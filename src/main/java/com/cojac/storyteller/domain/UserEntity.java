@@ -17,4 +17,10 @@ public class UserEntity {
 
     private String role;
 
+    public UserEntity(String encryptedPassword, String username, String role) {
+        this.password = encryptedPassword;
+        this.username = username;
+        this.role = role;
+    }
+
 }
