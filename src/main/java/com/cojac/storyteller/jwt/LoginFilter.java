@@ -61,14 +61,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        // Access 토큰 생성
-        String access = jwtUtil.createJwt("access", username, role, 60*60*10L);
+        //토큰 생성
+        String access = jwtUtil.createJwt("access", username, role, 600000L);
+        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
 
         // access 토큰 설정
         response.setHeader("access", access);
 
         // 로그인 성공시 body에 응답 정보 담기
         UserDTO userDTO = new UserDTO(userId, username, role);
+        // body에 refresh 토큰 설정
+        userDTO.setRefreshToken(refresh);
         ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGIN, userDTO);
 
         // 응답의 Content-Type 및 Character Encoding 설정
