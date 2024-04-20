@@ -11,7 +11,7 @@ public enum ResponseCode {
     /**
      * User
      */
-    SUCCESS_JOIN(HttpStatus.OK, "회원가입을 성공했습니다."),
+    SUCCESS_REGISTER(HttpStatus.OK, "회원가입을 성공했습니다."),
     ;
 
     private final HttpStatus status;
