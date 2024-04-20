@@ -64,14 +64,16 @@ public class UserController {
 
         // Access token 생성
         String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
+        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
 
         //response
         response.setHeader("access", newAccess);
-
+        UserDTO userDTO = new UserDTO();
+        userDTO.setRefreshToken(newRefresh);
 
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_REISSUE.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_REISSUE, null));
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_REISSUE, userDTO));
     }
 
     // 로그인 이후 유저 아이디 및 role 확인 방법
