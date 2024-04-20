@@ -1,5 +1,6 @@
 package com.cojac.storyteller.config;
 
+import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
+
+    private final JWTUtil jwtUtil;
 
     //AuthenticationManager Bean 등록
     @Bean
@@ -54,7 +57,7 @@ public class SecurityConfig {
 
         //커스텀 UsernamePasswordAuthenticationFilter 추가
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 
         //세션 설정
