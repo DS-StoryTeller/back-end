@@ -7,5 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class DuplicateUsernameException extends RuntimeException {
+
     private final ErrorCode errorCode;
 }
