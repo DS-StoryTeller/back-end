@@ -1,9 +1,16 @@
 package com.cojac.storyteller.controller;
 
+import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.exception.AccessTokenExpiredException;
+import com.cojac.storyteller.exception.RequestParsingException;
+import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,12 +29,49 @@ public class UserController {
 
     private final UserService userService;
 
+    private final JWTUtil jwtUtil;
+
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> registerUser(UserDTO userDTO) {
         UserDTO res = userService.registerUser(userDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_REGISTER.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, res));
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<ResponseDTO> reissue(HttpServletRequest request, HttpServletResponse response) {
+        // 헤더에서 refresh키에 담긴 토큰을 꺼냄
+        String refreshToken = request.getHeader("refresh");
+
+        if (refreshToken == null) {
+            throw new RequestParsingException(ErrorCode.TOKEN_MISSING);
+        }
+
+        try {
+            jwtUtil.isExpired(refreshToken);
+        } catch (ExpiredJwtException e) {
+            throw new AccessTokenExpiredException(ErrorCode.TOKEN_EXPIRED);
+        }
+
+        String category = jwtUtil.getCategory(refreshToken);
+        if (!category.equals("refresh")) {
+            throw new RequestParsingException(ErrorCode.INVALID_ACCESS_TOKEN);
+        }
+
+        String username = jwtUtil.getUsername(refreshToken);
+        String role = jwtUtil.getRole(refreshToken);
+
+        // Access token 생성
+        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
+
+        //response
+        response.setHeader("access", newAccess);
+
+
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_REISSUE.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_REISSUE, null));
     }
 
     // 로그인 이후 유저 아이디 및 role 확인 방법
