@@ -1,5 +1,6 @@
 package com.cojac.storyteller.config;
 
+import com.cojac.storyteller.jwt.JWTFilter;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/register").permitAll()
                         .anyRequest().authenticated());
+
+        //JWTFilter 등록
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         //커스텀 UsernamePasswordAuthenticationFilter 추가
         http
