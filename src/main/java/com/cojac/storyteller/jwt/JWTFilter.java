@@ -5,6 +5,9 @@ import com.cojac.storyteller.domain.UserEntity;
 import com.cojac.storyteller.dto.response.ErrorResponseDTO;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,6 +21,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -65,8 +70,23 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+
         // 에러 메시지를 JSON 형식으로 직렬화
         ObjectMapper objectMapper = new ObjectMapper();
+
+        // LocalDateTime 직렬화를 위한 JavaTimeModule 생성
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+
+        // 원하는 날짜 및 시간 형식 지정 (예: "yyyy-MM-dd HH:mm:ss")
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // LocalDateTimeSerializer 및 LocalDateTimeDeserializer를 설정
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+
+        // LocalDateTime를 JSON 형식으로 직렬화를 위한 설정
+        objectMapper.registerModule(javaTimeModule);
+
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(errorCode);
         String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 

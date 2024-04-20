@@ -1,6 +1,7 @@
 package com.cojac.storyteller.dto.response;
 
 import com.cojac.storyteller.code.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
