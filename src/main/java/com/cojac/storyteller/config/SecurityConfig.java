@@ -3,6 +3,7 @@ package com.cojac.storyteller.config;
 import com.cojac.storyteller.jwt.JWTFilter;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.jwt.LoginFilter;
+import com.cojac.storyteller.repository.RefreshRedisRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
 
     private final JWTUtil jwtUtil;
+
+    private final RefreshRedisRepository refreshRedisRepository;
 
     //AuthenticationManager Bean 등록
     @Bean
@@ -89,7 +92,7 @@ public class SecurityConfig {
 
         //커스텀 UsernamePasswordAuthenticationFilter 추가
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRedisRepository), UsernamePasswordAuthenticationFilter.class);
 
 
         //세션 설정

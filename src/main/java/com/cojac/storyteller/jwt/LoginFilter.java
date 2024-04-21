@@ -1,10 +1,11 @@
 package com.cojac.storyteller.jwt;
 
 import com.cojac.storyteller.code.ResponseCode;
+import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
 import com.cojac.storyteller.dto.user.UserDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.cojac.storyteller.repository.RefreshRedisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
 
     private final JWTUtil jwtUtil;
+
+    private final RefreshRedisRepository refreshRedisRepository;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -64,6 +67,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createJwt("access", username, role, 600000L);
         String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
 
+        // refresh 토큰 저장
+        addRefreshEntity(refresh, username);
+
         // access 토큰 설정
         response.setHeader("access", access);
 
@@ -90,5 +96,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         //로그인 실패시 401 응답 코드 반환
         response.setStatus(401);
+    }
+
+    private void addRefreshEntity(String refresh, String username) {
+        RefreshEntity refreshEntity = new RefreshEntity(refresh, username);
+        refreshRedisRepository.save(refreshEntity);
     }
 }
