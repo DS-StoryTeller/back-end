@@ -1,5 +1,6 @@
 package com.cojac.storyteller.config;
 
+import com.cojac.storyteller.jwt.CustomLogoutFilter;
 import com.cojac.storyteller.jwt.JWTFilter;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.jwt.LoginFilter;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -85,6 +87,10 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/", "/register").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());
+
+        // 로그아웃 필터 등록
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRedisRepository), LogoutFilter.class);
 
         //JWTFilter 등록
         http
