@@ -22,4 +22,12 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ErrorCode.DUPLICATE_USERNAME));
     }
 
+    @ExceptionHandler(RequestParsingException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleRequestParsingException(final RequestParsingException e) {
+        log.error("handleRequestParsingException : {}", e.getErrorCode().getMessage());
+        return ResponseEntity
+                .status(ErrorCode.BAD_REQUEST.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.BAD_REQUEST));
+    }
+
 }

@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class DuplicateUsernameException extends RuntimeException {
-
+public class AccessTokenExpiredException extends RuntimeException {
     private final ErrorCode errorCode;
 }
