@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -25,6 +28,10 @@ public class ProfileEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    // 책 목록 추가
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<BookEntity> books = new ArrayList<>();
+
     public ProfileEntity(String name, Integer age, String image, UserEntity user) {
         this.name = name;
         this.age = age;
@@ -32,4 +39,8 @@ public class ProfileEntity {
         this.user = user;
     }
 
+    public void addBook(BookEntity book) {
+        books.add(book);
+        book.setProfile(this);
+    }
 }

@@ -17,4 +17,5 @@ public class BookDTO {
     private String coverImage;
     private Integer currentPage;
     private List<PageDTO> pages;
+    private Integer profileId;
 }

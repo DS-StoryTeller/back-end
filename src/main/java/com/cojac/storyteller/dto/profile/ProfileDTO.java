@@ -1,13 +1,17 @@
 package com.cojac.storyteller.dto.profile;
 
-
+import com.cojac.storyteller.dto.book.BookDTO;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProfileDTO {
 
     private Integer id;
@@ -15,12 +19,5 @@ public class ProfileDTO {
     private Integer age;
     private String image;
     private Integer userId;
-
-    public ProfileDTO(Integer id, String name, Integer age, String image, Integer userId) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.image = image;
-        this.userId = userId;
-    }
+    private List<BookDTO> books;
 }

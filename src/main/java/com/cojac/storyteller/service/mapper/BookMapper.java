@@ -2,6 +2,7 @@ package com.cojac.storyteller.service.mapper;
 
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
+import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.page.PageDTO;
 
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BookMapper {
-    public static BookEntity mapToBookEntity(String title, String content, String defaultCoverImage, Integer currentPage) {
+    public static BookEntity mapToBookEntity(String title, String content, String defaultCoverImage, Integer currentPage, ProfileEntity profile) {
         BookEntity book = BookEntity.builder()
                 .title(title)
                 .coverImage(defaultCoverImage)
@@ -47,7 +48,8 @@ public class BookMapper {
                 .title(book.getTitle())
                 .coverImage(book.getCoverImage())
                 .currentPage(book.getCurrentPage())
-                .pages(pageDTOs)
+//                .pages(pageDTOs) page 내용 필요하면 주석 제거
+                .pages(null)
                 .build();
     }
 }

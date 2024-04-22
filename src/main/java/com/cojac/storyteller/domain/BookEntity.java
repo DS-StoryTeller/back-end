@@ -30,8 +30,16 @@ public class BookEntity {
     @Builder.Default
     private List<PageEntity> pages = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private ProfileEntity profile;
+
     public void addPage(PageEntity page) {
         pages.add(page);
         page.setBook(this);
+    }
+
+    public void setProfile(ProfileEntity profile) {
+        this.profile = profile;
     }
 }

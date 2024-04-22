@@ -7,10 +7,7 @@ import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/books")
@@ -20,8 +17,8 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO<BookDTO>> createBook(@RequestBody CreateBookRequest request) {
-        BookDTO createdBook = bookService.createBook(request.getTitle(), request.getContent());
+    public ResponseEntity<ResponseDTO<BookDTO>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
+        BookDTO createdBook = bookService.createBook(request.getTitle(), request.getContent(), profileId);
         ResponseDTO<BookDTO> response = new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook);
         return ResponseEntity.status(ResponseCode.SUCCESS_CREATE_BOOK.getStatus()).body(response);
     }
