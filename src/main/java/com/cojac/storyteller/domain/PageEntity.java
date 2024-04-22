@@ -1,13 +1,13 @@
 package com.cojac.storyteller.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class PageEntity {
 
     @Id
@@ -25,11 +25,10 @@ public class PageEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
-    private BookEntity bookEntity;
+    private BookEntity book;
 
-    public PageEntity(Integer page, String image, String content) {
-        this.page = page;
-        this.image = image;
-        this.content = content;
+    // BookEntity에서 사용해서 set메서드 하나만 만들었습니다.
+    public void setBook(BookEntity book) {
+        this.book = book;
     }
 }

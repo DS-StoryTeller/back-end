@@ -1,14 +1,16 @@
 package com.cojac.storyteller.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class BookEntity {
 
     @Id
@@ -24,12 +26,12 @@ public class BookEntity {
     @Column(nullable = false)
     private Integer currentPage;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<PageEntity> pages;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<PageEntity> pages = new ArrayList<>();
 
-    public BookEntity(String title, String coverImage, Integer currentPage) {
-        this.title = title;
-        this.coverImage = coverImage;
-        this.currentPage = currentPage;
+    public void addPage(PageEntity page) {
+        pages.add(page);
+        page.setBook(this);
     }
 }
