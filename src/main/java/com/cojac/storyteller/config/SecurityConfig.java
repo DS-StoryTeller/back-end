@@ -35,7 +35,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/register").permitAll()
+                        .requestMatchers("/login", "/", "/register", "/books/create").permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정
@@ -48,4 +48,3 @@ public class SecurityConfig {
 
     }
 }
-
