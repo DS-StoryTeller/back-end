@@ -1,8 +1,10 @@
 package com.cojac.storyteller.service;
 
+import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
+import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.service.mapper.BookMapper;
@@ -22,7 +24,7 @@ public class BookService {
         String defaultCoverImage = "defaultCover.jpg";
 
         ProfileEntity profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new RuntimeException("Profile not found")); // 예외 처리 필요
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         // 매퍼 클래스를 사용해서 북 만들기
         BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, 0, profile);

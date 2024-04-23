@@ -22,12 +22,15 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ErrorCode.DUPLICATE_USERNAME));
     }
 
-    @ExceptionHandler(RequestParsingException.class)
-    protected ResponseEntity<ErrorResponseDTO> handleRequestParsingException(final RequestParsingException e) {
-        log.error("handleRequestParsingException : {}", e.getErrorCode().getMessage());
+    /**
+     * Book
+     */
+    @ExceptionHandler(ProfileNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleProfileNotFoundException(final ProfileNotFoundException e) {
+        log.error("handleProfileNotFoundException : {}", e.getErrorCode().getMessage());
         return ResponseEntity
-                .status(ErrorCode.BAD_REQUEST.getStatus().value())
-                .body(new ErrorResponseDTO(ErrorCode.BAD_REQUEST));
+                .status(e.getErrorCode().getStatus().value())
+                .body(new ErrorResponseDTO(e.getErrorCode()));
     }
 
 }
