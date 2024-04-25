@@ -1,12 +1,12 @@
 package com.cojac.storyteller.dto.user;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class UserDTO {
 
     private Integer id;
