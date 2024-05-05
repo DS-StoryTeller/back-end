@@ -23,7 +23,7 @@ public enum ErrorCode {
     /**
      * 404 NOT_FOUND: 리소스를 찾을 수 없음
      */
-
+    PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "프로필을 찾을 수 없습니다."),
 
 
     /**
