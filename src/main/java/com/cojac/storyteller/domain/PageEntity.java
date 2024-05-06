@@ -15,7 +15,7 @@ public class PageEntity {
     private Integer id;
 
     @Column(nullable = false)
-    private Integer page;
+    private Integer pageNumber;
 
     @Column(nullable = false)
     private String image;

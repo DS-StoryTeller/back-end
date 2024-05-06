@@ -10,7 +10,7 @@ import lombok.*;
 public class PageDTO {
 
     private Integer id;
-    private Integer page;
+    private Integer pageNumber;
     private String image;
     private String content;
     private Integer bookId;
