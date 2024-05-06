@@ -19,7 +19,8 @@ public enum ResponseCode {
     /**
      * Book
      */
-    SUCCESS_CREATE_BOOK(HttpStatus.CREATED, "동화가 성공적으로 생성되었습니다.");
+    SUCCESS_CREATE_BOOK(HttpStatus.CREATED, "동화가 성공적으로 생성되었습니다."),
+    SUCCESS_RETRIEVE_BOOKS(HttpStatus.OK, "책 목록을 성공적으로 조회했습니다.");
 
     private final HttpStatus status;
     private final String message;
