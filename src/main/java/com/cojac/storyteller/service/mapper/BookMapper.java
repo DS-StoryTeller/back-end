@@ -39,12 +39,17 @@ public class BookMapper {
 
     public static BookDTO mapToBookDTO(BookEntity book) {
         List<PageDTO> pageDTOs = book.getPages().stream()
-                .map(page -> PageDTO.builder()
-                        .id(page.getId())
-                        .pageNumber(page.getPageNumber())
-                        .image(page.getImage())
-                        .content(page.getContent())
-                        .build())
+                .map(page -> {
+                    BookEntity associatedBook = page.getBook();
+
+                    return PageDTO.builder()
+                            .id(page.getId())
+                            .pageNumber(page.getPageNumber())
+                            .image(page.getImage())
+                            .content(page.getContent())
+                            .bookId(associatedBook != null ? associatedBook.getId() : null)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return BookDTO.builder()
@@ -52,7 +57,7 @@ public class BookMapper {
                 .title(book.getTitle())
                 .coverImage(book.getCoverImage())
                 .currentPage(book.getCurrentPage())
-//                .pages(pageDTOs) page 내용 필요하면 주석 제거
+//                .pages(pageDTOs) // page 내용 필요하면 주석 제거
                 .pages(null)
                 .isReading(book.isReading())
                 .isFavorite(book.isFavorite())

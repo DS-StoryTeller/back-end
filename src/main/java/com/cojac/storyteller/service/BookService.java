@@ -60,18 +60,23 @@ public class BookService {
         BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
+        List<PageDTO> pageDTOs = book.getPages().stream()
+                .map(page -> PageDTO.builder()
+                        .id(page.getId())
+                        .pageNumber(page.getPageNumber())
+                        .image(page.getImage())
+                        .content(page.getContent())
+                        .bookId(page.getBook().getId())
+                        .build())
+                .collect(Collectors.toList());
+
         return BookDetailResponseDTO.builder()
                 .bookId(book.getId())
                 .title(book.getTitle())
                 .coverImage(book.getCoverImage())
                 .currentPage(book.getCurrentPage())
                 .totalPageCount(book.getPages().size())
-                .pages(book.getPages().stream()
-                        .map(page -> PageDTO.builder()
-                                .pageNumber(page.getPageNumber())
-                                .content(page.getContent())
-                                .build())
-                        .collect(Collectors.toList()))
+                .pages(pageDTOs)
                 .build();
     }
 }
