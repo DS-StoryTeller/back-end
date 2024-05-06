@@ -18,4 +18,7 @@ public class BookDTO {
     private Integer currentPage;
     private List<PageDTO> pages;
     private Integer profileId;
+    private Integer totalPageCount;
+    private Boolean isReading;
+    private Boolean isFavorite;
 }

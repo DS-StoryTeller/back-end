@@ -16,6 +16,8 @@ public class BookMapper {
                 .title(title)
                 .coverImage(defaultCoverImage)
                 .currentPage(0)  // 처음 책 생성 시 0페이지로 설정
+                .isReading(true) // 책 생성후 바로 보인다 가정하여 true
+                .isFavorite(false)
                 .build();
 
         // OpenAI 연결 전 #### 을 기준으로 동화 내용이 들어온다 가정하고 나눴습니다.
@@ -33,6 +35,7 @@ public class BookMapper {
 
         return book;
     }
+
     public static BookDTO mapToBookDTO(BookEntity book) {
         List<PageDTO> pageDTOs = book.getPages().stream()
                 .map(page -> PageDTO.builder()
@@ -50,6 +53,9 @@ public class BookMapper {
                 .currentPage(book.getCurrentPage())
 //                .pages(pageDTOs) page 내용 필요하면 주석 제거
                 .pages(null)
+                .isReading(book.isReading())
+                .isFavorite(book.isFavorite())
+                .totalPageCount(book.getTotalPageCount())
                 .build();
     }
 }
