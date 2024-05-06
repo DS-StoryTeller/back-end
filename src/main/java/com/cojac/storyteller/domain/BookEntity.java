@@ -34,6 +34,13 @@ public class BookEntity {
     @JoinColumn(name = "profile_id")
     private ProfileEntity profile;
 
+    @Column(nullable = false)
+    private boolean isReading;
+
+    @Column(nullable = false)
+    private boolean isFavorite;
+
+
     public void addPage(PageEntity page) {
         pages.add(page);
         page.setBook(this);
@@ -41,5 +48,9 @@ public class BookEntity {
 
     public void setProfile(ProfileEntity profile) {
         this.profile = profile;
+    }
+
+    public int getTotalPageCount() {
+        return pages.size();
     }
 }
