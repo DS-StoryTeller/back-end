@@ -18,6 +18,7 @@ public class BookMapper {
                 .currentPage(0)  // 처음 책 생성 시 0페이지로 설정
                 .isReading(true) // 책 생성후 바로 보인다 가정하여 true
                 .isFavorite(false)
+                .profile(profile)
                 .build();
 
         // OpenAI 연결 전 #### 을 기준으로 동화 내용이 들어온다 가정하고 나눴습니다.
