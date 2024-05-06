@@ -18,22 +18,22 @@ public class UserService {
 
     public UserDTO registerUser(UserDTO userDTO) {
 
+        String username = userDTO.getUsername();
+        String role = userDTO.getRole();
         // 패스워드를 암호화하여 저장
         String encryptedPassword = bCryptPasswordEncoder.encode(userDTO.getPassword());
-        String username = userDTO.getUsername();
-        String role = "ROLE_USER";
 
-        if (userRepository.existsByUsername(username)) {  // 중복된 아이디가 이미 존재하는지 확인
+        // 중복된 아이디가 이미 존재하는지 확인
+        if (userRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException(ErrorCode.DUPLICATE_USERNAME);
         }
 
-        // user 생성
+        // UserEntity 생성
         UserEntity userEntity = new UserEntity(encryptedPassword, username, role);
 
         userRepository.save(userEntity);
 
         return new UserDTO(userEntity.getId(), userEntity.getUsername(), userEntity.getRole());
     }
-
 
 }
