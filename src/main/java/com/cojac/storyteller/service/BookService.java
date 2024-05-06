@@ -4,7 +4,10 @@ import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
+import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
+import com.cojac.storyteller.dto.page.PageDTO;
+import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
@@ -48,5 +51,27 @@ public class BookService {
                         .currentPage(book.getCurrentPage())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public BookDetailResponseDTO getBookDetail(Integer profileId, Integer bookId) {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        return BookDetailResponseDTO.builder()
+                .bookId(book.getId())
+                .title(book.getTitle())
+                .coverImage(book.getCoverImage())
+                .currentPage(book.getCurrentPage())
+                .totalPageCount(book.getPages().size())
+                .pages(book.getPages().stream()
+                        .map(page -> PageDTO.builder()
+                                .pageNumber(page.getPageNumber())
+                                .content(page.getContent())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

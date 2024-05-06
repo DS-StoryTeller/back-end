@@ -3,6 +3,7 @@ package com.cojac.storyteller.controller;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.book.BookDTO;
+import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
 import com.cojac.storyteller.dto.book.CreateBookRequest;
 import com.cojac.storyteller.dto.response.ErrorResponseDTO;
@@ -34,5 +35,11 @@ public class BookController {
     public ResponseDTO<List<BookListResponseDTO>> getBookList(@RequestParam Integer profileId) {
         List<BookListResponseDTO> books = bookService.getAllBooks(profileId);
         return new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOKS, books);
+    }
+
+    @GetMapping("/detail")
+    public ResponseDTO<BookDetailResponseDTO> getBookDetail( @RequestParam Integer profileId, @RequestParam Integer bookId) {
+        BookDetailResponseDTO bookDetail = bookService.getBookDetail(profileId, bookId);
+        return new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOK_DETAILS, bookDetail);
     }
 }

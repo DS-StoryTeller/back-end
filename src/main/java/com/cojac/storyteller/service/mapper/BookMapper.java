@@ -25,7 +25,7 @@ public class BookMapper {
         // ####을 기준으로 동화 내용을 잘라 Page 객체를 넣음
         List<PageEntity> pages = IntStream.range(0, content.split("####").length)
                 .mapToObj(i -> PageEntity.builder()
-                        .page(i + 1)
+                        .pageNumber(i + 1)
                         .content(content.split("####")[i])
                         .image("defaultPageImage.jpg") // 이미지 역시 기본 이미지를 넣고, 추후 변경하는 것으로 하겠습니다.
                         .book(book)
@@ -41,7 +41,7 @@ public class BookMapper {
         List<PageDTO> pageDTOs = book.getPages().stream()
                 .map(page -> PageDTO.builder()
                         .id(page.getId())
-                        .page(page.getPage())
+                        .pageNumber(page.getPageNumber())
                         .image(page.getImage())
                         .content(page.getContent())
                         .build())
