@@ -23,12 +23,15 @@ public class PageService {
 
 
     public PageDetailResponseDTO getPageDetail(Integer profileId, Integer bookId, Integer pageNum) {
+        // 해당 프로필 가져오기
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 해당 프로필에 해당하는 책 가져오기
         BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
+        // 해당 책에 해당하는 페이지 가져오기
         PageEntity page = pageRepository.findByBookAndPageNumber(book, pageNum)
                 .orElseThrow(() -> new PageNotFoundException(ErrorCode.PAGE_NOT_FOUND));
 

@@ -30,6 +30,7 @@ public class BookService {
     public BookDTO createBook(String title, String content, Integer profileId) {
         String defaultCoverImage = "defaultCover.jpg";
 
+        // 프로필이 존재하는지 확인
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
@@ -39,10 +40,13 @@ public class BookService {
         return BookMapper.mapToBookDTO(savedBook);
     }
 
+    // 전체 동화 목록 가져오기
     public List<BookListResponseDTO> getAllBooks(Integer profileId) {
+        // 프로필이 존재하는지 확인
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 프로필에 해당하는 동화 목록 가져오기
         return bookRepository.findByProfile(profile).stream()
                 .map(book -> BookListResponseDTO.builder()
                         .bookId(book.getId())
@@ -53,13 +57,17 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
+    // 동화 상세 정보 가져오기
     public BookDetailResponseDTO getBookDetail(Integer profileId, Integer bookId) {
+        // 프로필이 존재하는지 확인
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 해당 프로필에 해당하는 책 가져오기
         BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
+        // 각 책에대한 페이지들을 가져와서 DTO로 변환
         List<PageDTO> pageDTOs = book.getPages().stream()
                 .map(page -> PageDTO.builder()
                         .id(page.getId())
@@ -80,16 +88,19 @@ public class BookService {
                 .build();
     }
 
+    // 즐겨찾기 변경시 사용 (토글)
     public Boolean toggleFavorite(Integer profileId, Integer bookId) {
+        // 프로필이 존재하는지 확인
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 해당 프로필에 해당하는 책 가져오기
         BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
+        // 즐겨찾기 상태 변경 후 저장
         boolean newFavoriteStatus = !book.isFavorite();
         book.setFavorite(newFavoriteStatus);
-
         bookRepository.save(book);
 
         return newFavoriteStatus;

@@ -14,6 +14,7 @@ public class PageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // 엔티티명과 구분을 두고자 기존 page -> pageNumber로 변경
     @Column(nullable = false)
     private Integer pageNumber;
 
