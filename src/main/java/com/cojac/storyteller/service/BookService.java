@@ -79,4 +79,19 @@ public class BookService {
                 .pages(pageDTOs)
                 .build();
     }
+
+    public Boolean toggleFavorite(Integer profileId, Integer bookId) {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        boolean newFavoriteStatus = !book.isFavorite();
+        book.setFavorite(newFavoriteStatus);
+
+        bookRepository.save(book);
+
+        return newFavoriteStatus;
+    }
 }

@@ -38,8 +38,14 @@ public class BookController {
     }
 
     @GetMapping("/detail")
-    public ResponseDTO<BookDetailResponseDTO> getBookDetail( @RequestParam Integer profileId, @RequestParam Integer bookId) {
+    public ResponseDTO<BookDetailResponseDTO> getBookDetail(@RequestParam Integer profileId, @RequestParam Integer bookId) {
         BookDetailResponseDTO bookDetail = bookService.getBookDetail(profileId, bookId);
         return new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOK_DETAILS, bookDetail);
+    }
+
+    @PutMapping("/favorite")
+    public ResponseDTO<Boolean> isFavorite(@RequestParam Integer profileId, @RequestParam Integer bookId) {
+        Boolean newFavoriteStatus = bookService.toggleFavorite(profileId, bookId);
+        return new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_IS_FAVORITE, newFavoriteStatus);
     }
 }
