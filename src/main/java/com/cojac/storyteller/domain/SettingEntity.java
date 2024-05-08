@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static com.cojac.storyteller.domain.setting.FontSize.MEDIUM;
-import static com.cojac.storyteller.domain.setting.ReadingSpeed.ONE;
+import static com.cojac.storyteller.domain.setting.ReadingSpeed.NORMAL;
 
 @Entity
 @Getter
@@ -31,7 +31,7 @@ public class SettingEntity {
     public SettingEntity(BookEntity book) {
         this.book = book;
         this.fontSize = MEDIUM;
-        this.readingSpeed = ONE;
+        this.readingSpeed = NORMAL;
     }
 
     public void updateSetting(SettingDTO settingDTO) {
