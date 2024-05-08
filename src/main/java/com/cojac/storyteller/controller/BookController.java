@@ -32,20 +32,23 @@ public class BookController {
     }
 
     @GetMapping("/booklist")
-    public ResponseDTO<List<BookListResponseDTO>> getBookList(@RequestParam Integer profileId) {
+    public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId) {
         List<BookListResponseDTO> books = bookService.getAllBooks(profileId);
-        return new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOKS, books);
+        if (books.isEmpty()) {
+            return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, books));
+        }
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOKS, books));
     }
 
     @GetMapping("/detail")
-    public ResponseDTO<BookDetailResponseDTO> getBookDetail(@RequestParam Integer profileId, @RequestParam Integer bookId) {
+    public ResponseEntity<ResponseDTO<BookDetailResponseDTO>> getBookDetail(@RequestParam Integer profileId, @RequestParam Integer bookId) {
         BookDetailResponseDTO bookDetail = bookService.getBookDetail(profileId, bookId);
-        return new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOK_DETAILS, bookDetail);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOK_DETAILS, bookDetail));
     }
 
     @PutMapping("/favorite")
-    public ResponseDTO<Boolean> isFavorite(@RequestParam Integer profileId, @RequestParam Integer bookId) {
+    public ResponseEntity<ResponseDTO<Boolean>> isFavorite(@RequestParam Integer profileId, @RequestParam Integer bookId) {
         Boolean newFavoriteStatus = bookService.toggleFavorite(profileId, bookId);
-        return new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_IS_FAVORITE, newFavoriteStatus);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_IS_FAVORITE, newFavoriteStatus));
     }
 }
