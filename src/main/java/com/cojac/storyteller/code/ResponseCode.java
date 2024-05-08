@@ -26,6 +26,11 @@ public enum ResponseCode {
     SUCCESS_UPDATE_IS_FAVORITE(HttpStatus.OK, "즐겨찾기 상태를 성공적으로 변경했습니다."),
 
     /**
+     * UnknownWord
+     */
+    SUCCESS_CREATE_UNKNOWNWORD(HttpStatus.CREATED, "단어가 성공적으로 저장되었습니다"),
+
+    /**
      * Custom status for empty data lists
      */
     SUCCESS_RETRIEVE_EMPTY_LIST(HttpStatus.OK, "데이터 조회를 성공했으나, 목록이 비어 있습니다.");

@@ -21,4 +21,10 @@ public class UnknownWordEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "page_id")
     private PageEntity page;
+
+    public UnknownWordEntity(String unknownWord, Integer position, PageEntity page) {
+        this.unknownWord = unknownWord;
+        this.position = position;
+        this.page = page;
+    }
 }
