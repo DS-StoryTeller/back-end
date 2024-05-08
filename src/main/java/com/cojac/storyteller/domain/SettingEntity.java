@@ -1,5 +1,6 @@
 package com.cojac.storyteller.domain;
 
+import com.cojac.storyteller.dto.setting.SettingDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,5 +30,10 @@ public class SettingEntity {
         this.book = book;
         this.fontSize = MEDIUM;
         this.readingSpeed = ONE;
+    }
+
+    public void updateSetting(SettingDTO settingDTO) {
+        this.fontSize = settingDTO.getFontSize();
+        this.readingSpeed = settingDTO.getReadingSpeed();
     }
 }
