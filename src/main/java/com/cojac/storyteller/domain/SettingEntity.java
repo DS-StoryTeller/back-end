@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.cojac.storyteller.domain.FontSize.MEDIUM;
+import static com.cojac.storyteller.domain.ReadingSpeed.ONE;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -21,4 +24,10 @@ public class SettingEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private BookEntity book;
+
+    public SettingEntity(BookEntity book) {
+        this.book = book;
+        this.fontSize = MEDIUM;
+        this.readingSpeed = ONE;
+    }
 }
