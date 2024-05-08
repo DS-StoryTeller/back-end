@@ -1,12 +1,14 @@
 package com.cojac.storyteller.domain;
 
+import com.cojac.storyteller.domain.setting.FontSize;
+import com.cojac.storyteller.domain.setting.ReadingSpeed;
 import com.cojac.storyteller.dto.setting.SettingDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.cojac.storyteller.domain.FontSize.MEDIUM;
-import static com.cojac.storyteller.domain.ReadingSpeed.ONE;
+import static com.cojac.storyteller.domain.setting.FontSize.MEDIUM;
+import static com.cojac.storyteller.domain.setting.ReadingSpeed.ONE;
 
 @Entity
 @Getter

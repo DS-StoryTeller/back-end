@@ -1,4 +1,4 @@
-package com.cojac.storyteller.domain;
+package com.cojac.storyteller.domain.setting;
 
 public enum ReadingSpeed {
     HALF(0.5),
@@ -11,9 +11,5 @@ public enum ReadingSpeed {
 
     ReadingSpeed(double value) {
         this.value = value;
-    }
-
-    public double getValue() {
-        return value;
     }
 }

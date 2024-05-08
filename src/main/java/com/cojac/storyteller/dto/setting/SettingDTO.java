@@ -1,7 +1,7 @@
 package com.cojac.storyteller.dto.setting;
 
-import com.cojac.storyteller.domain.FontSize;
-import com.cojac.storyteller.domain.ReadingSpeed;
+import com.cojac.storyteller.domain.setting.FontSize;
+import com.cojac.storyteller.domain.setting.ReadingSpeed;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
