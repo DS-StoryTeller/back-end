@@ -4,6 +4,7 @@ import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
+import com.cojac.storyteller.dto.book.BookListResponseDTO;
 import com.cojac.storyteller.dto.page.PageDTO;
 
 import java.util.List;
@@ -68,4 +69,15 @@ public class BookMapper {
                 .totalPageCount(book.getTotalPageCount())
                 .build();
     }
+    public static List<BookListResponseDTO> mapToBookListResponseDTOs(List<BookEntity> books) {
+        return books.stream()
+                .map(book -> BookListResponseDTO.builder()
+                        .bookId(book.getId())
+                        .title(book.getTitle())
+                        .coverImage(book.getCoverImage())
+                        .currentPage(book.getCurrentPage())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }

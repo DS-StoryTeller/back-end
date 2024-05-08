@@ -47,14 +47,8 @@ public class BookService {
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         // 프로필에 해당하는 동화 목록 가져오기
-        return bookRepository.findByProfile(profile).stream()
-                .map(book -> BookListResponseDTO.builder()
-                        .bookId(book.getId())
-                        .title(book.getTitle())
-                        .coverImage(book.getCoverImage())
-                        .currentPage(book.getCurrentPage())
-                        .build())
-                .collect(Collectors.toList());
+        List<BookEntity> books = bookRepository.findByProfile(profile);
+        return BookMapper.mapToBookListResponseDTOs(books);
     }
 
     // 동화 상세 정보 가져오기
