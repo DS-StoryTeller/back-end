@@ -76,7 +76,7 @@ public class UserController {
         String role = jwtUtil.getRole(refreshToken);
 
         // Access token 생성
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
+        String newAccess = jwtUtil.createJwt("access", username, role, 86400000L); // 추후에 변경 -> 600000L
         String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
