@@ -44,14 +44,11 @@ public class PageService {
                 .orElseThrow(() -> new PageNotFoundException(ErrorCode.PAGE_NOT_FOUND));
 
         // 페이지에 해당하는 모르는 단어 가져오기
-        List<UnknownWordEntity> unknownWordEntity = unknownWordRepository.getByPage(page)
+        List<UnknownWordEntity> unknownWordEntities = unknownWordRepository.getByPage(page)
                 .orElseThrow(() -> new UnknownNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
 
-        List<UnknownWordDto> unknownWordDtos = new ArrayList<>();
-        for(UnknownWordEntity unKnownWord : unknownWordEntity) {
-            UnknownWordDto unknownWordDto = new UnknownWordDto(unKnownWord.getUnknownWord(), unKnownWord.getPosition());
-            unknownWordDtos.add(unknownWordDto);
-        }
+
+        List<UnknownWordDto> unknownWordDtos = UnknownWordDto.toDto(unknownWordEntities);
 
         return PageDetailResponseDTO.builder()
                 .bookId(book.getId())
