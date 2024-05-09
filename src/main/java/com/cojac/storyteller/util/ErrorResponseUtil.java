@@ -2,7 +2,6 @@ package com.cojac.storyteller.util;
 
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.dto.response.ErrorResponseDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
