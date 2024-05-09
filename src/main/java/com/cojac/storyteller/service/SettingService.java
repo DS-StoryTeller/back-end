@@ -32,7 +32,8 @@ public class SettingService {
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         // 책에 해당하는 설정 정보 가져오기
-        SettingEntity settingEntity = settingRepository.findByBook(book);
+        SettingEntity settingEntity = settingRepository.findByBook(book)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         // 설정 정보 업데이트
         settingEntity.updateSetting(settingDTO);
