@@ -8,6 +8,11 @@ public class GoogleResponse implements OAuth2Response{
 
     public GoogleResponse(Map<String, Object> attribute) {
 
+        /*
+        System.out.println(attribute);
+        { resultcode=00, message=success, id=123123123, name=이름 }
+         */
+
         this.attribute = attribute;
     }
 
