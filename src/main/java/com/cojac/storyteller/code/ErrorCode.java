@@ -24,7 +24,7 @@ public enum ErrorCode {
      * 404 NOT_FOUND: 리소스를 찾을 수 없음
      */
     PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "프로필을 찾을 수 없습니다."),
-
+    SOCIAL_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "소셜 사용자를 찾을 수 없습니다."),
 
     /**
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출

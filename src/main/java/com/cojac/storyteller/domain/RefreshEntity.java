@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@RedisHash(value = "refresh", timeToLive = 86400)  // 만료 시간 24시간
+@RedisHash(value = "refresh", timeToLive = 1209600)  // 만료 시간 2주일(14일)
 public class RefreshEntity {
 
     @Id
