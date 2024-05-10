@@ -3,6 +3,9 @@ package com.cojac.storyteller.jwt;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.UserEntity;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
+import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.dto.user.oauth2.CustomOAuth2User;
+import com.cojac.storyteller.dto.user.oauth2.SocialUserDTO;
 import com.cojac.storyteller.util.ErrorResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -24,6 +27,19 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestUri = request.getRequestURI();
+
+        if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 헤더에서 access키에 담긴 토큰을 꺼냄
         String accessToken = request.getHeader("access");
 
@@ -53,12 +69,33 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
-        UserEntity userEntity = new UserEntity("password", username, role);
-        CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
+        // 자체로그인인지 소셜 로그인인지 구별
+        String authenticationMethod = jwtUtil.getAuthenticationMethod(accessToken);
+        if (authenticationMethod.equals("self")) {
 
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+            UserEntity userEntity = new UserEntity("password", username, role);
+            //UserDetails에 회원 정보 객체 담기
+            CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
 
-        filterChain.doFilter(request, response);
+            Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            filterChain.doFilter(request, response);
+
+        } else if (authenticationMethod.equals("social")) {
+            SocialUserDTO socialUserDTO = new SocialUserDTO(role, "", username);
+            //UserDetails에 회원 정보 객체 담기
+            CustomOAuth2User customOAuth2User = new CustomOAuth2User(socialUserDTO);
+
+            //스프링 시큐리티 인증 토큰 생성
+            Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+            //세션에 사용자 등록
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            filterChain.doFilter(request, response);
+        } else {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_ACCESS_TOKEN);
+            return;
+        }
     }
 }
