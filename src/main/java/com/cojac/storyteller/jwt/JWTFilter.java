@@ -3,7 +3,6 @@ package com.cojac.storyteller.jwt;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.UserEntity;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
-import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.dto.user.oauth2.CustomOAuth2User;
 import com.cojac.storyteller.dto.user.oauth2.SocialUserDTO;
 import com.cojac.storyteller.util.ErrorResponseUtil;

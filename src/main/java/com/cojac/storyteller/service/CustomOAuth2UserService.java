@@ -1,12 +1,10 @@
 package com.cojac.storyteller.service;
 
-import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.SocialUserEntity;
 import com.cojac.storyteller.dto.user.oauth2.CustomOAuth2User;
 import com.cojac.storyteller.dto.user.oauth2.GoogleResponse;
 import com.cojac.storyteller.dto.user.oauth2.OAuth2Response;
 import com.cojac.storyteller.dto.user.oauth2.SocialUserDTO;
-import com.cojac.storyteller.exception.SocialUserNotFoundException;
 import com.cojac.storyteller.repository.SocialUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
