@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class UnknownNotFoundException extends RuntimeException {
+public class UnknownWordNotFoundException extends RuntimeException {
     private final ErrorCode errorCode;
 }

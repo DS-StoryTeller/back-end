@@ -10,7 +10,7 @@ import com.cojac.storyteller.dto.unknownWord.UnknownWordDto;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.PageNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
-import com.cojac.storyteller.exception.UnknownNotFoundException;
+import com.cojac.storyteller.exception.UnknownWordNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.PageRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
@@ -18,7 +18,6 @@ import com.cojac.storyteller.repository.UnknownWordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,7 +44,7 @@ public class PageService {
 
         // 페이지에 해당하는 모르는 단어 가져오기
         List<UnknownWordEntity> unknownWordEntities = unknownWordRepository.getByPage(page)
-                .orElseThrow(() -> new UnknownNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
+                .orElseThrow(() -> new UnknownWordNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
 
 
         List<UnknownWordDto> unknownWordDtos = UnknownWordDto.toDto(unknownWordEntities);

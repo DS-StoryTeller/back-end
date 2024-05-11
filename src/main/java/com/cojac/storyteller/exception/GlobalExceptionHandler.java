@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
      * UnknownWord
      */
     @ExceptionHandler(DuplicateUsernameException.class)
-    protected ResponseEntity<ErrorResponseDTO> handleUnknownWordNotFoundException(final UnknownNotFoundException e) {
+    protected ResponseEntity<ErrorResponseDTO> handleUnknownWordNotFoundException(final UnknownWordNotFoundException e) {
         log.error("handleDuplicateUsernameException : {}", e.getErrorCode().getMessage());
         return ResponseEntity
                 .status(e.getErrorCode().getStatus().value())
