@@ -3,6 +3,9 @@ package com.cojac.storyteller.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +30,10 @@ public class PageEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private BookEntity book;
+
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<UnknownWordEntity> unknownWords = new ArrayList<>();
 
     // BookEntity에서 사용해서 set메서드 하나만 만들었습니다.
     public void setBook(BookEntity book) {
