@@ -40,6 +40,9 @@ public class BookEntity {
     @Column(nullable = false)
     private boolean isFavorite;
 
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private SettingEntity setting;
+
 
     public void addPage(PageEntity page) {
         pages.add(page);
