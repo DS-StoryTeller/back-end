@@ -3,6 +3,7 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
+import com.cojac.storyteller.domain.SettingEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
@@ -11,6 +12,7 @@ import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
+import com.cojac.storyteller.repository.SettingRepository;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
+    private final SettingRepository settingRepository;
 
     @Transactional
     public BookDTO createBook(String title, String content, Integer profileId) {
@@ -37,6 +40,11 @@ public class BookService {
         // 매퍼 클래스를 사용해서 북 만들기
         BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, 0, profile);
         BookEntity savedBook = bookRepository.save(book);
+
+        // Book에 해당하는 SettingEntity 생성
+        SettingEntity settingEntity = new SettingEntity(book);
+        settingRepository.save(settingEntity);
+
         return BookMapper.mapToBookDTO(savedBook);
     }
 
