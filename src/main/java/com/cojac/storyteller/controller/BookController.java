@@ -51,4 +51,12 @@ public class BookController {
         Boolean newFavoriteStatus = bookService.toggleFavorite(profileId, bookId);
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_IS_FAVORITE, newFavoriteStatus));
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDTO> deleteBook(@RequestParam Integer profileId, @RequestParam Integer bookId) {
+        bookService.deleteBook(profileId, bookId);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_DELETE_BOOK.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_BOOK, null));
+    }
 }

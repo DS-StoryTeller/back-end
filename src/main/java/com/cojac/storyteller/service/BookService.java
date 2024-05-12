@@ -107,4 +107,19 @@ public class BookService {
 
         return newFavoriteStatus;
     }
+
+    // 동화 삭제
+
+    @Transactional
+    public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
+        // 프로필이 존재하는지 확인
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        // 해당 프로필에 해당하는 책 가져오기
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        bookRepository.delete(book);
+    }
 }

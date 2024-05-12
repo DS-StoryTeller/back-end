@@ -24,6 +24,7 @@ public enum ResponseCode {
     SUCCESS_RETRIEVE_BOOK_DETAILS(HttpStatus.OK, "책 세부 정보를 성공적으로 조회했습니다."),
     SUCCESS_RETRIEVE_PAGE_DETAILS(HttpStatus.OK, "페이지 세부 정보를 성공적으로 조회했습니다."),
     SUCCESS_UPDATE_IS_FAVORITE(HttpStatus.OK, "즐겨찾기 상태를 성공적으로 변경했습니다."),
+    SUCCESS_DELETE_BOOK(HttpStatus.OK, "책을 성공적으로 삭제했습니다."),
 
     /**
      * UnknownWord
