@@ -25,15 +25,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-        OAuth2Response oAuth2Response = null;
-        if (registrationId.equals("google")) {
-
-            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        } else if (registrationId.equals("kakao")) {
-            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-        } else {
-            return null;
-        }
+        // OAuth2ResponseFactory 객체를 생성
+        OAuth2ResponseFactory factory = new OAuth2ResponseFactory();
+        // registrationId와 attributes를 이용하여 OAuth2Response 객체를 생성
+        OAuth2Response oAuth2Response = factory.createOAuth2Response(registrationId, oAuth2User.getAttributes());
 
         // 리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만들기
         String accountId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
