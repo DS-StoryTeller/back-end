@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -76,8 +77,8 @@ public class UserController {
         String role = jwtUtil.getRole(refreshToken);
 
         // Access token 생성
-        String newAccess = jwtUtil.createJwt("access", username, role, 86400000L); // 추후에 변경 -> 600000L
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt("self", "access", username, role, 86400000L); // 24시간(하루)
+        String newRefresh = jwtUtil.createJwt("self", "refresh", username, role, 1209600000L); // 2주(14일)
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         refreshRedisRepository.deleteById(refreshToken);

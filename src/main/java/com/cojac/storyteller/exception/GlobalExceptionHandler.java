@@ -22,6 +22,14 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ErrorCode.DUPLICATE_USERNAME));
     }
 
+    @ExceptionHandler(SocialUserNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleSocialUserNotFoundException(final SocialUserNotFoundException e) {
+        log.error("handleSocialUserNotFoundException : {}", e.getErrorCode().getMessage());
+        return ResponseEntity
+                .status(ErrorCode.SOCIAL_USER_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.SOCIAL_USER_NOT_FOUND));
+    }
+
     /**
      * Book
      */

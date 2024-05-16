@@ -4,7 +4,9 @@ import com.cojac.storyteller.jwt.CustomLogoutFilter;
 import com.cojac.storyteller.jwt.JWTFilter;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.jwt.LoginFilter;
+import com.cojac.storyteller.jwt.oauth2.CustomSuccessHandler;
 import com.cojac.storyteller.repository.RefreshRedisRepository;
+import com.cojac.storyteller.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -33,6 +36,10 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     private final RefreshRedisRepository refreshRedisRepository;
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    private final CustomSuccessHandler customSuccessHandler;
 
     //AuthenticationManager Bean 등록
     @Bean
@@ -63,6 +70,7 @@ public class SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
 
+                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
                         configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
                         return configuration;
@@ -80,6 +88,14 @@ public class SecurityConfig {
         //http basic 인증 방식 disable
         http
                 .httpBasic((auth) -> auth.disable());
+
+        //oauth2
+        http
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler)
+                );
 
         //경로별 인가 작업
         http
