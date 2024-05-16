@@ -39,4 +39,9 @@ public class PageEntity {
     public void setBook(BookEntity book) {
         this.book = book;
     }
+
+    // 이미지 추가 삽입을 위한 set 메서드
+    public void setImage(String image) {
+        this.image = image;
+    }
 }

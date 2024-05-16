@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageDetailResponseDTO {
-    private Integer bookId;
+    private Integer pageId;
     private Integer pageNumber;
     private String image;
     private String content;

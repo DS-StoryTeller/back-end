@@ -18,6 +18,7 @@ import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.UnknownWordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -55,11 +56,42 @@ public class PageService {
         List<UnknownWordDto> unknownWordDtos = UnknownWordDto.toDto(unknownWordEntities);
 
         return PageDetailResponseDTO.builder()
-                .bookId(book.getId())
+                .pageId(page.getId())
                 .pageNumber(page.getPageNumber())
                 .image(page.getImage())
                 .content(page.getContent())
                 .unknownWords(unknownWordDtos)
                 .build();
+    }
+
+
+    public PageDetailResponseDTO updatePageImage(PageRequestDTO requestDto, MultipartFile imageFile) {
+        // 해당 프로필 가져오기
+        ProfileEntity profile = profileRepository.findById(requestDto.getProfileId())
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        // 해당 프로필에 해당하는 책 가져오기
+        BookEntity book = bookRepository.findByIdAndProfile(requestDto.getBookId(), profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        // 해당 책에 해당하는 페이지 가져오기
+        PageEntity page = pageRepository.findByBookAndPageNumber(book, requestDto.getPageNum())
+                .orElseThrow(() -> new PageNotFoundException(ErrorCode.PAGE_NOT_FOUND));
+
+        // 이미지 파일 처리 로직 (저장 및 URL 생성)
+        String imageUrl = saveImage(imageFile);
+
+        // 페이지 엔티티 업데이트
+        page.setImage(imageUrl);
+        pageRepository.save(page);
+
+        // 처음 페이지가 로딩될때 이미지가 삽입되기에, 처음 본다고 가정. unknownWords는 null로 반환
+        return new PageDetailResponseDTO(page.getId(), page.getPageNumber(), imageUrl, page.getContent(), null);
+    }
+
+    private String saveImage(MultipartFile imageFile) {
+        // 이미지 파일을 서버에 저장하고 URL을 반환
+        // 추후 AWS 연결되면 완성하도록 하겠습니다.
+        return "path/to/saved/image.jpg"; // 임시 URL
     }
 }
