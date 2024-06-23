@@ -22,4 +22,15 @@ public class UnknownWordController {
         UnknownWordDetailDto response = unknownWordService.saveUnknownWord(pageRequestDTO, unknownWordDto);
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD, response));
     }
+
+    /*
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDTO<UnknownWordDetailDto>> deleteUnknownWord(
+            @ModelAttribute  PageRequestDTO pageRequestDTO,
+    ){
+        UnknownWordDetailDto response = unknownWordService.saveUnknownWord(pageRequestDTO, unknownWordDto);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD, response));
+    }
+
+     */
 }
