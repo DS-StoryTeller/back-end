@@ -16,19 +16,19 @@ public class BookMapper {
         BookEntity book = BookEntity.builder()
                 .title(title)
                 .coverImage(defaultCoverImage)
-                .currentPage(0)  // 처음 책 생성 시 0페이지로 설정
-                .isReading(true) // 책 생성 후 바로 보인다 가정하여 true
+                .currentPage(0)
+                .isReading(true)
                 .isFavorite(false)
-                .profile(profile) // 프로필과 연결
+                .profile(profile)
                 .build();
 
-        // #### 을 기준으로 동화 내용을 나눠 Page 객체를 추가
-        String[] contentParts = content.split("####");
+        // \n\n 을 기준으로 동화 내용을 나눠 Page 객체를 추가
+        String[] contentParts = content.split("\n\n");
         List<PageEntity> pages = IntStream.range(0, contentParts.length)
                 .mapToObj(i -> PageEntity.builder()
                         .pageNumber(i + 1)
                         .content(contentParts[i].trim())
-                        .image("defaultPageImage.jpg") // 이미지 역시 기본 이미지를 넣고, 추후 변경하는 것으로 하겠습니다.
+                        .image("defaultPageImage.jpg")
                         .book(book)
                         .build())
                 .collect(Collectors.toList());
@@ -39,7 +39,6 @@ public class BookMapper {
     }
 
     public static BookDTO mapToBookDTO(BookEntity book) {
-        // 페이지 엔티티의 리스트를 페이지 DTO의 리스트로 변환
         List<PageDTO> pageDTOs = book.getPages().stream()
                 .map(page -> PageDTO.builder()
                         .id(page.getId())
@@ -50,7 +49,6 @@ public class BookMapper {
                         .build())
                 .collect(Collectors.toList());
 
-        // 책 엔티티의 데이터로 BookDTO 객체를 생성 후 반환
         return BookDTO.builder()
                 .id(book.getId())
                 .title(book.getTitle())

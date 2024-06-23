@@ -27,7 +27,8 @@ public class OpenAIService {
         String url = "https://api.openai.com/v1/chat/completions";
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")
-                .content("Generate a title and story with the following theme: " + prompt + ". Separate title and story with '####'.")
+                // 제목과 내용을 Title: 과 Content: 로 구분하여 요청
+                .content("Generate a story with the following theme: " + prompt + ". Provide the response in the following format:\n\nTitle: [Your Title]\n\nContent: [Your Content]")
                 .build();
         CompletionRequestDto requestDto = CompletionRequestDto.builder()
                 .model(model)
