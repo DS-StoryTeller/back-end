@@ -24,13 +24,10 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
-        BookDTO createdBook = bookService.createBook(request.getTitle(), request.getContent(), profileId);
-        return ResponseEntity
-                .status(ResponseCode.SUCCESS_CREATE_BOOK.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook));
+    public ResponseEntity<ResponseDTO<BookDTO>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
+        BookDTO createdBook = bookService.createBook(request.getPrompt(), profileId);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook));
     }
-
     @GetMapping("/booklist")
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId) {
         List<BookListResponseDTO> books = bookService.getAllBooks(profileId);

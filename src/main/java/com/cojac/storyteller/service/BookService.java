@@ -28,17 +28,30 @@ public class BookService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
     private final SettingRepository settingRepository;
+    private final OpenAIService openAIService;
 
     @Transactional
-    public BookDTO createBook(String title, String content, Integer profileId) {
+    public BookDTO createBook(String prompt, Integer profileId) {
         String defaultCoverImage = "defaultCover.jpg";
 
         // 프로필이 존재하는지 확인
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        // 매퍼 클래스를 사용해서 북 만들기
-        BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, 0, profile);
+        // OpenAI API를 호출하여 제목과 동화 생성
+        String story = openAIService.generateStory(prompt);
+
+        // 제목과 내용을 분리 (#### 기준)
+        String[] storyParts = story.split("####");
+        if (storyParts.length < 2) {
+            throw new RuntimeException("Invalid response from OpenAI API");
+        }
+
+        String title = storyParts[0].trim();
+        String content = storyParts[1].trim();
+
+        // 매퍼 클래스를 사용해서 책 생성 및 저장
+        BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, profile);
         BookEntity savedBook = bookRepository.save(book);
 
         // Book에 해당하는 SettingEntity 생성
@@ -109,7 +122,6 @@ public class BookService {
     }
 
     // 동화 삭제
-
     @Transactional
     public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
         // 프로필이 존재하는지 확인
