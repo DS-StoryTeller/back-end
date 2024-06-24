@@ -49,6 +49,13 @@ public class UnknownWordService {
 
         UnknownWordDetailDto response = new UnknownWordDetailDto(bookId, pageNum, unknownWordDto.getUnknownWord(), unknownWordDto.getPosition());
         return response;
+    }
 
+    public void deleteUnknownWord(Integer unknownWordId) {
+        // unknownword 가져오기
+        UnknownWordEntity unknownWordEntity = unknownWordRepository.findById(unknownWordId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
+
+        unknownWordRepository.delete(unknownWordEntity);
     }
 }

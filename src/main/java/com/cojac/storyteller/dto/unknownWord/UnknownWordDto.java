@@ -12,13 +12,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UnknownWordDto {
+    private Integer unknownWordId;
     private String unknownWord;
     private Integer position;
 
     public static List<UnknownWordDto> toDto(List<UnknownWordEntity> unknownWordEntities) {
         List<UnknownWordDto> unknownWordDtos = new ArrayList<>();
         for(UnknownWordEntity unKnownWord : unknownWordEntities) {
-            UnknownWordDto unknownWordDto = new UnknownWordDto(unKnownWord.getUnknownWord(), unKnownWord.getPosition());
+            UnknownWordDto unknownWordDto = new UnknownWordDto(unKnownWord.getId(), unKnownWord.getUnknownWord(), unKnownWord.getPosition());
             unknownWordDtos.add(unknownWordDto);
         }
         return unknownWordDtos;

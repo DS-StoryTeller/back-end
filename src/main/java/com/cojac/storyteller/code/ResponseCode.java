@@ -35,6 +35,8 @@ public enum ResponseCode {
      * UnknownWord
      */
     SUCCESS_CREATE_UNKNOWNWORD(HttpStatus.CREATED, "단어가 성공적으로 저장되었습니다"),
+    SUCCESS_DELETE_UNKNOWNWORD(HttpStatus.OK, "단어가 성공적으로 삭제되었습니다"),
+
 
     /**
      * Setting
