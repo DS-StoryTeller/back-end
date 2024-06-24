@@ -42,6 +42,7 @@ public enum ResponseCode {
      * Setting
      */
     SUCCESS_UPDATE_SETTING(HttpStatus.OK, "책 설정을 성공적으로 변경했습니다"),
+    SUCCESS_RETRIEVE_SETTING(HttpStatus.OK, "책 설정을 성공적으로 조회했습니다"),
 
     /**
      * Custom status for empty data lists
