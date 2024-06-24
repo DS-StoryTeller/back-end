@@ -23,9 +23,9 @@ public class UnknownWordController {
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD, response));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{unknownWordId}")
     public ResponseEntity<ResponseDTO> deleteUnknownWord(
-            @RequestParam("unknownWordId") Integer unknownWordId
+            @PathVariable("unknownWordId") Integer unknownWordId
     ){
         unknownWordService.deleteUnknownWord(unknownWordId);
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_UNKNOWNWORD, null));
