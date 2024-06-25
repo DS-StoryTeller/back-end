@@ -37,11 +37,15 @@ public enum ResponseCode {
     SUCCESS_CREATE_UNKNOWNWORD(HttpStatus.CREATED, "단어가 성공적으로 저장되었습니다"),
     SUCCESS_DELETE_UNKNOWNWORD(HttpStatus.OK, "단어가 성공적으로 삭제되었습니다"),
 
-
     /**
      * Setting
      */
     SUCCESS_UPDATE_SETTING(HttpStatus.OK, "책 설정을 성공적으로 변경했습니다"),
+
+    /**
+     * Quiz
+     */
+    SUCCESS_CREATE_QUIZ(HttpStatus.OK, "퀴즈가 성공적으로 생성되었습니다."),
 
     /**
      * Custom status for empty data lists
