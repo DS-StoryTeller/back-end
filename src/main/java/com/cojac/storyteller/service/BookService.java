@@ -130,7 +130,8 @@ public class BookService {
         }
 
         String story = contentBuilder.toString();
-        String quiz = openAIService.generateQuiz(story);
+        Integer age = profile.getAge();
+        String quiz = openAIService.generateQuiz(story, age);
 
         // \n을 기준으로 퀴즈 분리
         List<String> questions = Arrays.asList(quiz.split("\n"));
