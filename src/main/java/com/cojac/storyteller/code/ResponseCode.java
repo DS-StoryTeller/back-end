@@ -15,7 +15,12 @@ public enum ResponseCode {
     SUCCESS_REISSUE(HttpStatus.OK, "토큰 재발급을 성공했습니다."),
     SUCCESS_TEST(HttpStatus.OK, "테스트를 성공했습니다."),
     SUCCESS_LOGOUT(HttpStatus.OK, "로그아웃을 성공했습니다."),
-  
+
+    /**
+     * Profile
+     */
+    SUCCESS_PROFILE_PHOTOS(HttpStatus.OK, "프로필 사진 목록을 성공적으로 조회했습니다."),
+
     /**
      * Book
      */
