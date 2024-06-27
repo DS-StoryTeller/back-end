@@ -25,8 +25,12 @@ public class ProfileEntity {
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "social_user_id", nullable = true)
+    private SocialUserEntity socialUser;
 
     // 책 목록 추가
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
