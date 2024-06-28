@@ -37,10 +37,11 @@ public class ProfileEntity {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<BookEntity> books = new ArrayList<>();
 
-    public ProfileEntity(String name, LocalDate birthDate, String imageUrl, UserEntity user) {
+    public ProfileEntity(String name, LocalDate birthDate, String imageUrl, String pinNumber, UserEntity user) {
         this.name = name;
         this.birthDate = birthDate;
         this.imageUrl = imageUrl;
+        this.pinNumber = pinNumber;
         this.user = user;
     }
 

@@ -5,11 +5,13 @@ import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UserEntity;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
+import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.exception.UserNotFoundException;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.SocialUserRepository;
 import com.cojac.storyteller.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,8 +45,23 @@ public class ProfileService {
         UserEntity user = userRepository.findById(profileDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
+        // 핀 번호 유효성 검증
+        String pinNumber = profileDTO.getPinNumber();
+        if (pinNumber == null || pinNumber.length() != 4 || !pinNumber.matches("\\d+")) {
+            throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER);
+        }
+
+        // 핀 번호 암호화
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPin = encoder.encode(pinNumber);
+
         // 프로필 생성
-        ProfileEntity profileEntity = new ProfileEntity(profileDTO.getName(), profileDTO.getBirthDate(), profileDTO.getImageUrl(), user);
+        ProfileEntity profileEntity = new ProfileEntity(
+                profileDTO.getName(),
+                profileDTO.getBirthDate(),
+                profileDTO.getImageUrl(),
+                hashedPin,
+                user);
 
         // 프로필 리포지토리 저장
         profileRepository.save(profileEntity);
