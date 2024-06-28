@@ -26,6 +26,9 @@ public class ProfileEntity {
     @Column(nullable = true)
     private String imageUrl;
 
+    @Column(nullable = false)
+    private String pinNumber;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
