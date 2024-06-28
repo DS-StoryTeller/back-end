@@ -2,12 +2,9 @@ package com.cojac.storyteller.service;
 
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.ProfileEntity;
-import com.cojac.storyteller.domain.SocialUserEntityEntity;
-import com.cojac.storyteller.domain.LocalUserEntityEntity;
 import com.cojac.storyteller.domain.UserEntity;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
-import com.cojac.storyteller.exception.SocialUserNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.SocialUserRepository;
