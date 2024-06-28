@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class ProfileEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -19,27 +21,23 @@ public class ProfileEntity {
     private String name;
 
     @Column(nullable = true)
-    private Integer age;
+    private LocalDate birthDate;
 
     @Column(nullable = true)
-    private String image;
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "social_user_id", nullable = true)
-    private SocialUserEntity socialUser;
 
     // 책 목록 추가
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<BookEntity> books = new ArrayList<>();
 
-    public ProfileEntity(String name, Integer age, String image, UserEntity user) {
+    public ProfileEntity(String name, LocalDate birthDate, String imageUrl, UserEntity user) {
         this.name = name;
-        this.age = age;
-        this.image = image;
+        this.birthDate = birthDate;
+        this.imageUrl = imageUrl;
         this.user = user;
     }
 

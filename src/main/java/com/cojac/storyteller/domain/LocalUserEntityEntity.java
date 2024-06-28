@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class UserEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@DiscriminatorValue("L")
+public class LocalUserEntityEntity extends UserEntity {
 
     private String username;
 
@@ -19,7 +16,7 @@ public class UserEntity {
 
     private String role;
 
-    public UserEntity(String encryptedPassword, String username, String role) {
+    public LocalUserEntityEntity(String encryptedPassword, String username, String role) {
         this.password = encryptedPassword;
         this.username = username;
         this.role = role;
