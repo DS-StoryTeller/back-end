@@ -1,11 +1,13 @@
 package com.cojac.storyteller.dto.profile;
 
+import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -16,8 +18,17 @@ public class ProfileDTO {
 
     private Integer id;
     private String name;
-    private Integer age;
-    private String image;
+    private LocalDate birthDate;
+    private String imageUrl;
     private Integer userId;
-    private List<BookDTO> books;
+
+    public ProfileDTO mapEntityToDTO(ProfileEntity profileEntity) {
+        return new ProfileDTO(
+                profileEntity.getId(),
+                profileEntity.getName(),
+                profileEntity.getBirthDate(),
+                profileEntity.getImageUrl(),
+                profileEntity.getUser().getId()
+        );
+    }
 }

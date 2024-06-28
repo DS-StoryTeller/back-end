@@ -7,5 +7,5 @@ import lombok.Getter;
 @Getter
 public class ProfilePhotoDTO {
 
-    private String profilePhotoUrl;
+    private String imageUrl;
 }
