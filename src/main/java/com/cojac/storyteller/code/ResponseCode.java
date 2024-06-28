@@ -20,7 +20,7 @@ public enum ResponseCode {
      * Profile
      */
     SUCCESS_PROFILE_PHOTOS(HttpStatus.OK, "프로필 사진 목록을 성공적으로 조회했습니다."),
-
+    SUCCESS_CREATE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 생성되었습니다."),
     /**
      * Book
      */

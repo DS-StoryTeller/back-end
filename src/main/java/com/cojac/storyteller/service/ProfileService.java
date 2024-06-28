@@ -1,10 +1,19 @@
 package com.cojac.storyteller.service;
 
+import com.cojac.storyteller.code.ErrorCode;
+import com.cojac.storyteller.domain.ProfileEntity;
+import com.cojac.storyteller.domain.SocialUserEntityEntity;
+import com.cojac.storyteller.domain.LocalUserEntityEntity;
+import com.cojac.storyteller.domain.UserEntity;
+import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
-import com.cojac.storyteller.service.AmazonS3Service;
+import com.cojac.storyteller.exception.SocialUserNotFoundException;
+import com.cojac.storyteller.exception.UserNotFoundException;
+import com.cojac.storyteller.repository.ProfileRepository;
+import com.cojac.storyteller.repository.SocialUserRepository;
+import com.cojac.storyteller.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,12 +21,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
+
     private final AmazonS3Service amazonS3Service;
+    private final UserRepository userRepository;
+    private final SocialUserRepository socialUserRepository;
+    private final ProfileRepository profileRepository;
 
     /**
      * S3에서 /profile/photos 경로에 있는 사진 목록 가져오기
      */
-    //
     public List<ProfilePhotoDTO> getProfilePhotos() {
         List<String> photoUrls = amazonS3Service.getAllPhotos("profile/photos");
         return photoUrls.stream()
@@ -26,12 +38,22 @@ public class ProfileService {
     }
 
     /**
-     * AmazonS3 작동 확인을 위한 테스트 코드입니다. 추후에 프로필 로직에 맞게 수정할 예정
-     * @param name
-     * @param file
+     * 프로필 생성하기
      */
-    public void createProfile(String name, MultipartFile file) {
-        String url = "";
-        if(file != null)  url = amazonS3Service.uploadFileToS3(file, "profile/photos");
+    public ProfileDTO createProfile(ProfileDTO profileDTO) {
+
+        // 사용자 아이디로 조회 및 예외 처리
+        UserEntity user = userRepository.findById(profileDTO.getUserId())
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        // 프로필 생성
+        ProfileEntity profileEntity = new ProfileEntity(profileDTO.getName(), profileDTO.getBirthDate(), profileDTO.getImageUrl(), user);
+
+        // 프로필 리포지토리 저장
+        profileRepository.save(profileEntity);
+
+        // DTO로 매핑
+        return new ProfileDTO().mapEntityToDTO(profileEntity);
     }
+
 }
