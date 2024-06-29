@@ -22,7 +22,7 @@ public class ProfileController {
     /**
      * 프로필 사진 목록 가져오기
      */
-    @GetMapping
+    @GetMapping("/photos")
     public ResponseEntity<ResponseDTO> getProfilePhotos() {
         List<ProfilePhotoDTO> result = profileService.getProfilePhotos();
         return ResponseEntity
@@ -75,4 +75,16 @@ public class ProfileController {
                 .status(ResponseCode.SUCCESS_GET_PROFILE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE, result));
     }
+
+    /**
+     * 프로필 목록 불러오기
+     */
+    @GetMapping
+    public ResponseEntity<ResponseDTO> getProfileList(@RequestBody ProfileDTO profileDTO) {
+        List<ProfileDTO> result = profileService.getProfileList(profileDTO);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_GET_PROFILE_LIST.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE_LIST, result));
+    }
+
 }

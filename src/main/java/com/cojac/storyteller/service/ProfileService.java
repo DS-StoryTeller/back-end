@@ -27,7 +27,6 @@ public class ProfileService {
 
     private final AmazonS3Service amazonS3Service;
     private final UserRepository userRepository;
-    private final SocialUserRepository socialUserRepository;
     private final ProfileRepository profileRepository;
 
     /**
@@ -71,7 +70,7 @@ public class ProfileService {
         profileRepository.save(profileEntity);
 
         // DTO로 매핑
-        return new ProfileDTO().mapEntityToDTO(profileEntity);
+        return ProfileDTO.mapEntityToDTO(profileEntity);
     }
 
     /**
@@ -112,7 +111,7 @@ public class ProfileService {
         // 프로필 정보 업데이트
         profileEntity.updateProfile(profileDTO);
 
-        return new ProfileDTO().mapEntityToDTO(profileEntity);
+        return ProfileDTO.mapEntityToDTO(profileEntity);
     }
 
     /**
@@ -124,7 +123,22 @@ public class ProfileService {
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        return new ProfileDTO().mapEntityToDTO(profileEntity);
+        return ProfileDTO.mapEntityToDTO(profileEntity);
+    }
+
+    /**
+     * 프로필 목록 조회하기
+     */
+    public List<ProfileDTO> getProfileList(ProfileDTO profileDTO) {
+
+        UserEntity user = userRepository.findById(profileDTO.getUserId())
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        List<ProfileEntity> profileEntityList = profileRepository.findByUser_Id(user.getId());
+
+        return profileEntityList.stream()
+                .map(ProfileDTO::mapEntityToDTO)
+                .collect(Collectors.toList());
     }
 
 }

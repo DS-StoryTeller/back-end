@@ -21,7 +21,7 @@ public class ProfileDTO {
     private String pinNumber;
     private Integer userId;
 
-    public ProfileDTO mapEntityToDTO(ProfileEntity profileEntity) {
+    public static ProfileDTO mapEntityToDTO(ProfileEntity profileEntity) {
         return new ProfileDTO(
                 profileEntity.getId(),
                 profileEntity.getName(),
