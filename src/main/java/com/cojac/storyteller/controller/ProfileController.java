@@ -47,6 +47,7 @@ public class ProfileController {
     @PostMapping("/{profileId}/pin-number")
     public ResponseEntity<ResponseDTO> checkPinNumber(@PathVariable Integer profileId,
                                                       @RequestBody PinNumberDTO pinNumberDTO) {
+        profileService.checkPinNumber(profileId, pinNumberDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_CHECK_PIN_NUMBER.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_CHECK_PIN_NUMBER, null));

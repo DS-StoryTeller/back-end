@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class PinNumberDTO {
 
-    private Integer profileId;
     private String pinNumber;
 }

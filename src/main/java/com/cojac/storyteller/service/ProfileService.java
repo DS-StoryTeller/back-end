@@ -75,10 +75,10 @@ public class ProfileService {
     /**
      * 암호된 프로필 비밀번호 체크하기
      */
-    public void checkPinNumber(PinNumberDTO pinNumberDTO) {
+    public void checkPinNumber(Integer profileId, PinNumberDTO pinNumberDTO) {
 
         // 프로필 아이디로 프로필을 찾아옵니다.
-        ProfileEntity profileEntity = profileRepository.findById(pinNumberDTO.getProfileId())
+        ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         // DB에 저장된 암호화된 핀 번호를 가져옵니다.
