@@ -87,4 +87,16 @@ public class ProfileController {
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE_LIST, result));
     }
 
+    /**
+     * 프로필 삭제하기
+     */
+    @DeleteMapping("/{profileId}")
+    public ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId) {
+        profileService.deleteProfile(profileId);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_DELETE_PROFILE.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_PROFILE, null));
+    }
+
+
 }

@@ -25,6 +25,7 @@ public enum ResponseCode {
     SUCCESS_UPDATE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 수정되었습니다."),
     SUCCESS_GET_PROFILE(HttpStatus.OK, "프로필을 성공적으로 조회했습니다."),
     SUCCESS_GET_PROFILE_LIST(HttpStatus.OK, "프로필 목록을 성공적으로 조회했습니다."),
+    SUCCESS_DELETE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 삭제되었습니다."),
 
     /**
      * Book

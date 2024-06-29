@@ -141,4 +141,14 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 프로필 삭제하기
+     */
+    public void deleteProfile(Integer profileId) {
+        ProfileEntity profileEntity = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        profileRepository.delete(profileEntity);
+    }
+
 }
