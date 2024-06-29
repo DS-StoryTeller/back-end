@@ -105,6 +105,10 @@ public class ProfileService {
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 핀 번호 암호화
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        profileDTO.setPinNumber(encoder.encode(profileDTO.getPinNumber()));
+
         // 프로필 정보 업데이트
         profileEntity.updateProfile(profileDTO);
 
