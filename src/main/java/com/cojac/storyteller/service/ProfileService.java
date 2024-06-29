@@ -10,7 +10,6 @@ import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.SocialUserRepository;
 import com.cojac.storyteller.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
