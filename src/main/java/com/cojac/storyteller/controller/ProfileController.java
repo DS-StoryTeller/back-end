@@ -56,10 +56,12 @@ public class ProfileController {
     /**
      * 프로필 수정하기
      */
-    @PatchMapping("/{profileId}")
-    public ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId) {
+    @PutMapping("/{profileId}")
+    public ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId,
+                                                     @RequestBody ProfileDTO profileDTO) {
+        ProfileDTO result = profileService.updateProfile(profileId, profileDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_UPDATE_PROFILE.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PROFILE, null));
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PROFILE, result));
     }
 }

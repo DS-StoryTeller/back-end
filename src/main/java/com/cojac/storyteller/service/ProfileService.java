@@ -15,12 +15,14 @@ import com.cojac.storyteller.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProfileService {
 
     private final AmazonS3Service amazonS3Service;
@@ -106,10 +108,6 @@ public class ProfileService {
         // 프로필 정보 업데이트
         profileEntity.updateProfile(profileDTO);
 
-        profileDTO.setId(profileId);
-        return profileDTO;
-
+        return new ProfileDTO().mapEntityToDTO(profileEntity);
     }
-
-
 }
