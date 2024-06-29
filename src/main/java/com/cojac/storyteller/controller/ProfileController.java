@@ -64,4 +64,14 @@ public class ProfileController {
                 .status(ResponseCode.SUCCESS_UPDATE_PROFILE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PROFILE, result));
     }
+
+    /**
+     * 프로필 정보 불러오기
+     */
+    @GetMapping("/{profileId}")
+    public ResponseEntity<ResponseDTO> getProfile(@PathVariable Integer profileId) {
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_GET_PROFILE.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE, null));
+    }
 }
