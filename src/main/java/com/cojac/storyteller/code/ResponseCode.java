@@ -22,6 +22,7 @@ public enum ResponseCode {
     SUCCESS_PROFILE_PHOTOS(HttpStatus.OK, "프로필 사진 목록을 성공적으로 조회했습니다."),
     SUCCESS_CREATE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 생성되었습니다."),
     SUCCESS_CHECK_PIN_NUMBER(HttpStatus.OK, "프로필의 비밀번호가 일치합니다."),
+    SUCCESS_UPDATE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 수정되었습니다."),
 
     /**
      * Book
