@@ -70,8 +70,9 @@ public class ProfileController {
      */
     @GetMapping("/{profileId}")
     public ResponseEntity<ResponseDTO> getProfile(@PathVariable Integer profileId) {
+        ProfileDTO result = profileService.getProfile(profileId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_GET_PROFILE.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE, null));
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE, result));
     }
 }

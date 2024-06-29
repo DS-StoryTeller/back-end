@@ -110,4 +110,17 @@ public class ProfileService {
 
         return new ProfileDTO().mapEntityToDTO(profileEntity);
     }
+
+    /**
+     * 프로필 정보 조회하기
+     */
+    public ProfileDTO getProfile(Integer profileId) {
+
+        // 프로필 아이디로 프로필을 찾기
+        ProfileEntity profileEntity = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        return new ProfileDTO().mapEntityToDTO(profileEntity);
+    }
+
 }
