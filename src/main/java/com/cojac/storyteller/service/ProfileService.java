@@ -3,9 +3,11 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UserEntity;
+import com.cojac.storyteller.dto.profile.PinNumberDTO;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
+import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.SocialUserRepository;
@@ -69,5 +71,28 @@ public class ProfileService {
         // DTO로 매핑
         return new ProfileDTO().mapEntityToDTO(profileEntity);
     }
+
+    /**
+     * 암호된 프로필 비밀번호 체크하기
+     */
+    public void checkPinNumber(PinNumberDTO pinNumberDTO) {
+
+        // 프로필 아이디로 프로필을 찾아옵니다.
+        ProfileEntity profileEntity = profileRepository.findById(pinNumberDTO.getProfileId())
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        // DB에 저장된 암호화된 핀 번호를 가져옵니다.
+        String hashedPinFromDB = profileEntity.getPinNumber();
+
+        // 입력된 핀 번호를 가져옵니다.
+        String inputPin = pinNumberDTO.getPinNumber();
+
+        // BCryptPasswordEncoder를 사용하여 비밀번호를 검증합니다.
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!encoder.matches(inputPin, hashedPinFromDB)) {
+            throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER); // 비밀번호가 일치하지 않으면 예외를 던집니다.
+        }
+    }
+
 
 }
