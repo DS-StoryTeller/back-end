@@ -1,8 +1,10 @@
 package com.cojac.storyteller.service;
 
+import com.cojac.storyteller.dto.profile.PinNumberDTO;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,17 +39,9 @@ class ProfileServiceTest {
     @Test
     void createProfile() {
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("username");
-        userDTO.setPassword("password");
-        UserDTO savedUserDTO = userService.registerUser(userDTO);
+        UserDTO savedUserDTO = createUser();
 
-        ProfileDTO profileDTO = new ProfileDTO();
-
-        profileDTO.setName("name");
-        profileDTO.setBirthDate(LocalDate.of(2000, 1, 1));
-        profileDTO.setImageUrl("https://example.com/profile.jpg");
-        profileDTO.setUserId(savedUserDTO.getId());
+        ProfileDTO profileDTO = createProfileDTO(savedUserDTO);
 
         // When
         ProfileDTO createdProfile = profileService.createProfile(profileDTO);
@@ -60,5 +54,42 @@ class ProfileServiceTest {
         assertEquals(profileDTO.getUserId(), createdProfile.getUserId());
     }
 
+    @Test
+    void checkPinNum() {
 
+        UserDTO savedUserDTO = createUser();
+        ProfileDTO profileDTO = createProfileDTO(savedUserDTO);
+        ProfileDTO createdProfile = profileService.createProfile(profileDTO);
+
+        // 올바른 PIN으로 테스트
+        PinNumberDTO validPinNumberDTO  = new PinNumberDTO();
+        validPinNumberDTO.setProfileId(createdProfile.getId());
+        validPinNumberDTO.setPinNumber("1234");
+        assertDoesNotThrow(() -> profileService.checkPinNumber(validPinNumberDTO));
+
+        // 잘못된 PIN으로 테스트
+        PinNumberDTO invalidPinNumberDTO = new PinNumberDTO();
+        invalidPinNumberDTO.setProfileId(createdProfile.getId());
+        invalidPinNumberDTO.setPinNumber("4321");
+        assertThrows(InvalidPinNumberException.class, () -> profileService.checkPinNumber(invalidPinNumberDTO));
+    }
+
+    private static ProfileDTO createProfileDTO(UserDTO savedUserDTO) {
+        ProfileDTO profileDTO = new ProfileDTO();
+
+        profileDTO.setName("name");
+        profileDTO.setBirthDate(LocalDate.of(2000, 1, 1));
+        profileDTO.setImageUrl("https://example.com/profile.jpg");
+        profileDTO.setUserId(savedUserDTO.getId());
+        profileDTO.setPinNumber("1234");
+        return profileDTO;
+    }
+
+    private UserDTO createUser() {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("username");
+        userDTO.setPassword("password");
+        UserDTO savedUserDTO = userService.registerUser(userDTO);
+        return savedUserDTO;
+    }
 }
