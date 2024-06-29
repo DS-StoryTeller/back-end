@@ -77,21 +77,38 @@ public class ProfileService {
      */
     public void checkPinNumber(Integer profileId, PinNumberDTO pinNumberDTO) {
 
-        // 프로필 아이디로 프로필을 찾아옵니다.
+        // 프로필 아이디로 프로필을 찾기
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        // DB에 저장된 암호화된 핀 번호를 가져옵니다.
+        // DB에 저장된 암호화된 핀 번호를 가져오기
         String hashedPinFromDB = profileEntity.getPinNumber();
 
-        // 입력된 핀 번호를 가져옵니다.
+        // 입력된 핀 번호를 가져오기
         String inputPin = pinNumberDTO.getPinNumber();
 
-        // BCryptPasswordEncoder를 사용하여 비밀번호를 검증합니다.
+        // BCryptPasswordEncoder를 사용하여 비밀번호를 검증
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (!encoder.matches(inputPin, hashedPinFromDB)) {
-            throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER); // 비밀번호가 일치하지 않으면 예외를 던집니다.
+            throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER); // 비밀번호가 일치하지 않으면 예외
         }
+    }
+
+    /**
+     * 프로필 수정하기
+     */
+    public ProfileDTO updateProfile(Integer profileId, ProfileDTO profileDTO) {
+
+        // 프로필 아이디로 프로필을 찾기
+        ProfileEntity profileEntity = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        // 프로필 정보 업데이트
+        profileEntity.updateProfile(profileDTO);
+
+        profileDTO.setId(profileId);
+        return profileDTO;
+
     }
 
 
