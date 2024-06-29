@@ -1,10 +1,12 @@
 package com.cojac.storyteller.service;
 
+import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.profile.PinNumberDTO;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
+import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ class ProfileServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
 
     @Test
     void getProfilePhotos() {
@@ -70,6 +75,32 @@ class ProfileServiceTest {
         PinNumberDTO invalidPinNumberDTO = new PinNumberDTO();
         invalidPinNumberDTO.setPinNumber("4321");
         assertThrows(InvalidPinNumberException.class, () -> profileService.checkPinNumber(createdProfile.getId(), invalidPinNumberDTO));
+    }
+
+    @Test
+    void updateProfile() {
+
+        UserDTO savedUserDTO = createUser();
+        ProfileDTO profileDTO = createProfileDTO(savedUserDTO);
+        ProfileDTO createdProfile = profileService.createProfile(profileDTO);
+
+        // 프로필 수정
+        ProfileDTO updatedProfileDTO = new ProfileDTO();
+        updatedProfileDTO.setName("updatedName");
+        updatedProfileDTO.setBirthDate(LocalDate.of(1990, 1, 1));
+        updatedProfileDTO.setImageUrl("https://example.com/updated_profile.jpg");
+        updatedProfileDTO.setPinNumber("4321");
+
+        profileService.updateProfile(createdProfile.getId(), updatedProfileDTO);
+
+        ProfileEntity updatedProfile = profileRepository.findById(createdProfile.getId()).get();
+
+        // 수정된 프로필 검증
+        assertNotNull(updatedProfile.getId());
+        assertEquals(updatedProfileDTO.getName(), updatedProfile.getName());
+        assertEquals(updatedProfileDTO.getBirthDate(), updatedProfile.getBirthDate());
+        assertEquals(updatedProfileDTO.getImageUrl(), updatedProfile.getImageUrl());
+        assertEquals(updatedProfileDTO.getPinNumber(), updatedProfile.getPinNumber());
     }
 
     private static ProfileDTO createProfileDTO(UserDTO savedUserDTO) {
