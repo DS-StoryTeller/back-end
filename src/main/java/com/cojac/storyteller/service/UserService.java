@@ -1,7 +1,7 @@
 package com.cojac.storyteller.service;
 
 import com.cojac.storyteller.code.ErrorCode;
-import com.cojac.storyteller.domain.UserEntity;
+import com.cojac.storyteller.domain.LocalUserEntityEntity;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.exception.DuplicateUsernameException;
 import com.cojac.storyteller.repository.UserRepository;
@@ -29,11 +29,11 @@ public class UserService {
         }
 
         // UserEntity 생성
-        UserEntity userEntity = new UserEntity(encryptedPassword, username, role);
+        LocalUserEntityEntity localUserEntity = new LocalUserEntityEntity(encryptedPassword, username, role);
 
-        userRepository.save(userEntity);
+        userRepository.save(localUserEntity);
 
-        return new UserDTO(userEntity.getId(), userEntity.getUsername(), userEntity.getRole());
+        return new UserDTO(localUserEntity.getId(), localUserEntity.getUsername(), localUserEntity.getRole());
     }
 
 }

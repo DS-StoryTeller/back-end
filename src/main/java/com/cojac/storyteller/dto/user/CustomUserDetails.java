@@ -1,6 +1,6 @@
 package com.cojac.storyteller.dto.user;
 
-import com.cojac.storyteller.domain.UserEntity;
+import com.cojac.storyteller.domain.LocalUserEntityEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final UserEntity userEntity;
+    private final LocalUserEntityEntity localUserEntity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -23,7 +23,7 @@ public class CustomUserDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return userEntity.getRole();
+                return localUserEntity.getRole();
             }
         });
 
@@ -31,19 +31,19 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public Integer getId() {
-        return userEntity.getId();
+        return localUserEntity.getId();
     }
 
     @Override
     public String getPassword() {
 
-        return userEntity.getPassword();
+        return localUserEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
 
-        return userEntity.getUsername();
+        return localUserEntity.getUsername();
     }
 
     @Override

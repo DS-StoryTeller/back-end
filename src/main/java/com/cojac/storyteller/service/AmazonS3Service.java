@@ -2,8 +2,7 @@ package com.cojac.storyteller.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -78,6 +79,35 @@ public class AmazonS3Service {
         }
         log.info("[S3Uploader] : S3에 있는 파일 삭제");
     }
+
+    /**
+     * S3에서 특정 경로에 있는 사진 목록 가져오기
+     *
+     * @param folderPath
+     * @return 사진 URL 리스트
+     */
+    public List<String> getAllPhotos(String folderPath) {
+        List<String> photoUrls = new ArrayList<>();
+
+        // S3 객체 리스트 요청
+        ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucket).withPrefix(folderPath);
+        ListObjectsV2Result result;
+
+        do {
+            result = amazonS3Client.listObjectsV2(req);
+
+            for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
+                // 파일 URL 생성
+                String fileUrl = amazonS3Client.getUrl(bucket, objectSummary.getKey()).toString();
+                photoUrls.add(fileUrl);
+            }
+
+            req.setContinuationToken(result.getNextContinuationToken());
+        } while (result.isTruncated());
+
+        return photoUrls;
+    }
+
 
     /**
      * 로컬에 저장된 파일 지우기
