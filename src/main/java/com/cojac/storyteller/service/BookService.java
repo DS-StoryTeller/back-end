@@ -2,11 +2,13 @@ package com.cojac.storyteller.service;
 
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
+import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.SettingEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
+import com.cojac.storyteller.dto.book.QuizResponseDTO;
 import com.cojac.storyteller.dto.page.PageDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
@@ -18,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,5 +115,38 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         bookRepository.delete(book);
+    }
+
+    public List<QuizResponseDTO> getQuiz(Integer profileId, Integer bookId) {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        // 책의 모든 페이지를 가져와 하나의 string으로 연결
+        StringBuilder contentBuilder = new StringBuilder();
+        for (PageEntity page : book.getPages()) {
+            contentBuilder.append(page.getContent()).append("\n");
+        }
+
+        String story = contentBuilder.toString();
+        Integer age = profile.getAge();
+        String quiz = openAIService.generateQuiz(story, age);
+
+        // \n을 기준으로 퀴즈 분리
+        List<String> questions = Arrays.asList(quiz.split("\n"));
+        List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
+
+        questions.forEach(question ->  {
+            // 괄호가 있는지 확인하고 제거
+            int bracketIndex = question.indexOf('(');
+            if (bracketIndex != -1) {
+                question = question.substring(0, bracketIndex).trim();
+            }
+            quizResponseDTOS.add(new QuizResponseDTO(question));
+        });
+
+        return quizResponseDTOS;
     }
 }

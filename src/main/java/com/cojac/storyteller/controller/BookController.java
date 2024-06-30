@@ -2,10 +2,7 @@ package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.dto.book.BookDTO;
-import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
-import com.cojac.storyteller.dto.book.BookListResponseDTO;
-import com.cojac.storyteller.dto.book.CreateBookRequest;
+import com.cojac.storyteller.dto.book.*;
 import com.cojac.storyteller.dto.response.ErrorResponseDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
@@ -55,5 +52,11 @@ public class BookController {
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_DELETE_BOOK.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_BOOK, null));
+    }
+
+    @GetMapping("/quiz")
+    public ResponseEntity<ResponseDTO<List<QuizResponseDTO>>> getBookQuiz(@RequestParam Integer profileId, @RequestParam Integer bookId) {
+        List<QuizResponseDTO> quiz = bookService.getQuiz(profileId, bookId);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_QUIZ, quiz));
     }
 }
