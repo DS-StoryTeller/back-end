@@ -103,9 +103,15 @@ public class ProfileService {
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 핀 번호 유효성 검증
+        String pinNumber = profileDTO.getPinNumber();
+        if (pinNumber == null || pinNumber.length() != 4 || !pinNumber.matches("\\d+")) {
+            throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER);
+        }
+
         // 핀 번호 암호화
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        profileDTO.setPinNumber(encoder.encode(profileDTO.getPinNumber()));
+        profileDTO.setPinNumber(encoder.encode(pinNumber));
 
         // 프로필 정보 업데이트
         profileEntity.updateProfile(profileDTO);
