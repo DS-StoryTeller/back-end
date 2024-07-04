@@ -40,4 +40,21 @@ public class SettingService {
 
         return settingDTO;
     }
+
+    public SettingDTO getDetailSettings(Integer profileId, Integer bookId) {
+        // 프로필이 존재하는지 확인
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        // 해당 프로필에 해당하는 책 가져오기
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        // 책에 해당하는 설정 정보 가져오기
+        SettingEntity settingEntity = settingRepository.findByBook(book)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        // 설정 정보 업데이트
+        return SettingDTO.toDto(settingEntity);
+    }
 }

@@ -23,12 +23,15 @@ public class OpenAIService {
     @Value("${openai.model}")
     private String model;
 
-    public String generateStory(String prompt) {
+    public String generateStory(String prompt, Integer age) {
         String url = "https://api.openai.com/v1/chat/completions";
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")
                 // 제목과 내용을 Title: 과 Content: 로 구분하여 요청
-                .content("Generate a story with the following theme: " + prompt + ". Provide the response in the following format:\n\nTitle: [Your Title]\n\nContent: [Your Content]")
+                .content("Generate a story with the following theme: " + prompt + ". Provide the response in the following format:\n\nTitle: [Your Title]\n\nContent: [Your Content]. " +
+                        "Please generate an English fairy tale suitable for the difficulty level appropriate for " + age + " years old." +
+                        "Please write at least 10 paragraphs"
+                )
                 .build();
         CompletionRequestDto requestDto = CompletionRequestDto.builder()
                 .model(model)

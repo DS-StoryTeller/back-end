@@ -41,7 +41,8 @@ public class BookService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        String story = openAIService.generateStory(prompt);
+        Integer age = profile.getAge();
+        String story = openAIService.generateStory(prompt, age);
 
         // 제목과 내용을 분리 (Title: 과 Content: 기준)
         String title = story.split("Content:")[0].replace("Title:", "").trim();
