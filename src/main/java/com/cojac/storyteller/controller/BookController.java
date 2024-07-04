@@ -21,8 +21,8 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO<BookDTO>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
-        BookDTO createdBook = bookService.createBook(request.getPrompt(), profileId);
+    public ResponseEntity<ResponseDTO<List<QuizResponseDTO>>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
+        List<QuizResponseDTO>  createdBook = bookService.createBook(request.getPrompt(), profileId);
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook));
     }
     @GetMapping("/booklist")
@@ -52,11 +52,5 @@ public class BookController {
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_DELETE_BOOK.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_BOOK, null));
-    }
-
-    @GetMapping("/quiz")
-    public ResponseEntity<ResponseDTO<List<QuizResponseDTO>>> getBookQuiz(@RequestParam Integer profileId, @RequestParam Integer bookId) {
-        List<QuizResponseDTO> quiz = bookService.getQuiz(profileId, bookId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_QUIZ, quiz));
     }
 }

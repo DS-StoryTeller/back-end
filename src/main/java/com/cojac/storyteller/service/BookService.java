@@ -34,8 +34,11 @@ public class BookService {
     private final SettingRepository settingRepository;
     private final OpenAIService openAIService;
 
+    /**
+     * 동화와 퀴즈 생성
+     */
     @Transactional
-    public BookDTO createBook(String prompt, Integer profileId) {
+    public List<QuizResponseDTO>  createBook(String prompt, Integer profileId) {
         String defaultCoverImage = "defaultCover.jpg";
 
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -54,7 +57,23 @@ public class BookService {
         SettingEntity settingEntity = new SettingEntity(book);
         settingRepository.save(settingEntity);
 
-        return BookMapper.mapToBookDTO(savedBook);
+        // 생성한 동화 내용으로 퀴즈 생성
+        String quiz = openAIService.generateQuiz(story, age);
+
+        // \n을 기준으로 퀴즈 분리
+        List<String> questions = Arrays.asList(quiz.split("\n"));
+        List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
+
+        questions.forEach(question ->  {
+            // 괄호가 있는지 확인하고 제거
+            int bracketIndex = question.indexOf('(');
+            if (bracketIndex != -1) {
+                question = question.substring(0, bracketIndex).trim();
+            }
+            quizResponseDTOS.add(new QuizResponseDTO(question));
+        });
+
+        return quizResponseDTOS;
     }
 
     public List<BookListResponseDTO> getAllBooks(Integer profileId) {
@@ -115,38 +134,5 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         bookRepository.delete(book);
-    }
-
-    public List<QuizResponseDTO> getQuiz(Integer profileId, Integer bookId) {
-        ProfileEntity profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
-
-        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
-                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
-
-        // 책의 모든 페이지를 가져와 하나의 string으로 연결
-        StringBuilder contentBuilder = new StringBuilder();
-        for (PageEntity page : book.getPages()) {
-            contentBuilder.append(page.getContent()).append("\n");
-        }
-
-        String story = contentBuilder.toString();
-        Integer age = profile.getAge();
-        String quiz = openAIService.generateQuiz(story, age);
-
-        // \n을 기준으로 퀴즈 분리
-        List<String> questions = Arrays.asList(quiz.split("\n"));
-        List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
-
-        questions.forEach(question ->  {
-            // 괄호가 있는지 확인하고 제거
-            int bracketIndex = question.indexOf('(');
-            if (bracketIndex != -1) {
-                question = question.substring(0, bracketIndex).trim();
-            }
-            quizResponseDTOS.add(new QuizResponseDTO(question));
-        });
-
-        return quizResponseDTOS;
     }
 }

@@ -53,9 +53,7 @@ public class OpenAIService {
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")
                 // 퀴즈 3개를 \n으로 구분하여 요청
-                .content(story + "라는 동화 내용이 있어. 이 내용에 대해 창의력을 향상시킬 수 있는 질문 3가지를 한국어 존댓말로 알려줘. " +
-                        "퀴즈 3개는 \n으로 구분해줘. " +
-                        "질문의 난이도는 " + age + "세 연령대에 맞게 생성해줘. "
+                .content(story + "라는 동화 내용이 있어. 이 내용에 대해 창의력을 향상시킬 수 있는 질문 1개를 한국어 존댓말로 알려줘. "
                 )
                 .build();
         CompletionRequestDto requestDto = CompletionRequestDto.builder()
