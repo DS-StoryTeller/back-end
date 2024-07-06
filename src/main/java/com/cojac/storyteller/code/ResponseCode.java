@@ -19,7 +19,7 @@ public enum ResponseCode {
     /**
      * Book
      */
-    SUCCESS_CREATE_BOOK(HttpStatus.CREATED, "동화가 성공적으로 생성되었습니다."),
+    SUCCESS_CREATE_BOOK_AND_QUIZ(HttpStatus.CREATED, "동화와 퀴즈가 성공적으로 생성되었습니다."),
     SUCCESS_RETRIEVE_BOOKS(HttpStatus.OK, "책 목록을 성공적으로 조회했습니다."),
     SUCCESS_RETRIEVE_BOOK_DETAILS(HttpStatus.OK, "책 세부 정보를 성공적으로 조회했습니다."),
     SUCCESS_UPDATE_IS_FAVORITE(HttpStatus.OK, "즐겨찾기 상태를 성공적으로 변경했습니다."),
@@ -42,11 +42,6 @@ public enum ResponseCode {
      */
     SUCCESS_UPDATE_SETTING(HttpStatus.OK, "책 설정을 성공적으로 변경했습니다"),
     SUCCESS_RETRIEVE_SETTING(HttpStatus.OK, "책 설정을 성공적으로 조회했습니다"),
-
-    /**
-     * Quiz
-     */
-    SUCCESS_CREATE_QUIZ(HttpStatus.OK, "퀴즈가 성공적으로 생성되었습니다."),
 
     /**
      * Custom status for empty data lists
