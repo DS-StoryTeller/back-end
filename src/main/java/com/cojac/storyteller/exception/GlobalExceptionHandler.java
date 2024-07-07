@@ -31,6 +31,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Profile
+     */
+    @ExceptionHandler(InvalidPinNumberException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleInvalidPinNumberException(final InvalidPinNumberException e) {
+        log.error("handleInvalidPinNumberException : {}", e.getErrorCode().getMessage());
+        return ResponseEntity
+                .status(ErrorCode.INVALID_PIN_NUMBER.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.INVALID_PIN_NUMBER));
+    }
+
+    /**
      * Book
      */
     @ExceptionHandler(ProfileNotFoundException.class)

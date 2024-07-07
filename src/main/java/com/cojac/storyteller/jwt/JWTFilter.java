@@ -1,7 +1,7 @@
 package com.cojac.storyteller.jwt;
 
 import com.cojac.storyteller.code.ErrorCode;
-import com.cojac.storyteller.domain.UserEntity;
+import com.cojac.storyteller.domain.LocalUserEntityEntity;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
 import com.cojac.storyteller.dto.user.oauth2.CustomOAuth2User;
 import com.cojac.storyteller.dto.user.oauth2.SocialUserDTO;
@@ -72,9 +72,9 @@ public class JWTFilter extends OncePerRequestFilter {
         String authenticationMethod = jwtUtil.getAuthenticationMethod(accessToken);
         if (authenticationMethod.equals("self")) {
 
-            UserEntity userEntity = new UserEntity("password", username, role);
+            LocalUserEntityEntity localUserEntity = new LocalUserEntityEntity("password", username, role);
             //UserDetails에 회원 정보 객체 담기
-            CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
+            CustomUserDetails customUserDetails = new CustomUserDetails(localUserEntity);
 
             Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
