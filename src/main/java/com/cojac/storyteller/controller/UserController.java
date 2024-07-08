@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,11 +31,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-
     private final JWTUtil jwtUtil;
-
     private final RefreshRedisRepository refreshRedisRepository;
 
+    /**
+     * 자체 회원가입
+     */
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> registerUser(UserDTO userDTO) {
         UserDTO res = userService.registerUser(userDTO);
@@ -45,6 +45,9 @@ public class UserController {
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, res));
     }
 
+    /**
+     * 토큰 재발급
+     */
     @PostMapping("/reissue")
     public ResponseEntity<ResponseDTO> reissue(HttpServletRequest request, HttpServletResponse response) {
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄

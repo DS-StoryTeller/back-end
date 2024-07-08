@@ -98,5 +98,4 @@ public class ProfileController {
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_PROFILE, null));
     }
 
-
 }
