@@ -1,10 +1,8 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.dto.book.BookDTO;
-import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
-import com.cojac.storyteller.dto.book.BookListResponseDTO;
-import com.cojac.storyteller.dto.book.CreateBookRequest;
+import com.cojac.storyteller.dto.book.*;
+import com.cojac.storyteller.dto.response.ErrorResponseDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +19,9 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO<BookDTO>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
-        BookDTO createdBook = bookService.createBook(request.getPrompt(), profileId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook));
+    public ResponseEntity<ResponseDTO<List<QuizResponseDTO>>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
+        List<QuizResponseDTO>  createdBook = bookService.createBook(request.getPrompt(), profileId);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK_AND_QUIZ, createdBook));
     }
 
     @GetMapping("/booklist")
