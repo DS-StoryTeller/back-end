@@ -4,6 +4,7 @@ import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.user.oauth2.CustomOAuth2User;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.repository.RefreshRedisRepository;
+import com.cojac.storyteller.service.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,8 +22,11 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+    public static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private static final long REFRESH_TOKEN_EXPIRATION = 1209600000L; // 14 days
+
     private final JWTUtil jwtUtil;
-    private final RefreshRedisRepository refreshRedisRepository;
+    private final RedisService redisService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, IOException {
@@ -38,10 +42,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = auth.getAuthority();
 
         // 토큰 생성
-        String refresh = jwtUtil.createJwt("social", "refresh", accountId, role, 1209600000L);
+        String refresh = jwtUtil.createJwt("social", "refresh", accountId, role, REFRESH_TOKEN_EXPIRATION);
+
+        // Redis 키값
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + accountId;
 
         // Refresh 토큰 Redis에 저장
-        addRefreshEntity(refresh, accountId);
+        redisService.setValues(refreshTokenKey, refresh);
 
         response.addCookie(createCookie("refresh", refresh));
         response.sendRedirect("http://localhost:3000/");
@@ -57,10 +64,4 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         return cookie;
     }
-
-    private void addRefreshEntity(String refresh, String username) {
-        RefreshEntity refreshEntity = new RefreshEntity(refresh, username);
-        refreshRedisRepository.save(refreshEntity);
-    }
-
 }

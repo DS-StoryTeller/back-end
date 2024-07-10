@@ -1,9 +1,6 @@
 package com.cojac.storyteller.config;
 
-import com.cojac.storyteller.jwt.CustomLogoutFilter;
-import com.cojac.storyteller.jwt.JWTFilter;
-import com.cojac.storyteller.jwt.JWTUtil;
-import com.cojac.storyteller.jwt.LoginFilter;
+import com.cojac.storyteller.jwt.*;
 import com.cojac.storyteller.jwt.oauth2.CustomSuccessHandler;
 import com.cojac.storyteller.repository.RefreshRedisRepository;
 import com.cojac.storyteller.service.CustomOAuth2UserService;
@@ -38,6 +35,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final ObjectMapper objectMapper;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     // AuthenticationManager Bean 등록
     @Bean
@@ -101,6 +99,12 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/", "/register", "/check-username").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());
+
+        // 인증/인가와 관련된 예외 처리
+        http
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                );
 
         // 로그아웃 필터 등록
         http
