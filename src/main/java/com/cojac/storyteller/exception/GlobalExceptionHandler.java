@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         log.error("handleMethodArgumentNotValidException : {}", builder.toString());
         return ResponseEntity
                 .status(ErrorCode.BAD_REQUEST.getStatus().value())
-                .body(new ErrorResponseDTO(ErrorCode.BAD_REQUEST));
+                .body(new ErrorResponseDTO(ErrorCode.BAD_REQUEST, builder.toString()));
     }
 
     /**
