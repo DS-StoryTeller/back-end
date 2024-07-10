@@ -58,6 +58,14 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ErrorCode.DUPLICATE_USERNAME));
     }
 
+    @ExceptionHandler(EmailSendingException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleEmailSendingException(final EmailSendingException e) {
+        log.error("handleEmailSendingException : {}", e.getErrorCode().getMessage());
+        return ResponseEntity
+                .status(ErrorCode.UNABLE_TO_SEND_EMAIL.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.UNABLE_TO_SEND_EMAIL));
+    }
+
     /**
      * Profile
      */
