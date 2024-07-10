@@ -5,6 +5,7 @@ import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.dto.user.UsernameDTO;
 import com.cojac.storyteller.exception.AccessTokenExpiredException;
 import com.cojac.storyteller.exception.RequestParsingException;
 import com.cojac.storyteller.jwt.JWTUtil;
@@ -13,6 +14,7 @@ import com.cojac.storyteller.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
@@ -43,6 +46,18 @@ public class UserController {
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_REGISTER.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, res));
+    }
+
+    /**
+     * 아이디 중복 확인
+     */
+    @PostMapping("/check-username")
+    public ResponseEntity<ResponseDTO> checkUsername(@Valid @RequestBody UsernameDTO usernameDTO) {
+
+        UsernameDTO res = userService.checkUsername(usernameDTO);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_CHECK_USERNAME.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_CHECK_USERNAME, res));
     }
 
     /**

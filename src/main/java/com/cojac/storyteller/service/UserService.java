@@ -3,11 +3,14 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.LocalUserEntityEntity;
 import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.dto.user.UsernameDTO;
 import com.cojac.storyteller.exception.DuplicateUsernameException;
+import com.cojac.storyteller.exception.UsernameExistsException;
 import com.cojac.storyteller.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +19,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    /**
+     * 자체 회원가입하기
+     * @param userDTO 사용자 DTO
+     * @return 등록된 사용자 DTO
+     */
+    @Transactional
     public UserDTO registerUser(UserDTO userDTO) {
 
         String username = userDTO.getUsername();
@@ -36,4 +45,17 @@ public class UserService {
         return new UserDTO(localUserEntity.getId(), localUserEntity.getUsername(), localUserEntity.getRole());
     }
 
+    /**
+     * 아이디 중복 확인하기
+     */
+    public UsernameDTO checkUsername(UsernameDTO usernameDTO) {
+
+        String username = usernameDTO.getUsername();
+        userRepository.findByUsername(username)
+                .ifPresent(user -> {
+                    throw new UsernameExistsException(ErrorCode.DUPLICATE_USERNAME);
+                });
+
+        return new UsernameDTO(username);
+    }
 }
