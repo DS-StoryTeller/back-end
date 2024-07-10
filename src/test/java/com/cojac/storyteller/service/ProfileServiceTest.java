@@ -7,7 +7,7 @@ import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.UserRepository;
+import com.cojac.storyteller.repository.LocalUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +30,7 @@ class ProfileServiceTest {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
+    private LocalUserRepository userRepository;
 
     @Autowired
     private ProfileRepository profileRepository;

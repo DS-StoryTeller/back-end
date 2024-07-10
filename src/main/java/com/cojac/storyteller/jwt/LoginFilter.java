@@ -1,12 +1,17 @@
 package com.cojac.storyteller.jwt;
 
+import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.domain.RefreshEntity;
+import com.cojac.storyteller.dto.response.ErrorResponseDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.repository.RefreshRedisRepository;
+import com.cojac.storyteller.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +25,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -27,11 +33,13 @@ import java.util.Iterator;
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
+    public static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private static final long ACCESS_TOKEN_EXPIRATION = 86400000L; // 24 hours
+    private static final long REFRESH_TOKEN_EXPIRATION = 1209600000L; // 14 days
+
     private final AuthenticationManager authenticationManager;
-
     private final JWTUtil jwtUtil;
-
-    private final RefreshRedisRepository refreshRedisRepository;
+    private final RedisService redisService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -56,50 +64,60 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 정보 가져오기(id, username, role)
         String username = customUserDetails.getUsername();
         Integer userId = customUserDetails.getId();
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-
-        String role = auth.getAuthority();
+        String role = extractRole(authentication.getAuthorities());
 
         //토큰 생성
-        String access = jwtUtil.createJwt("self", "access", username, role, 86400000L); // 24시간(하루)
-        String refresh = jwtUtil.createJwt("self", "refresh", username, role, 1209600000L); // 2주(14일)
+        String accessToken = jwtUtil.createJwt("self", "access", username, role, ACCESS_TOKEN_EXPIRATION);
+        String refreshToken = jwtUtil.createJwt("self", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
 
         // refresh 토큰 저장
-        addRefreshEntity(refresh, username);
+        redisService.setValues(REFRESH_TOKEN_PREFIX + username, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRATION));
 
         // access 토큰 설정
-        response.setHeader("access", access);
+        response.setHeader("access", accessToken);
 
         // 로그인 성공시 body에 응답 정보 담기
         UserDTO userDTO = new UserDTO(userId, username, role);
-        // body에 refresh 토큰 설정
-        userDTO.setRefreshToken(refresh);
+        userDTO.setRefreshToken(refreshToken);
         ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGIN, userDTO);
 
-        // 응답의 Content-Type 및 Character Encoding 설정
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        // JSON 라이브러리 사용 (예: Jackson)
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseDTO);
-
-        // 응답 본문에 JSON 데이터 쓰기
-        response.getWriter().write(jsonResponse);
+        writeResponse(response, responseDTO);
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        //로그인 실패시 401 응답 코드 반환
-        response.setStatus(401);
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        // 로그인 실패시 401 응답 코드 반환
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        // ErrorResponseDTO 생성
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(ErrorCode.UNAUTHORIZED, failed.getMessage());
+
+        writeErrorResponse(response, errorResponse);
     }
 
-    private void addRefreshEntity(String refresh, String username) {
-        RefreshEntity refreshEntity = new RefreshEntity(refresh, username);
-        refreshRedisRepository.save(refreshEntity);
+    private void writeResponse(HttpServletResponse response, ResponseDTO<UserDTO> responseDTO) throws IOException {
+        writeJsonResponse(response, responseDTO);
+    }
+
+    private void writeErrorResponse(HttpServletResponse response, ErrorResponseDTO errorResponseDTO) throws IOException {
+        writeJsonResponse(response, errorResponseDTO);
+    }
+
+    private void writeJsonResponse(HttpServletResponse response, Object responseObject) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        String jsonResponse = objectMapper.writeValueAsString(responseObject);
+        response.getWriter().write(jsonResponse);
+    }
+
+    private String extractRole(Collection<? extends GrantedAuthority> authorities) {
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        return iterator.hasNext() ? iterator.next().getAuthority() : "";
     }
 }

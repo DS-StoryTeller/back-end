@@ -20,6 +20,7 @@ public enum ErrorCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 액세스 토큰입니다."),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "요청 헤더에 토큰이 없습니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다."),
 
     /**
      * 404 NOT_FOUND: 리소스를 찾을 수 없음

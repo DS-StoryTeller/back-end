@@ -1,12 +1,12 @@
 package com.cojac.storyteller.service;
 
 import com.cojac.storyteller.code.ErrorCode;
-import com.cojac.storyteller.domain.LocalUserEntityEntity;
+import com.cojac.storyteller.domain.LocalUserEntity;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.dto.user.UsernameDTO;
 import com.cojac.storyteller.exception.DuplicateUsernameException;
 import com.cojac.storyteller.exception.UsernameExistsException;
-import com.cojac.storyteller.repository.UserRepository;
+import com.cojac.storyteller.repository.LocalUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final LocalUserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
@@ -38,7 +38,7 @@ public class UserService {
         }
 
         // UserEntity 생성
-        LocalUserEntityEntity localUserEntity = new LocalUserEntityEntity(encryptedPassword, username, role);
+        LocalUserEntity localUserEntity = new LocalUserEntity(encryptedPassword, username, role);
 
         userRepository.save(localUserEntity);
 
