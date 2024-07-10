@@ -2,14 +2,13 @@ package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.dto.user.UsernameDTO;
 import com.cojac.storyteller.exception.AccessTokenExpiredException;
 import com.cojac.storyteller.exception.RequestParsingException;
 import com.cojac.storyteller.jwt.JWTUtil;
-import com.cojac.storyteller.repository.RefreshRedisRepository;
+import com.cojac.storyteller.service.RedisService;
 import com.cojac.storyteller.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,17 +24,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
+    public static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private static final long ACCESS_TOKEN_EXPIRATION = 86400000L; // 24 hours
+    private static final long REFRESH_TOKEN_EXPIRATION = 1209600000L; // 14 days
+
     private final UserService userService;
     private final JWTUtil jwtUtil;
-    private final RefreshRedisRepository refreshRedisRepository;
+    private final RedisService redisService;
 
     /**
      * 자체 회원가입
@@ -64,7 +67,9 @@ public class UserController {
      * 토큰 재발급
      */
     @PostMapping("/reissue")
-    public ResponseEntity<ResponseDTO> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ResponseDTO> reissueAccessToken(HttpServletRequest request,
+                                               HttpServletResponse response,
+                                               @Valid @RequestBody UsernameDTO usernameDTO) {
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄
         String refreshToken = request.getHeader("refresh");
 
@@ -85,22 +90,25 @@ public class UserController {
             throw new RequestParsingException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
 
-        // DB에 저장되어 있는지 확인
-        Optional<RefreshEntity> isExist = refreshRedisRepository.findById(refreshToken);
-        if (isExist.isEmpty()) {
+        // Redis 키값
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + usernameDTO.getUsername();
+
+        // Redis에 저장되어 있는지 확인
+        String values = redisService.getValues(refreshTokenKey);
+        if (values == null || values.isEmpty()) {
             throw new RequestParsingException(ErrorCode.TOKEN_EXPIRED);
         }
 
         String username = jwtUtil.getUsername(refreshToken);
         String role = jwtUtil.getRole(refreshToken);
 
-        // Access token 생성
-        String newAccess = jwtUtil.createJwt("self", "access", username, role, 86400000L); // 24시간(하루)
-        String newRefresh = jwtUtil.createJwt("self", "refresh", username, role, 1209600000L); // 2주(14일)
+        // token 새롭게 생성
+        String newAccess = jwtUtil.createJwt("self", "access", username, role, ACCESS_TOKEN_EXPIRATION);
+        String newRefresh = jwtUtil.createJwt("self", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
 
-        //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
-        refreshRedisRepository.deleteById(refreshToken);
-        addRefreshEntity(newRefresh, username);
+        //Refresh 토큰 저장 Redis에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
+        redisService.deleteValues(refreshTokenKey);
+        redisService.setValues(refreshTokenKey, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRATION));
 
         //response
         response.setHeader("access", newAccess);
@@ -132,10 +140,4 @@ public class UserController {
                 .status(ResponseCode.SUCCESS_TEST.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_TEST, res));
     }
-
-    private void addRefreshEntity(String refresh, String username) {
-        RefreshEntity refreshEntity = new RefreshEntity(refresh, username);
-        refreshRedisRepository.save(refreshEntity);
-    }
-
 }
