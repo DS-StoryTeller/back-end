@@ -8,6 +8,7 @@ import com.cojac.storyteller.jwt.oauth2.CustomSuccessHandler;
 import com.cojac.storyteller.repository.RefreshRedisRepository;
 import com.cojac.storyteller.service.CustomOAuth2UserService;
 import com.cojac.storyteller.service.RedisService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -33,10 +34,10 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final RefreshRedisRepository refreshRedisRepository;
     private final RedisService redisService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final ObjectMapper objectMapper;
 
     // AuthenticationManager Bean 등록
     @Bean
@@ -103,7 +104,7 @@ public class SecurityConfig {
 
         // 로그아웃 필터 등록
         http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRedisRepository), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService, objectMapper), LogoutFilter.class);
 
         // JWTFilter 등록
         http

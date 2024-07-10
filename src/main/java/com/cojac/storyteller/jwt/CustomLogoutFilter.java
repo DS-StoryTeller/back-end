@@ -5,9 +5,14 @@ import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.dto.user.UsernameDTO;
+import com.cojac.storyteller.exception.RequestParsingException;
 import com.cojac.storyteller.repository.RefreshRedisRepository;
+import com.cojac.storyteller.service.RedisService;
 import com.cojac.storyteller.util.ErrorResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,9 +29,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
 
-    private final JWTUtil jwtUtil;
+    public static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
 
-    private final RefreshRedisRepository refreshRedisRepository;
+    private final JWTUtil jwtUtil;
+    private final RedisService redisService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -69,29 +76,46 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        // DB에 저장되어 있는지 확인
-        Optional<RefreshEntity> isExist = refreshRedisRepository.findById(refreshToken);
-        if (isExist.isEmpty()) {
-            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.TOKEN_EXPIRED);
+        // 본문에서 사용자 이름 추출
+        String username = getUsername(request);
+        if (username == null || username.isEmpty()) {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.BAD_REQUEST);
             return;
+        }
+
+        // Redis 키값
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
+
+        // Redis에 저장되어 있는지 확인
+        String values = redisService.getValues(refreshTokenKey);
+        if (values == null || values.isEmpty()) {
+            throw new RequestParsingException(ErrorCode.TOKEN_EXPIRED);
         }
 
         //로그아웃 진행
         //Refresh 토큰 redis에서 제거
-        refreshRedisRepository.deleteById(refreshToken);
+        redisService.deleteValues(refreshTokenKey);
 
         // response
         ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGOUT, null);
 
-        // 응답의 Content-Type 및 Character Encoding 설정
+        writeJsonResponse(response, responseDTO);
+    }
+
+    private String getUsername(HttpServletRequest request) throws IOException {
+        UsernameDTO usernameDTO = objectMapper.readValue(request.getReader(), UsernameDTO.class);
+        String username = usernameDTO.getUsername();
+        return username;
+    }
+
+    private void writeJsonResponse(HttpServletResponse response, Object responseObject) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // JSON 라이브러리 사용 (예: Jackson)
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseDTO);
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-        // 응답 본문에 JSON 데이터 쓰기
+        String jsonResponse = objectMapper.writeValueAsString(responseObject);
         response.getWriter().write(jsonResponse);
     }
 
