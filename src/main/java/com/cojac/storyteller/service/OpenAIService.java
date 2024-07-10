@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 @Service
@@ -23,7 +24,7 @@ public class OpenAIService {
     @Value("${openai.model}")
     private String model;
 
-    public String generateStory(String prompt, Integer age) {
+    public String generateStory(String prompt, LocalDate age) {
         String url = "https://api.openai.com/v1/chat/completions";
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")
@@ -48,7 +49,7 @@ public class OpenAIService {
         return null;
     }
 
-    public String generateQuiz(String story, Integer age) {
+    public String generateQuiz(String story, LocalDate age) {
         String url = "https://api.openai.com/v1/chat/completions";
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")

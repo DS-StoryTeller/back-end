@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,8 +45,8 @@ public class BookService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        Integer age = profile.getAge();
-        String story = openAIService.generateStory(prompt, age);
+        LocalDate birthDate = profile.getBirthDate();
+        String story = openAIService.generateStory(prompt, birthDate);
 
         // 제목과 내용을 분리 (Title: 과 Content: 기준)
         String title = story.split("Content:")[0].replace("Title:", "").trim();
@@ -58,7 +59,7 @@ public class BookService {
         settingRepository.save(settingEntity);
 
         // 생성한 동화 내용으로 퀴즈 생성
-        String quiz = openAIService.generateQuiz(story, age);
+        String quiz = openAIService.generateQuiz(story, birthDate);
 
         // \n을 기준으로 퀴즈 분리
         List<String> questions = Arrays.asList(quiz.split("\n"));
