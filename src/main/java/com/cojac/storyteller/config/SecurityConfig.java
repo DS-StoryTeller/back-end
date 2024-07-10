@@ -76,7 +76,7 @@ public class SecurityConfig {
         http
                 .csrf((auth) -> auth.disable());
 
-        // From 로그인 방식 disable
+        // Form 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
 
@@ -95,7 +95,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/register").permitAll()
+                        .requestMatchers("/login", "/", "/register", "/check-username").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());
 
