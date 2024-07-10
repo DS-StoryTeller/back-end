@@ -2,7 +2,6 @@ package com.cojac.storyteller.config;
 
 import com.cojac.storyteller.jwt.*;
 import com.cojac.storyteller.jwt.oauth2.CustomSuccessHandler;
-import com.cojac.storyteller.repository.RefreshRedisRepository;
 import com.cojac.storyteller.service.CustomOAuth2UserService;
 import com.cojac.storyteller.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;

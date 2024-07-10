@@ -2,12 +2,10 @@ package com.cojac.storyteller.jwt;
 
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.dto.user.UsernameDTO;
 import com.cojac.storyteller.exception.RequestParsingException;
-import com.cojac.storyteller.repository.RefreshRedisRepository;
 import com.cojac.storyteller.service.RedisService;
 import com.cojac.storyteller.util.ErrorResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {

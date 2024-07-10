@@ -1,9 +1,7 @@
 package com.cojac.storyteller.jwt.oauth2;
 
-import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.user.oauth2.CustomOAuth2User;
 import com.cojac.storyteller.jwt.JWTUtil;
-import com.cojac.storyteller.repository.RefreshRedisRepository;
 import com.cojac.storyteller.service.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

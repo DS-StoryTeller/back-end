@@ -2,12 +2,10 @@ package com.cojac.storyteller.jwt;
 
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.domain.RefreshEntity;
 import com.cojac.storyteller.dto.response.ErrorResponseDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
 import com.cojac.storyteller.dto.user.UserDTO;
-import com.cojac.storyteller.repository.RefreshRedisRepository;
 import com.cojac.storyteller.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
