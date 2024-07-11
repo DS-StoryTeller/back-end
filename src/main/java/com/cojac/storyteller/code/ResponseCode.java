@@ -16,7 +16,7 @@ public enum ResponseCode {
     SUCCESS_TEST(HttpStatus.OK, "테스트를 성공했습니다."),
     SUCCESS_LOGOUT(HttpStatus.OK, "로그아웃을 성공했습니다."),
   
-    /**
+    /**H
      * Book
      */
     SUCCESS_CREATE_BOOK_AND_QUIZ(HttpStatus.CREATED, "동화와 퀴즈가 성공적으로 생성되었습니다."),
