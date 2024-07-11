@@ -37,7 +37,7 @@ jobs:
       - name: Docker build & push to docker repo
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/storyteller.
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/storyteller .
           docker push ${{ secrets.DOCKER_REPO }}/storyteller
 
       - name: Deploy to server
