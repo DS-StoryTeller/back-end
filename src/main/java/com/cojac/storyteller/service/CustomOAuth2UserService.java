@@ -1,6 +1,6 @@
 package com.cojac.storyteller.service;
 
-import com.cojac.storyteller.domain.SocialUserEntity;
+import com.cojac.storyteller.domain.SocialUserEntityEntity;
 import com.cojac.storyteller.dto.user.oauth2.*;
 import com.cojac.storyteller.repository.SocialUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +32,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만들기
         String accountId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        SocialUserEntity existData = socialUserRepository.findByAccountId(accountId);
+        SocialUserEntityEntity existData = socialUserRepository.findByAccountId(accountId);
 
         // DB에 없는 사용자라면 회원가입처리 및 DTO 응답
         if(existData == null) {
-            SocialUserEntity socialUserEntity
-                    = new SocialUserEntity(accountId, oAuth2Response.getUserName(), oAuth2Response.getEmail(), "ROLE_USER");
+            SocialUserEntityEntity socialUserEntity
+                    = new SocialUserEntityEntity(accountId, oAuth2Response.getUserName(), oAuth2Response.getEmail(), "ROLE_USER");
 
             socialUserRepository.save(socialUserEntity);
 

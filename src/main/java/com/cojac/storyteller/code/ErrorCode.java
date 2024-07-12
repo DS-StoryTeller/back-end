@@ -12,6 +12,7 @@ public enum ErrorCode {
      * 400 BAD_REQUEST: 잘못된 요청
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    INVALID_PIN_NUMBER(HttpStatus.BAD_REQUEST, "잘못된 핀 번호입니다."),
 
     /**
      * 401 UNAUTHORIZED: 토큰 만료
@@ -24,6 +25,7 @@ public enum ErrorCode {
      * 404 NOT_FOUND: 리소스를 찾을 수 없음
      */
     PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "프로필을 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     SOCIAL_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "소셜 사용자를 찾을 수 없습니다."),
     BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "책을 찾을 수 없습니다."),
     PAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "페이지를 찾을 수 없습니다."),
