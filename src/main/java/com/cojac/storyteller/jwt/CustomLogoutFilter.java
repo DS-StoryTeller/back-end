@@ -3,8 +3,7 @@ package com.cojac.storyteller.jwt;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.response.ResponseDTO;
-import com.cojac.storyteller.dto.user.UserDTO;
-import com.cojac.storyteller.dto.user.UsernameDTO;
+import com.cojac.storyteller.dto.user.ReissueDTO;
 import com.cojac.storyteller.exception.RequestParsingException;
 import com.cojac.storyteller.service.RedisService;
 import com.cojac.storyteller.util.ErrorResponseUtil;
@@ -38,16 +37,11 @@ public class CustomLogoutFilter extends GenericFilterBean {
     }
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        // 경로와 HTTP Method 유효한지
         String requestUri = request.getRequestURI();
-        if (!requestUri.matches("^\\/logout$")) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
         String requestMethod = request.getMethod();
-        if (!requestMethod.equals("POST")) {
 
+        // /logout 경로와 POST 메소드인지 확인
+        if (!requestUri.equals("/logout") || !requestMethod.equals("POST")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -58,51 +52,46 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
         try {
+            // 토큰 만료 여부 확인
             jwtUtil.isExpired(refreshToken);
         } catch (ExpiredJwtException e) {
             ErrorResponseUtil.sendErrorResponse(response, ErrorCode.TOKEN_EXPIRED);
             return;
         }
 
-        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
+        // 토큰이 refresh인지 확인
         String category = jwtUtil.getCategory(refreshToken);
         if (!category.equals("refresh")) {
             ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_ACCESS_TOKEN);
             return;
         }
 
-        // 본문에서 사용자 이름 추출
-        String username = getUsername(request);
-        if (username == null || username.isEmpty()) {
-            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.BAD_REQUEST);
-            return;
-        }
+        String authenticationMethod = jwtUtil.getAuthenticationMethod(refreshToken);
+        String userKey = getUserKey(request, authenticationMethod);
 
-        // Redis 키값
-        String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
+        // Redis에 저장된 refresh 토큰 확인
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + userKey;
+        checkTokenInRedis(refreshTokenKey);
 
-        // Redis에 저장되어 있는지 확인
+        // 로그아웃 처리: Redis에서 refresh 토큰 제거
+        redisService.deleteValues(refreshTokenKey);
+
+        // 응답 생성 및 전송
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGOUT, null);
+        writeJsonResponse(response, responseDTO);
+    }
+
+    private String getUserKey(HttpServletRequest request, String authenticationMethod) throws IOException {
+        ReissueDTO reissueDTO = objectMapper.readValue(request.getReader(), ReissueDTO.class);
+        return authenticationMethod.equals("local") ? reissueDTO.getUsername() : reissueDTO.getAccountId();
+    }
+
+    private void checkTokenInRedis(String refreshTokenKey) {
         String values = redisService.getValues(refreshTokenKey);
         if (values == null || values.isEmpty()) {
             throw new RequestParsingException(ErrorCode.TOKEN_EXPIRED);
         }
-
-        //로그아웃 진행
-        //Refresh 토큰 redis에서 제거
-        redisService.deleteValues(refreshTokenKey);
-
-        // response
-        ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGOUT, null);
-
-        writeJsonResponse(response, responseDTO);
-    }
-
-    private String getUsername(HttpServletRequest request) throws IOException {
-        UsernameDTO usernameDTO = objectMapper.readValue(request.getReader(), UsernameDTO.class);
-        String username = usernameDTO.getUsername();
-        return username;
     }
 
     private void writeJsonResponse(HttpServletResponse response, Object responseObject) throws IOException {
@@ -115,5 +104,4 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String jsonResponse = objectMapper.writeValueAsString(responseObject);
         response.getWriter().write(jsonResponse);
     }
-
 }

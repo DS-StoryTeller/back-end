@@ -49,6 +49,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         redisService.setValues(refreshTokenKey, refresh);
 
         response.addCookie(createCookie("refresh", refresh));
+        response.addCookie(createCookie("accountId", accountId));
         response.sendRedirect("http://localhost:3000/");
     }
 

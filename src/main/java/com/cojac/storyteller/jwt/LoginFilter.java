@@ -5,7 +5,7 @@ import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.response.ErrorResponseDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
-import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.dto.user.LocalUserDTO;
 import com.cojac.storyteller.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -65,19 +65,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = extractRole(authentication.getAuthorities());
 
         //토큰 생성
-        String accessToken = jwtUtil.createJwt("self", "access", username, role, ACCESS_TOKEN_EXPIRATION);
-        String refreshToken = jwtUtil.createJwt("self", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
+        String accessToken = jwtUtil.createJwt("local", "access", username, role, ACCESS_TOKEN_EXPIRATION);
+        String refreshToken = jwtUtil.createJwt("local", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
+
+        // Redis 키값
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
 
         // refresh 토큰 저장
-        redisService.setValues(REFRESH_TOKEN_PREFIX + username, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRATION));
+        redisService.setValues(refreshTokenKey, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRATION));
 
-        // access 토큰 설정
+        // access 및 refresh 토큰 설정
         response.setHeader("access", accessToken);
+        response.setHeader("refresh", refreshToken);
 
         // 로그인 성공시 body에 응답 정보 담기
-        UserDTO userDTO = new UserDTO(userId, username, role);
-        userDTO.setRefreshToken(refreshToken);
-        ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGIN, userDTO);
+        LocalUserDTO localUserDTO = new LocalUserDTO(userId, username, role);
+        ResponseDTO<LocalUserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGIN, localUserDTO);
 
         writeResponse(response, responseDTO);
     }
@@ -94,7 +97,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         writeErrorResponse(response, errorResponse);
     }
 
-    private void writeResponse(HttpServletResponse response, ResponseDTO<UserDTO> responseDTO) throws IOException {
+    private void writeResponse(HttpServletResponse response, ResponseDTO<LocalUserDTO> responseDTO) throws IOException {
         writeJsonResponse(response, responseDTO);
     }
 

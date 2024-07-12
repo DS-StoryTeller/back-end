@@ -64,15 +64,15 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // username, role 값을 획득
-        String username = jwtUtil.getUsername(accessToken);
+        // userKey, role 값을 획득
+        String userKey = jwtUtil.getUserKey(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
         // 자체로그인인지 소셜 로그인인지 구별
         String authenticationMethod = jwtUtil.getAuthenticationMethod(accessToken);
-        if (authenticationMethod.equals("self")) {
+        if (authenticationMethod.equals("local")) {
 
-            LocalUserEntity localUserEntity = new LocalUserEntity("password", username, role);
+            LocalUserEntity localUserEntity = new LocalUserEntity("password", userKey, role);
             //UserDetails에 회원 정보 객체 담기
             CustomUserDetails customUserDetails = new CustomUserDetails(localUserEntity);
 
@@ -82,7 +82,7 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } else if (authenticationMethod.equals("social")) {
-            SocialUserDTO socialUserDTO = new SocialUserDTO(role, "", username);
+            SocialUserDTO socialUserDTO = new SocialUserDTO(userKey, "", role);
             //UserDetails에 회원 정보 객체 담기
             CustomOAuth2User customOAuth2User = new CustomOAuth2User(socialUserDTO);
 
