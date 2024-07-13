@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +46,12 @@ public class BookService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        Integer age = profile.getAge();
+        // 프로필이 birthDate로 변경되면서 기존 age를 가져오는 코드가 안됩니다.
+        // 따라서 birthDate를 이용하여 age를 계산하는 코드를 추가했습니다.
+        LocalDate birthDate = profile.getBirthDate();
+        LocalDate currentDate = LocalDate.now();
+        int age = Period.between(birthDate, currentDate).getYears();
+
         String story = openAIService.generateStory(prompt, age);
 
         // 제목과 내용을 분리 (Title: 과 Content: 기준)
