@@ -1,6 +1,7 @@
 package com.cojac.storyteller.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class LocalUserEntity extends UserEntity {
     private String email;
     private String role;
 
+    @Builder
     public LocalUserEntity(String username, String encryptedPassword, String email, String role) {
         this.username = username;
         this.password = encryptedPassword;

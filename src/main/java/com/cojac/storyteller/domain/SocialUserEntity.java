@@ -15,19 +15,4 @@ public class SocialUserEntity extends UserEntity {
     private String username; // 사용자 이름
     private String email;
     private String role;
-
-    public SocialUserEntity(String accountId, String username, String email, String role) {
-        this.accountId = accountId;
-        this.username = username;
-        this.email = email;
-        this.role = role;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

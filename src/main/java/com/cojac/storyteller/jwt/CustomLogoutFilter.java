@@ -5,6 +5,9 @@ import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.ReissueDTO;
 import com.cojac.storyteller.exception.RequestParsingException;
+import com.cojac.storyteller.exception.UserNotFoundException;
+import com.cojac.storyteller.repository.LocalUserRepository;
+import com.cojac.storyteller.repository.SocialUserRepository;
 import com.cojac.storyteller.service.RedisService;
 import com.cojac.storyteller.util.ErrorResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +33,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
     private final ObjectMapper objectMapper;
+    private final LocalUserRepository localUserRepository;
+    private final SocialUserRepository socialUserRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -46,33 +51,65 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        String refreshToken = request.getHeader("refresh");
-        if (refreshToken == null) {
-            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.TOKEN_MISSING);
-            return;
-        }
+        String refreshToken = getRefreshTokenFromRequest(request, response);
+        if (refreshToken == null) return;
 
-        try {
-            // 토큰 만료 여부 확인
-            jwtUtil.isExpired(refreshToken);
-        } catch (ExpiredJwtException e) {
-            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.TOKEN_EXPIRED);
-            return;
-        }
+        // 토큰 만료 여부 확인
+        if (validateToken(response, refreshToken)) return;
 
         // 토큰이 refresh인지 확인
-        String category = jwtUtil.getCategory(refreshToken);
-        if (!category.equals("refresh")) {
+        if (validateCategory(response, refreshToken)) return;
+
+        String authenticationMethod = jwtUtil.getAuthenticationMethod(refreshToken);
+        if (authenticationMethod.equals("local")) {
+            authenticateLocalUser(request, response, authenticationMethod);
+        } else if (authenticationMethod.equals("social")) {
+            authenticateSocialUser(request, response, authenticationMethod);
+        } else {
             ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_ACCESS_TOKEN);
             return;
         }
+    }
 
-        String authenticationMethod = jwtUtil.getAuthenticationMethod(refreshToken);
-        String userKey = getUserKey(request, authenticationMethod);
+    private static String getRefreshTokenFromRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String refreshToken = request.getHeader("refresh");
+        if (refreshToken == null) {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.TOKEN_MISSING);
+            return null;
+        }
+        return refreshToken;
+    }
+
+    private void authenticateSocialUser(HttpServletRequest request, HttpServletResponse response, String authenticationMethod) throws IOException {
+        String accountId = getUserKey(request, authenticationMethod);
+        if(checkAccountId(response, accountId)) return;
 
         // Redis에 저장된 refresh 토큰 확인
-        String refreshTokenKey = REFRESH_TOKEN_PREFIX + userKey;
-        checkTokenInRedis(refreshTokenKey);
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + accountId;
+        if (checkTokenInRedis(refreshTokenKey, response)) return;
+
+        // 로그아웃 처리: Redis에서 refresh 토큰 제거
+        redisService.deleteValues(refreshTokenKey);
+
+        // 응답 생성 및 전송
+        ResponseDTO<?> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGOUT, null);
+        writeJsonResponse(response, responseDTO);
+    }
+    private boolean checkAccountId(HttpServletResponse response, String accountId) throws IOException {
+        if (!socialUserRepository.existsByAccountId(accountId)) {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.USER_NOT_FOUND);
+            return true;
+        }
+        return false;
+    }
+
+    private void authenticateLocalUser(HttpServletRequest request, HttpServletResponse response, String authenticationMethod) throws IOException {
+        String username = getUserKey(request, authenticationMethod);
+        if (checkUsername(response, username)) return;
+
+        // Redis에 저장된 refresh 토큰 확인
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
+        if (checkTokenInRedis(refreshTokenKey, response)) return;
 
         // 로그아웃 처리: Redis에서 refresh 토큰 제거
         redisService.deleteValues(refreshTokenKey);
@@ -82,16 +119,44 @@ public class CustomLogoutFilter extends GenericFilterBean {
         writeJsonResponse(response, responseDTO);
     }
 
+    private boolean checkUsername(HttpServletResponse response, String username) throws IOException {
+        if (!localUserRepository.existsByUsername(username)) {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.USER_NOT_FOUND);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validateCategory(HttpServletResponse response, String refreshToken) throws IOException {
+        String category = jwtUtil.getCategory(refreshToken);
+        if (!category.equals("refresh")) {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_ACCESS_TOKEN);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validateToken(HttpServletResponse response, String refreshToken) throws IOException {
+        try {
+            jwtUtil.isExpired(refreshToken);
+        } catch (ExpiredJwtException e) {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.TOKEN_EXPIRED);
+            return true;
+        }
+        return false;
+    }
+
     private String getUserKey(HttpServletRequest request, String authenticationMethod) throws IOException {
         ReissueDTO reissueDTO = objectMapper.readValue(request.getReader(), ReissueDTO.class);
         return authenticationMethod.equals("local") ? reissueDTO.getUsername() : reissueDTO.getAccountId();
     }
 
-    private void checkTokenInRedis(String refreshTokenKey) {
-        String values = redisService.getValues(refreshTokenKey);
-        if (values == null || values.isEmpty()) {
-            throw new RequestParsingException(ErrorCode.TOKEN_EXPIRED);
+    private boolean checkTokenInRedis(String refreshTokenKey, HttpServletResponse response) throws IOException {
+        if (redisService.checkExistsValue(refreshTokenKey)) {
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_REFRESH_TOKEN);
+            return true;
         }
+        return false;
     }
 
     private void writeJsonResponse(HttpServletResponse response, Object responseObject) throws IOException {

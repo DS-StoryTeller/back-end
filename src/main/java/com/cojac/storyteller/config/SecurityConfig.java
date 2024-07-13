@@ -1,6 +1,8 @@
 package com.cojac.storyteller.config;
 
 import com.cojac.storyteller.jwt.*;
+import com.cojac.storyteller.repository.LocalUserRepository;
+import com.cojac.storyteller.repository.SocialUserRepository;
 import com.cojac.storyteller.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +33,8 @@ public class SecurityConfig {
     private final RedisService redisService;
     private final ObjectMapper objectMapper;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final LocalUserRepository localUserRepository;
+    private final SocialUserRepository socialUserRepository;
 
     // AuthenticationManager Bean 등록
     @Bean
@@ -84,7 +88,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/register").permitAll()
-                        .requestMatchers("/check-username", "/emails/verification-requests", "/emails/verifications").permitAll()
+                        .requestMatchers("/username/verifications", "/emails/verification-requests", "/emails/verifications").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());
 
@@ -96,7 +100,7 @@ public class SecurityConfig {
 
         // 로그아웃 필터 등록
         http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService, objectMapper), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService, objectMapper, localUserRepository, socialUserRepository), LogoutFilter.class);
 
         // JWTFilter 등록
         http

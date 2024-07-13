@@ -3,8 +3,6 @@ package com.cojac.storyteller.controller;
 import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.*;
-import com.cojac.storyteller.jwt.JWTUtil;
-import com.cojac.storyteller.service.RedisService;
 import com.cojac.storyteller.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +31,7 @@ public class UserController {
      * 자체 회원가입
      */
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> registerUser(LocalUserDTO localUserDTO) {
+    public ResponseEntity<ResponseDTO> registerUser(@Valid LocalUserDTO localUserDTO) {
         LocalUserDTO res = userService.registerUser(localUserDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_REGISTER.getStatus().value())

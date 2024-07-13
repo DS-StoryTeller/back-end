@@ -31,7 +31,7 @@ import java.util.Iterator;
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    public static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
     private static final long ACCESS_TOKEN_EXPIRATION = 86400000L; // 24 hours
     private static final long REFRESH_TOKEN_EXPIRATION = 1209600000L; // 14 days
 
@@ -81,9 +81,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("refresh", refreshToken);
 
         // 로그인 성공시 body에 응답 정보 담기
-        LocalUserDTO localUserDTO = new LocalUserDTO(userId, username, email, role);
-        ResponseDTO<LocalUserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGIN, localUserDTO);
+        LocalUserDTO localUserDTO = LocalUserDTO.builder()
+                .id(userId)
+                .username(username)
+                .email(email)
+                .role(role)
+                .build();
 
+        ResponseDTO<LocalUserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGIN, localUserDTO);
         writeResponse(response, responseDTO);
     }
 
