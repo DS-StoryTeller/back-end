@@ -15,9 +15,10 @@ public class LocalUserEntity extends UserEntity {
     private String email;
     private String role;
 
-    public LocalUserEntity(String encryptedPassword, String username, String role) {
-        this.password = encryptedPassword;
+    public LocalUserEntity(String username, String encryptedPassword, String email, String role) {
         this.username = username;
+        this.password = encryptedPassword;
+        this.email = email;
         this.role = role;
     }
 

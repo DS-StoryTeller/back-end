@@ -43,8 +43,8 @@ public class UserController {
     /**
      * 아이디 중복 확인
      */
-    @PostMapping("/check-username")
-    public ResponseEntity<ResponseDTO> checkUsername(@Valid @RequestBody UsernameDTO usernameDTO) {
+    @PostMapping("/username/verifications")
+    public ResponseEntity<ResponseDTO> verifiedUsername(@Valid @RequestBody UsernameDTO usernameDTO) {
 
         UsernameDTO res = userService.verifiedUsername(usernameDTO);
         return ResponseEntity

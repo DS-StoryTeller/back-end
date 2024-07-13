@@ -48,25 +48,25 @@ public class UserService {
     public LocalUserDTO registerUser(LocalUserDTO localUserDTO) {
         String username = localUserDTO.getUsername();
         String role = localUserDTO.getRole();
+        String email = localUserDTO.getEmail();
         String encryptedPassword = bCryptPasswordEncoder.encode(localUserDTO.getPassword());
 
         if (localUserRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException(ErrorCode.DUPLICATE_USERNAME);
         }
 
-        LocalUserEntity localUserEntity = new LocalUserEntity(encryptedPassword, username, role);
+        LocalUserEntity localUserEntity = new LocalUserEntity(username, encryptedPassword, email, role);
         localUserRepository.save(localUserEntity);
 
-        return new LocalUserDTO(localUserEntity.getId(), localUserEntity.getUsername(), localUserEntity.getRole());
+        return new LocalUserDTO(localUserEntity.getId(), localUserEntity.getUsername(), localUserEntity.getEmail(), localUserEntity.getRole());
     }
 
     public UsernameDTO verifiedUsername(UsernameDTO usernameDTO) {
         String username = usernameDTO.getUsername();
-        localUserRepository.findByUsername(username)
-                .ifPresent(user -> {
-                    throw new UsernameExistsException(ErrorCode.DUPLICATE_USERNAME);
-                });
-        return new UsernameDTO(username);
+        boolean authResult = localUserRepository.findByUsername(username)
+                .map(user -> false)
+                .orElse(true);
+        return new UsernameDTO(username, authResult);
     }
 
     public UserDTO reissueToken(HttpServletRequest request, HttpServletResponse response, @RequestBody ReissueDTO reissueDTO) throws IOException {
@@ -176,7 +176,7 @@ public class UserService {
         if ("local".equals(authenticationMethod)) {
             LocalUserEntity localUserEntity = localUserRepository.findByUsername(userKey)
                     .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
-            return new LocalUserDTO(localUserEntity.getId(), localUserEntity.getUsername(), localUserEntity.getRole());
+            return new LocalUserDTO(localUserEntity.getId(), localUserEntity.getUsername(), localUserEntity.getEmail(), localUserEntity.getRole());
         } else if ("social".equals(authenticationMethod)) {
             SocialUserEntity socialUserEntity = socialUserRepository.findByAccountId(userKey)
                     .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));

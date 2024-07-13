@@ -12,4 +12,5 @@ public class UsernameDTO {
 
     @NotBlank(message = "Username을 입력해주세요.")
     private String username;
+    private boolean authResult;
 }

@@ -60,10 +60,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //UserDetails
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        // 정보 가져오기(id, username, role)
+        // 정보 가져오기(id, username, email, role)
         String username = customUserDetails.getUsername();
         Integer userId = customUserDetails.getId();
         String role = extractRole(authentication.getAuthorities());
+        String email = customUserDetails.getEmail();
 
         //토큰 생성
         String accessToken = jwtUtil.createJwt("local", "access", username, role, ACCESS_TOKEN_EXPIRATION);
@@ -80,7 +81,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("refresh", refreshToken);
 
         // 로그인 성공시 body에 응답 정보 담기
-        LocalUserDTO localUserDTO = new LocalUserDTO(userId, username, role);
+        LocalUserDTO localUserDTO = new LocalUserDTO(userId, username, email, role);
         ResponseDTO<LocalUserDTO> responseDTO = new ResponseDTO<>(ResponseCode.SUCCESS_LOGIN, localUserDTO);
 
         writeResponse(response, responseDTO);

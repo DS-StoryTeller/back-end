@@ -69,7 +69,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String authenticationMethod = jwtUtil.getAuthenticationMethod(accessToken);
         if (authenticationMethod.equals("local")) {
 
-            LocalUserEntity localUserEntity = new LocalUserEntity("password", userKey, role);
+            LocalUserEntity localUserEntity = new LocalUserEntity(userKey, "password", "email", role);
             //UserDetails에 회원 정보 객체 담기
             CustomUserDetails customUserDetails = new CustomUserDetails(localUserEntity);
 

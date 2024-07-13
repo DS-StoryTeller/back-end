@@ -15,7 +15,7 @@ public enum ResponseCode {
     SUCCESS_REISSUE(HttpStatus.OK, "토큰 재발급을 성공했습니다."),
     SUCCESS_TEST(HttpStatus.OK, "테스트를 성공했습니다."),
     SUCCESS_LOGOUT(HttpStatus.OK, "로그아웃을 성공했습니다."),
-    SUCCESS_VERIFICATION_USERNAME(HttpStatus.OK, "아이디가 사용 가능합니다."),
+    SUCCESS_VERIFICATION_USERNAME(HttpStatus.OK, "아이디가 사용 검증 완료했습니다. authResult를 확인해주세요."),
     SUCCESS_VERIFICATION_REQUEST(HttpStatus.OK, "해당 이메일로 인증 코드가 전송되었습니다."),
     SUCCESS_VERIFICATION_CODE(HttpStatus.OK, "인증 코드가 검증 완료했습니다. authResult를 확인해주세요."),
 
