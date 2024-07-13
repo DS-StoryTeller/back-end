@@ -1,4 +1,4 @@
-package com.cojac.storyteller.dto.user.oauth2;
+package com.cojac.storyteller.dto.user;
 
 import com.cojac.storyteller.dto.user.UserDTO;
 import lombok.AllArgsConstructor;

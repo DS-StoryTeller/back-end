@@ -7,7 +7,7 @@ import com.cojac.storyteller.dto.user.ReissueDTO;
 import com.cojac.storyteller.dto.user.LocalUserDTO;
 import com.cojac.storyteller.dto.user.UserDTO;
 import com.cojac.storyteller.dto.user.UsernameDTO;
-import com.cojac.storyteller.dto.user.oauth2.SocialUserDTO;
+import com.cojac.storyteller.dto.user.SocialUserDTO;
 import com.cojac.storyteller.exception.*;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.repository.LocalUserRepository;

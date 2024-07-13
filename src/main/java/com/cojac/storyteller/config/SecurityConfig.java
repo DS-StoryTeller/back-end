@@ -1,8 +1,6 @@
 package com.cojac.storyteller.config;
 
 import com.cojac.storyteller.jwt.*;
-import com.cojac.storyteller.jwt.oauth2.CustomSuccessHandler;
-import com.cojac.storyteller.service.CustomOAuth2UserService;
 import com.cojac.storyteller.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,8 +29,6 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomSuccessHandler customSuccessHandler;
     private final ObjectMapper objectMapper;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
@@ -83,14 +79,6 @@ public class SecurityConfig {
         // http basic 인증 방식 disable
         http
                 .httpBasic((auth) -> auth.disable());
-
-        // oauth2
-        http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
-                );
 
         // 경로별 인가 작업
         http

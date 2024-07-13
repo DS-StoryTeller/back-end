@@ -3,8 +3,6 @@ package com.cojac.storyteller.jwt;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.LocalUserEntity;
 import com.cojac.storyteller.dto.user.CustomUserDetails;
-import com.cojac.storyteller.dto.user.oauth2.CustomOAuth2User;
-import com.cojac.storyteller.dto.user.oauth2.SocialUserDTO;
 import com.cojac.storyteller.util.ErrorResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -58,7 +56,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 토큰이 access인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(accessToken);
-
         if (!category.equals("access")) {
             ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_ACCESS_TOKEN);
             return;
@@ -82,14 +79,8 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } else if (authenticationMethod.equals("social")) {
-            SocialUserDTO socialUserDTO = new SocialUserDTO(userKey, "", role);
-            //UserDetails에 회원 정보 객체 담기
-            CustomOAuth2User customOAuth2User = new CustomOAuth2User(socialUserDTO);
 
-            //스프링 시큐리티 인증 토큰 생성
-            Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-            //세션에 사용자 등록
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            // 소셜 로그인과 관련된 로직
 
             filterChain.doFilter(request, response);
         } else {
