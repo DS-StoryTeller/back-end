@@ -160,4 +160,23 @@ public class BookService {
 
         bookRepository.delete(book);
     }
+
+    @Transactional
+    public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        book.setCurrentPage(currentPage);
+        if (currentPage >= book.getTotalPageCount()) {
+            book.setReading(false);
+        } else {
+            book.setReading(true);
+        }
+        bookRepository.save(book);
+
+        return BookMapper.mapToBookDTO(book);
+    }
 }
