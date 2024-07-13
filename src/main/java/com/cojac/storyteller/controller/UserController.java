@@ -2,10 +2,7 @@ package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.response.ResponseDTO;
-import com.cojac.storyteller.dto.user.ReissueDTO;
-import com.cojac.storyteller.dto.user.LocalUserDTO;
-import com.cojac.storyteller.dto.user.UserDTO;
-import com.cojac.storyteller.dto.user.UsernameDTO;
+import com.cojac.storyteller.dto.user.*;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.service.RedisService;
 import com.cojac.storyteller.service.UserService;
@@ -49,10 +46,10 @@ public class UserController {
     @PostMapping("/check-username")
     public ResponseEntity<ResponseDTO> checkUsername(@Valid @RequestBody UsernameDTO usernameDTO) {
 
-        UsernameDTO res = userService.checkUsername(usernameDTO);
+        UsernameDTO res = userService.verifiedUsername(usernameDTO);
         return ResponseEntity
-                .status(ResponseCode.SUCCESS_CHECK_USERNAME.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_CHECK_USERNAME, res));
+                .status(ResponseCode.SUCCESS_VERIFICATION_USERNAME.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_VERIFICATION_USERNAME, res));
     }
 
     /**
@@ -66,6 +63,30 @@ public class UserController {
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_REISSUE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_REISSUE, res));
+    }
+
+    /**
+     * 이메일 인증 코드 요청하기
+     */
+    @PostMapping("/emails/verification-requests")
+    public ResponseEntity<ResponseDTO> sendEmailVerification(@Valid @RequestBody EmailDTO emailDTO) {
+
+        userService.sendCodeToEmail(emailDTO.getEmail());
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_VERIFICATION_REQUEST.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_VERIFICATION_REQUEST, null));
+    }
+
+    /**
+     * 인증 코드 확인하기
+     */
+    @GetMapping("/emails/verifications")
+    public ResponseEntity<ResponseDTO> verificationEmailCode(@Valid @RequestBody EmailDTO emailDTO) {
+
+        EmailDTO res = userService.verifiedCode(emailDTO.getEmail(), emailDTO.getAuthCode());
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_VERIFICATION_CODE.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_VERIFICATION_CODE, res));
     }
 
     // 로그인 이후 유저 아이디 및 role 확인 방법

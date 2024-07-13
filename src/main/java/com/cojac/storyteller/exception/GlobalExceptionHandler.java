@@ -66,6 +66,14 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ErrorCode.UNABLE_TO_SEND_EMAIL));
     }
 
+    @ExceptionHandler(BusinessLogicException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleBusinessLogicException(final BusinessLogicException e) {
+        log.error("handleBusinessLogicException : {}", e.getErrorCode().getMessage());
+        return ResponseEntity
+                .status(ErrorCode.NO_SUCH_ALGORITHM.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NO_SUCH_ALGORITHM));
+    }
+
     /**
      * Profile
      */

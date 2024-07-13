@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 public class LocalUserEntity extends UserEntity {
 
     private String username;
-
     private String password;
-
+    private String email;
     private String role;
 
     public LocalUserEntity(String encryptedPassword, String username, String role) {

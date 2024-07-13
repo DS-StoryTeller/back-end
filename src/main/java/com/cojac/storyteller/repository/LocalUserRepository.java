@@ -10,4 +10,5 @@ public interface LocalUserRepository extends JpaRepository<LocalUserEntity, Inte
     Boolean existsByUsername(String username);
 
     Optional<LocalUserEntity> findByUsername(String username);
+    Optional<LocalUserEntity> findByEmail(String email);
 }

@@ -3,11 +3,7 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.LocalUserEntity;
 import com.cojac.storyteller.domain.SocialUserEntity;
-import com.cojac.storyteller.dto.user.ReissueDTO;
-import com.cojac.storyteller.dto.user.LocalUserDTO;
-import com.cojac.storyteller.dto.user.UserDTO;
-import com.cojac.storyteller.dto.user.UsernameDTO;
-import com.cojac.storyteller.dto.user.SocialUserDTO;
+import com.cojac.storyteller.dto.user.*;
 import com.cojac.storyteller.exception.*;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.repository.LocalUserRepository;
@@ -16,20 +12,26 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Duration;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private static final String EMAIL_CODE_PREFIX = "email_code:";
     private static final long ACCESS_TOKEN_EXPIRATION = 86400000L; // 24 hours
     private static final long REFRESH_TOKEN_EXPIRATION = 1209600000L; // 14 days
 
@@ -38,6 +40,9 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
+    private final MailService mailService;
+    @Value("${spring.mail.auth-code-expiration-millis}")
+    private long authCodeExpirationMillis;
 
     @Transactional
     public LocalUserDTO registerUser(LocalUserDTO localUserDTO) {
@@ -55,7 +60,7 @@ public class UserService {
         return new LocalUserDTO(localUserEntity.getId(), localUserEntity.getUsername(), localUserEntity.getRole());
     }
 
-    public UsernameDTO checkUsername(UsernameDTO usernameDTO) {
+    public UsernameDTO verifiedUsername(UsernameDTO usernameDTO) {
         String username = usernameDTO.getUsername();
         localUserRepository.findByUsername(username)
                 .ifPresent(user -> {
@@ -64,7 +69,7 @@ public class UserService {
         return new UsernameDTO(username);
     }
 
-    public UserDTO reissueToken(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody ReissueDTO reissueDTO) throws IOException {
+    public UserDTO reissueToken(HttpServletRequest request, HttpServletResponse response, @RequestBody ReissueDTO reissueDTO) throws IOException {
         String refreshToken = getRefreshTokenFromRequest(request);
         validateToken(refreshToken);
         String category = jwtUtil.getCategory(refreshToken);
@@ -81,6 +86,45 @@ public class UserService {
         checkTokenExistsInRedis(refreshTokenKey);
 
         return generateAndSaveNewTokens(response, userKey, role, authenticationMethod, refreshTokenKey);
+    }
+
+    public void sendCodeToEmail(String toEmail) {
+        this.checkDuplicatedEmail(toEmail);
+        String title = "StoryTeller 이메일 인증 번호";
+        String authCode = this.createCode();
+        mailService.sendEmail(toEmail, title, authCode);
+
+        // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "email_code:" + Email / value = AuthCode )
+        redisService.setValues(EMAIL_CODE_PREFIX + toEmail,
+                authCode, Duration.ofMillis(this.authCodeExpirationMillis));
+    }
+
+    public EmailDTO verifiedCode(String email, String authCode) {
+        this.checkDuplicatedEmail(email);
+        String redisAuthCode = redisService.getValues(EMAIL_CODE_PREFIX + email);
+        boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
+
+        return new EmailDTO(email, authCode, authResult);
+    }
+
+    private void checkDuplicatedEmail(String email) {
+        localUserRepository.findByEmail(email).ifPresent(user -> {
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        });
+    }
+
+    private String createCode() {
+        int len = 6;
+        try {
+            Random random = SecureRandom.getInstanceStrong();
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < len; i++) {
+                builder.append(random.nextInt(10));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new BusinessLogicException(ErrorCode.NO_SUCH_ALGORITHM);
+        }
     }
 
     private String getRefreshTokenFromRequest(HttpServletRequest request) {

@@ -48,7 +48,7 @@ public enum ErrorCode {
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류입니다."),
     UNABLE_TO_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류입니다."),
-
+    NO_SUCH_ALGORITHM(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류입니다."),
     ;
 
     private final HttpStatus status;
