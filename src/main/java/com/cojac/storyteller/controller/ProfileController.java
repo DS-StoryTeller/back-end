@@ -7,6 +7,7 @@ import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.ProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class ProfileController {
      * 프로필 생성하기
      */
     @PostMapping
-    public ResponseEntity<ResponseDTO> createProfile(@RequestBody ProfileDTO profileDTO) {
+    public ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody ProfileDTO profileDTO) {
         ProfileDTO result = profileService.createProfile(profileDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_CREATE_PROFILE.getStatus().value())
@@ -47,7 +48,7 @@ public class ProfileController {
      */
     @PostMapping("/{profileId}/pin-number/verifications")
     public ResponseEntity<ResponseDTO> verificationPinNumber(@PathVariable Integer profileId,
-                                                      @RequestBody PinNumberDTO pinNumberDTO) {
+                                                             @Valid @RequestBody PinNumberDTO pinNumberDTO) {
         PinCheckResultDTO res = profileService.verificationPinNumber(profileId, pinNumberDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_VERIFICATION_PIN_NUMBER.getStatus().value())
@@ -59,7 +60,7 @@ public class ProfileController {
      */
     @PutMapping("/{profileId}")
     public ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId,
-                                                     @RequestBody ProfileDTO profileDTO) {
+                                                     @Valid @RequestBody ProfileDTO profileDTO) {
         ProfileDTO result = profileService.updateProfile(profileId, profileDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_UPDATE_PROFILE.getStatus().value())
