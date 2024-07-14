@@ -53,6 +53,13 @@ public class BookController {
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_BOOK, null));
     }
 
+    // 현재 읽고 있는 페이지 업데이트
+    @PutMapping("/current")
+    public ResponseEntity<ResponseDTO<BookDTO>> updateCurrentPage(@RequestParam Integer profileId, @RequestParam Integer bookId, @RequestParam Integer currentPage) {
+        BookDTO updatedBook = bookService.updateCurrentPage(profileId, bookId, currentPage);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_CURRENT_PAGE, updatedBook));
+    }
+
     // 즐겨찾기 책 필터링 엔드포인트
     @GetMapping("/favorites")
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(@RequestParam Integer profileId) {
