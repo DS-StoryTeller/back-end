@@ -7,7 +7,7 @@ import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UnknownWordEntity;
 import com.cojac.storyteller.dto.page.PageDetailResponseDTO;
 import com.cojac.storyteller.dto.request.PageRequestDTO;
-import com.cojac.storyteller.dto.unknownWord.UnknownWordDto;
+import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.PageNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
@@ -53,14 +53,14 @@ public class PageService {
                 .orElseThrow(() -> new UnknownWordNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
 
 
-        List<UnknownWordDto> unknownWordDtos = UnknownWordDto.toDto(unknownWordEntities);
+        List<UnknownWordDTO> unknownWordDTOS = UnknownWordDTO.toDto(unknownWordEntities);
 
         return PageDetailResponseDTO.builder()
                 .pageId(page.getId())
                 .pageNumber(page.getPageNumber())
                 .image(page.getImage())
                 .content(page.getContent())
-                .unknownWords(unknownWordDtos)
+                .unknownWords(unknownWordDTOS)
                 .build();
     }
 

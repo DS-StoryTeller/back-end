@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UnknownWordDetailDto {
+public class UnknownWordDetailDTO {
     private Integer bookId;
     private Integer pageId;
     private Integer unknownwordId;
