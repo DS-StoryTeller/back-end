@@ -1,6 +1,7 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
+import com.cojac.storyteller.dto.profile.PinCheckResultDTO;
 import com.cojac.storyteller.dto.profile.PinNumberDTO;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
@@ -44,13 +45,13 @@ public class ProfileController {
     /**
      * 프로필 비밀번호 체크하기
      */
-    @PostMapping("/{profileId}/pin-number")
-    public ResponseEntity<ResponseDTO> checkPinNumber(@PathVariable Integer profileId,
+    @PostMapping("/{profileId}/pin-number/verifications")
+    public ResponseEntity<ResponseDTO> verificationPinNumber(@PathVariable Integer profileId,
                                                       @RequestBody PinNumberDTO pinNumberDTO) {
-        profileService.checkPinNumber(profileId, pinNumberDTO);
+        PinCheckResultDTO res = profileService.verificationPinNumber(profileId, pinNumberDTO);
         return ResponseEntity
-                .status(ResponseCode.SUCCESS_CHECK_PIN_NUMBER.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_CHECK_PIN_NUMBER, null));
+                .status(ResponseCode.SUCCESS_VERIFICATION_PIN_NUMBER.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_VERIFICATION_PIN_NUMBER, res));
     }
 
     /**

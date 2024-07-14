@@ -3,6 +3,7 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UserEntity;
+import com.cojac.storyteller.dto.profile.PinCheckResultDTO;
 import com.cojac.storyteller.dto.profile.PinNumberDTO;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
@@ -77,7 +78,7 @@ public class ProfileService {
     /**
      * 암호된 프로필 비밀번호 체크하기
      */
-    public void checkPinNumber(Integer profileId, PinNumberDTO pinNumberDTO) {
+    public PinCheckResultDTO verificationPinNumber(Integer profileId, PinNumberDTO pinNumberDTO) {
 
         // 프로필 아이디로 프로필을 찾기
         ProfileEntity profileEntity = profileRepository.findById(profileId)
@@ -91,9 +92,9 @@ public class ProfileService {
 
         // BCryptPasswordEncoder를 사용하여 비밀번호를 검증
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(inputPin, hashedPinFromDB)) {
-            throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER); // 비밀번호가 일치하지 않으면 예외
-        }
+        boolean isValid = encoder.matches(inputPin, hashedPinFromDB);
+
+        return new PinCheckResultDTO(isValid);
     }
 
     /**

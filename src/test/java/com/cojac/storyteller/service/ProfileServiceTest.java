@@ -69,12 +69,12 @@ class ProfileServiceTest {
         // 올바른 PIN으로 테스트
         PinNumberDTO validPinNumberDTO  = new PinNumberDTO();
         validPinNumberDTO.setPinNumber("1234");
-        assertDoesNotThrow(() -> profileService.checkPinNumber(createdProfile.getId(), validPinNumberDTO));
+        assertDoesNotThrow(() -> profileService.verificationPinNumber(createdProfile.getId(), validPinNumberDTO));
 
         // 잘못된 PIN으로 테스트
         PinNumberDTO invalidPinNumberDTO = new PinNumberDTO();
         invalidPinNumberDTO.setPinNumber("4321");
-        assertThrows(InvalidPinNumberException.class, () -> profileService.checkPinNumber(createdProfile.getId(), invalidPinNumberDTO));
+        assertThrows(InvalidPinNumberException.class, () -> profileService.verificationPinNumber(createdProfile.getId(), invalidPinNumberDTO));
     }
 
     @Test
