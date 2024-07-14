@@ -43,6 +43,7 @@ public enum ErrorCode {
      * 409 CONFLICT: 중복된 이메일
      */
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "중복된 유저 아이디입니다."),
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
     /**
      * 500 INTERNAL_SERVER_ERROR: 내부 서버 오류
      */

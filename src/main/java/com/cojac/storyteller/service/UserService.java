@@ -235,7 +235,7 @@ public class UserService {
 
     private void checkDuplicatedEmail(String email) {
         localUserRepository.findByEmail(email).ifPresent(user -> {
-            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+            throw new DuplicateEmailException(ErrorCode.DUPLICATE_EMAIL);
         });
     }
 
