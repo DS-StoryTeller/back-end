@@ -69,6 +69,8 @@ public class BookMapper {
                         .title(book.getTitle())
                         .coverImage(book.getCoverImage())
                         .currentPage(book.getCurrentPage())
+                        .isReading(book.isReading())
+                        .isFavorite(book.isFavorite())
                         .build())
                 .collect(Collectors.toList());
     }

@@ -8,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -51,14 +52,5 @@ public class BookEntity {
 
     public int getTotalPageCount() {
         return pages.size();
-    }
-
-    public void setProfile(ProfileEntity profile) {
-        this.profile = profile;
-    }
-
-    // 즐겨찾기 변경을 위해 set 메서드 추가
-    public void setFavorite(boolean newFavoriteStatus) {
-        this.isFavorite = newFavoriteStatus;
     }
 }

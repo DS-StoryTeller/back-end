@@ -38,7 +38,7 @@ public class SettingService {
         // 설정 정보 업데이트
         settingEntity.updateSetting(settingDTO);
 
-        return settingDTO;
+        return SettingDTO.toDto(settingEntity);
     }
 
     public SettingDTO getDetailSettings(Integer profileId, Integer bookId) {

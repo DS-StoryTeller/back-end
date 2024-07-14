@@ -10,4 +10,6 @@ public class BookListResponseDTO {
     private String title;
     private String coverImage;
     private Integer currentPage;
+    private Boolean isReading;
+    private Boolean isFavorite;
 }

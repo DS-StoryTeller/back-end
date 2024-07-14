@@ -15,8 +15,19 @@ public enum ResponseCode {
     SUCCESS_REISSUE(HttpStatus.OK, "토큰 재발급을 성공했습니다."),
     SUCCESS_TEST(HttpStatus.OK, "테스트를 성공했습니다."),
     SUCCESS_LOGOUT(HttpStatus.OK, "로그아웃을 성공했습니다."),
-  
-    /**H
+
+    /**
+     * Profile
+     */
+    SUCCESS_PROFILE_PHOTOS(HttpStatus.OK, "프로필 사진 목록을 성공적으로 조회했습니다."),
+    SUCCESS_CREATE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 생성되었습니다."),
+    SUCCESS_CHECK_PIN_NUMBER(HttpStatus.OK, "프로필의 비밀번호가 일치합니다."),
+    SUCCESS_UPDATE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 수정되었습니다."),
+    SUCCESS_GET_PROFILE(HttpStatus.OK, "프로필을 성공적으로 조회했습니다."),
+    SUCCESS_GET_PROFILE_LIST(HttpStatus.OK, "프로필 목록을 성공적으로 조회했습니다."),
+    SUCCESS_DELETE_PROFILE(HttpStatus.OK, "프로필이 성공적으로 삭제되었습니다."),
+
+    /**
      * Book
      */
     SUCCESS_CREATE_BOOK_AND_QUIZ(HttpStatus.CREATED, "동화와 퀴즈가 성공적으로 생성되었습니다."),
@@ -26,6 +37,7 @@ public enum ResponseCode {
     SUCCESS_DELETE_BOOK(HttpStatus.OK, "책을 성공적으로 삭제했습니다."),
     SUCCESS_RETRIEVE_FAVORITE_BOOKS(HttpStatus.OK, "즐겨찾기 목록을 성공적으로 조회했습니다."),
     SUCCESS_RETRIEVE_READING_BOOKS(HttpStatus.OK, "읽고 있는 책 목록을 성공적으로 조회했습니다."),
+    SUCCESS_UPDATE_CURRENT_PAGE(HttpStatus.OK, "현재 읽고 있는 페이지를 성공적으로 변경했습니다."),
 
     /**
      * Page
