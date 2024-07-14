@@ -47,8 +47,13 @@ public class UnknownWordService {
         UnknownWordEntity unknownWordEntity = new UnknownWordEntity(unknownWordDto.getUnknownWord(), unknownWordDto.getPosition(), page);
         unknownWordRepository.save(unknownWordEntity);
 
-        UnknownWordDetailDto response = new UnknownWordDetailDto(bookId, pageNum, unknownWordDto.getUnknownWord(), unknownWordDto.getPosition());
-        return response;
+        return UnknownWordDetailDto.builder()
+                .bookId(bookId)
+                .pageId(pageNum)
+                .unknownwordId(unknownWordEntity.getId())
+                .unknownWord(unknownWordDto.getUnknownWord())
+                .position(unknownWordDto.getPosition())
+                .build();
     }
 
     public void deleteUnknownWord(Integer unknownWordId) {

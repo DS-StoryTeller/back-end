@@ -1,17 +1,15 @@
 package com.cojac.storyteller.dto.unknownWord;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UnknownWordDetailDto {
     private Integer bookId;
     private Integer pageId;
+    private Integer unknownwordId;
     private String unknownWord;
     private Integer position;
 }
