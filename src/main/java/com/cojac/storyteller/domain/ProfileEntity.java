@@ -2,6 +2,7 @@ package com.cojac.storyteller.domain;
 
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,6 +39,7 @@ public class ProfileEntity {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<BookEntity> books = new ArrayList<>();
 
+    @Builder
     public ProfileEntity(String name, LocalDate birthDate, String imageUrl, String pinNumber, UserEntity user) {
         this.name = name;
         this.birthDate = birthDate;

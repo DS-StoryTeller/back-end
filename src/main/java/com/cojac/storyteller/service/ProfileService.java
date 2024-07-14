@@ -59,12 +59,13 @@ public class ProfileService {
         String hashedPin = encoder.encode(pinNumber);
 
         // 프로필 생성
-        ProfileEntity profileEntity = new ProfileEntity(
-                profileDTO.getName(),
-                profileDTO.getBirthDate(),
-                profileDTO.getImageUrl(),
-                hashedPin,
-                user);
+        ProfileEntity profileEntity = ProfileEntity.builder()
+                .name(profileDTO.getName())
+                .birthDate(profileDTO.getBirthDate())
+                .imageUrl(profileDTO.getImageUrl())
+                .pinNumber(hashedPin)
+                .user(user)
+                .build();
 
         // 프로필 리포지토리 저장
         profileRepository.save(profileEntity);
