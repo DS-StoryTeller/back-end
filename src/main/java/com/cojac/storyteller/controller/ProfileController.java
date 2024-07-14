@@ -11,7 +11,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -100,5 +102,15 @@ public class ProfileController {
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_PROFILE, null));
     }
 
+    /**
+     * 프로필 사진 S3에 업로드
+     */
+    @PostMapping("/photos")
+    public ResponseEntity<ResponseDTO> uploadProfilePhotos(@RequestParam("files") MultipartFile[] files) throws IOException {
+        profileService.uploadMultipleFilesToS3(files);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_UPLOAD_PHOTOS.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPLOAD_PHOTOS, null));
+    }
 
 }
