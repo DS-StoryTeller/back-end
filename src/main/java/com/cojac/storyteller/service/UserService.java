@@ -104,7 +104,7 @@ public class UserService {
             return authenticateLocalUser(response, reissueDTO, refreshToken);
         } else if (authenticationMethod.equals("social")) {
             // 소셜 사용자 검증
-            return authenticateSocialUser(response, reissueDTO);
+            return authenticateSocialUser(response, reissueDTO, refreshToken);
         }
         else {
             throw new RequestParsingException(ErrorCode.INVALID_REFRESH_TOKEN);
@@ -192,13 +192,13 @@ public class UserService {
         return userDTO;
     }
 
-    private UserDTO authenticateSocialUser(HttpServletResponse response, ReissueDTO reissueDTO) {
+    private UserDTO authenticateSocialUser(HttpServletResponse response, ReissueDTO reissueDTO, String refreshToken) {
 
         // redis 에 저장되어 있는지 확인
         String refreshTokenKey = hasValueInRedis(reissueDTO.getAccountId());
 
-        String accountId = jwtUtil.getUserKey(refreshTokenKey);
-        String role = jwtUtil.getRole(refreshTokenKey);
+        String accountId = jwtUtil.getUserKey(refreshToken);
+        String role = jwtUtil.getRole(refreshToken);
 
         // Access token 생성
         String newAccess = jwtUtil.createJwt("social", "access", accountId, role, ACCESS_TOKEN_EXPIRATION);
