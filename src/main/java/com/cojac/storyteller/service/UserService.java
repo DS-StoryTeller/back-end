@@ -103,8 +103,8 @@ public class UserService {
             // 자체 로그인 사용자 검증
             return authenticateLocalUser(response, reissueDTO, refreshToken);
         } else if (authenticationMethod.equals("social")) {
-            // 자체 소셜 사용자 검증
-            return authenticateLocalUser(response, reissueDTO, refreshToken);
+            // 소셜 사용자 검증
+            return authenticateSocialUser(response, reissueDTO);
         }
         else {
             throw new RequestParsingException(ErrorCode.INVALID_REFRESH_TOKEN);
