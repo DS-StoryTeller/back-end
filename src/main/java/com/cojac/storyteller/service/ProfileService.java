@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ProfileService {
 
     private final AmazonS3Service amazonS3Service;
@@ -41,6 +41,7 @@ public class ProfileService {
     /**
      * 프로필 생성하기
      */
+    @Transactional
     public ProfileDTO createProfile(ProfileDTO profileDTO) {
 
         // 사용자 아이디로 조회 및 예외 처리
@@ -97,6 +98,7 @@ public class ProfileService {
     /**
      * 프로필 수정하기
      */
+    @Transactional
     public ProfileDTO updateProfile(Integer profileId, ProfileDTO profileDTO) {
 
         // 프로필 아이디로 프로필을 찾기
@@ -149,6 +151,7 @@ public class ProfileService {
     /**
      * 프로필 삭제하기
      */
+    @Transactional
     public void deleteProfile(Integer profileId) {
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
