@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface SocialUserRepository extends JpaRepository<SocialUserEntity, Integer> {
     Boolean existsByAccountId(String accountId);
     Optional<SocialUserEntity> findByAccountId(String accountId);
+    Boolean existsByEmail(String email);
 }

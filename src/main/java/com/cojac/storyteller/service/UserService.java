@@ -234,9 +234,9 @@ public class UserService {
     }
 
     private void checkDuplicatedEmail(String email) {
-        localUserRepository.findByEmail(email).ifPresent(user -> {
+        if (localUserRepository.existsByEmail(email) || socialUserRepository.existsByEmail(email)) {
             throw new DuplicateEmailException(ErrorCode.DUPLICATE_EMAIL);
-        });
+        }
     }
 
     private String createCode() {
