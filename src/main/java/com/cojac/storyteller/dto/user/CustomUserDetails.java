@@ -1,6 +1,6 @@
 package com.cojac.storyteller.dto.user;
 
-import com.cojac.storyteller.domain.LocalUserEntityEntity;
+import com.cojac.storyteller.domain.LocalUserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final LocalUserEntityEntity localUserEntity;
+    private final LocalUserEntity localUserEntity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -32,6 +32,11 @@ public class CustomUserDetails implements UserDetails {
 
     public Integer getId() {
         return localUserEntity.getId();
+    }
+
+    public String getEmail() {
+
+        return localUserEntity.getEmail();
     }
 
     @Override

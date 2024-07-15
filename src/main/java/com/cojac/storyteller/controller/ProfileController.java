@@ -112,5 +112,4 @@ public class ProfileController {
                 .status(ResponseCode.SUCCESS_UPLOAD_PHOTOS.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPLOAD_PHOTOS, null));
     }
-
 }

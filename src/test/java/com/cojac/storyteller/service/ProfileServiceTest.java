@@ -4,10 +4,10 @@ import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.profile.PinNumberDTO;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
-import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.dto.user.LocalUserDTO;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.UserRepository;
+import com.cojac.storyteller.repository.LocalUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +30,7 @@ class ProfileServiceTest {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
+    private LocalUserRepository userRepository;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -44,9 +44,9 @@ class ProfileServiceTest {
     @Test
     void createProfile() {
 
-        UserDTO savedUserDTO = createUser();
+        LocalUserDTO savedLocalUserDTO = createUser();
 
-        ProfileDTO profileDTO = createProfileDTO(savedUserDTO);
+        ProfileDTO profileDTO = createProfileDTO(savedLocalUserDTO);
 
         // When
         ProfileDTO createdProfile = profileService.createProfile(profileDTO);
@@ -62,8 +62,8 @@ class ProfileServiceTest {
     @Test
     void checkPinNum() {
 
-        UserDTO savedUserDTO = createUser();
-        ProfileDTO profileDTO = createProfileDTO(savedUserDTO);
+        LocalUserDTO savedLocalUserDTO = createUser();
+        ProfileDTO profileDTO = createProfileDTO(savedLocalUserDTO);
         ProfileDTO createdProfile = profileService.createProfile(profileDTO);
 
         // 올바른 PIN으로 테스트
@@ -80,8 +80,8 @@ class ProfileServiceTest {
     @Test
     void updateProfile() {
 
-        UserDTO savedUserDTO = createUser();
-        ProfileDTO profileDTO = createProfileDTO(savedUserDTO);
+        LocalUserDTO savedLocalUserDTO = createUser();
+        ProfileDTO profileDTO = createProfileDTO(savedLocalUserDTO);
         ProfileDTO createdProfile = profileService.createProfile(profileDTO);
 
         // 프로필 수정
@@ -103,22 +103,22 @@ class ProfileServiceTest {
         assertEquals(updatedProfileDTO.getPinNumber(), updatedProfile.getPinNumber());
     }
 
-    private static ProfileDTO createProfileDTO(UserDTO savedUserDTO) {
+    private static ProfileDTO createProfileDTO(LocalUserDTO savedLocalUserDTO) {
         ProfileDTO profileDTO = new ProfileDTO();
 
         profileDTO.setName("name");
         profileDTO.setBirthDate(LocalDate.of(2000, 1, 1));
         profileDTO.setImageUrl("https://example.com/profile.jpg");
-        profileDTO.setUserId(savedUserDTO.getId());
+        profileDTO.setUserId(savedLocalUserDTO.getId());
         profileDTO.setPinNumber("1234");
         return profileDTO;
     }
 
-    private UserDTO createUser() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("username");
-        userDTO.setPassword("password");
-        UserDTO savedUserDTO = userService.registerUser(userDTO);
-        return savedUserDTO;
+    private LocalUserDTO createUser() {
+        LocalUserDTO localUserDTO = new LocalUserDTO();
+        localUserDTO.setUsername("username");
+        localUserDTO.setPassword("password");
+        LocalUserDTO savedLocalUserDTO = userService.registerUser(localUserDTO);
+        return savedLocalUserDTO;
     }
 }

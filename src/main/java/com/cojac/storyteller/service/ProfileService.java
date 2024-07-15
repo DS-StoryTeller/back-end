@@ -11,7 +11,7 @@ import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.UserRepository;
+import com.cojac.storyteller.repository.LocalUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class ProfileService {
 
     private final AmazonS3Service amazonS3Service;
-    private final UserRepository userRepository;
+    private final LocalUserRepository userRepository;
     private final ProfileRepository profileRepository;
 
     /**
