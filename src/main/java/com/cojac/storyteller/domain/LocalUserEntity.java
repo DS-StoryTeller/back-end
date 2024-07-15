@@ -1,6 +1,7 @@
 package com.cojac.storyteller.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,17 +9,18 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @DiscriminatorValue("L")
-public class LocalUserEntityEntity extends UserEntity {
+public class LocalUserEntity extends UserEntity {
 
     private String username;
-
     private String password;
-
+    private String email;
     private String role;
 
-    public LocalUserEntityEntity(String encryptedPassword, String username, String role) {
-        this.password = encryptedPassword;
+    @Builder
+    public LocalUserEntity(String username, String encryptedPassword, String email, String role) {
         this.username = username;
+        this.password = encryptedPassword;
+        this.email = email;
         this.role = role;
     }
 

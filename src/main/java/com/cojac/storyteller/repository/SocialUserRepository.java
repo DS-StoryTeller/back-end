@@ -1,9 +1,12 @@
 package com.cojac.storyteller.repository;
 
-import com.cojac.storyteller.domain.SocialUserEntityEntity;
+import com.cojac.storyteller.domain.SocialUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SocialUserRepository extends JpaRepository<SocialUserEntityEntity, Integer> {
+import java.util.Optional;
 
-    SocialUserEntityEntity findByAccountId(String accountId);
+public interface SocialUserRepository extends JpaRepository<SocialUserEntity, Integer> {
+    Boolean existsByAccountId(String accountId);
+    Optional<SocialUserEntity> findByAccountId(String accountId);
+    Boolean existsByEmail(String email);
 }

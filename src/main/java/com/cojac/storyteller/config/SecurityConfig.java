@@ -1,12 +1,10 @@
 package com.cojac.storyteller.config;
 
-import com.cojac.storyteller.jwt.CustomLogoutFilter;
-import com.cojac.storyteller.jwt.JWTFilter;
-import com.cojac.storyteller.jwt.JWTUtil;
-import com.cojac.storyteller.jwt.LoginFilter;
-import com.cojac.storyteller.jwt.oauth2.CustomSuccessHandler;
-import com.cojac.storyteller.repository.RefreshRedisRepository;
-import com.cojac.storyteller.service.CustomOAuth2UserService;
+import com.cojac.storyteller.jwt.*;
+import com.cojac.storyteller.repository.LocalUserRepository;
+import com.cojac.storyteller.repository.SocialUserRepository;
+import com.cojac.storyteller.service.RedisService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -32,16 +29,14 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-
     private final JWTUtil jwtUtil;
+    private final RedisService redisService;
+    private final ObjectMapper objectMapper;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final LocalUserRepository localUserRepository;
+    private final SocialUserRepository socialUserRepository;
 
-    private final RefreshRedisRepository refreshRedisRepository;
-
-    private final CustomOAuth2UserService customOAuth2UserService;
-
-    private final CustomSuccessHandler customSuccessHandler;
-
-    //AuthenticationManager Bean 등록
+    // AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -77,47 +72,46 @@ public class SecurityConfig {
                     }
                 })));
 
-        //csrf disable
+        // csrf disable
         http
                 .csrf((auth) -> auth.disable());
 
-        //From 로그인 방식 disable
+        // Form 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
 
-        //http basic 인증 방식 disable
+        // http basic 인증 방식 disable
         http
                 .httpBasic((auth) -> auth.disable());
 
-        //oauth2
-        http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
-                );
-
-        //경로별 인가 작업
+        // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/register").permitAll()
+                        .requestMatchers("/username/verifications", "/emails/verification-requests", "/emails/verifications").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());
 
+        // 인증/인가와 관련된 예외 처리
+        http
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                );
+
         // 로그아웃 필터 등록
         http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRedisRepository), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService, objectMapper, localUserRepository, socialUserRepository), LogoutFilter.class);
 
-        //JWTFilter 등록
+        // JWTFilter 등록
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
-        //커스텀 UsernamePasswordAuthenticationFilter 추가
+        // 커스텀 UsernamePasswordAuthenticationFilter 추가
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRedisRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService), UsernamePasswordAuthenticationFilter.class);
 
 
-        //세션 설정
+        // 세션 설정
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -126,4 +120,5 @@ public class SecurityConfig {
         return http.build();
 
     }
+
 }
