@@ -3,6 +3,7 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UserEntity;
+import com.cojac.storyteller.dto.profile.PinCheckResultDTO;
 import com.cojac.storyteller.dto.profile.PinNumberDTO;
 import com.cojac.storyteller.dto.profile.ProfileDTO;
 import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
@@ -15,13 +16,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ProfileService {
 
     private final AmazonS3Service amazonS3Service;
@@ -41,6 +47,7 @@ public class ProfileService {
     /**
      * 프로필 생성하기
      */
+    @Transactional
     public ProfileDTO createProfile(ProfileDTO profileDTO) {
 
         // 사용자 아이디로 조회 및 예외 처리
@@ -58,12 +65,13 @@ public class ProfileService {
         String hashedPin = encoder.encode(pinNumber);
 
         // 프로필 생성
-        ProfileEntity profileEntity = new ProfileEntity(
-                profileDTO.getName(),
-                profileDTO.getBirthDate(),
-                profileDTO.getImageUrl(),
-                hashedPin,
-                user);
+        ProfileEntity profileEntity = ProfileEntity.builder()
+                .name(profileDTO.getName())
+                .birthDate(profileDTO.getBirthDate())
+                .imageUrl(profileDTO.getImageUrl())
+                .pinNumber(hashedPin)
+                .user(user)
+                .build();
 
         // 프로필 리포지토리 저장
         profileRepository.save(profileEntity);
@@ -75,7 +83,7 @@ public class ProfileService {
     /**
      * 암호된 프로필 비밀번호 체크하기
      */
-    public void checkPinNumber(Integer profileId, PinNumberDTO pinNumberDTO) {
+    public PinCheckResultDTO verificationPinNumber(Integer profileId, PinNumberDTO pinNumberDTO) {
 
         // 프로필 아이디로 프로필을 찾기
         ProfileEntity profileEntity = profileRepository.findById(profileId)
@@ -89,14 +97,15 @@ public class ProfileService {
 
         // BCryptPasswordEncoder를 사용하여 비밀번호를 검증
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(inputPin, hashedPinFromDB)) {
-            throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER); // 비밀번호가 일치하지 않으면 예외
-        }
+        boolean isValid = encoder.matches(inputPin, hashedPinFromDB);
+
+        return new PinCheckResultDTO(isValid);
     }
 
     /**
      * 프로필 수정하기
      */
+    @Transactional
     public ProfileDTO updateProfile(Integer profileId, ProfileDTO profileDTO) {
 
         // 프로필 아이디로 프로필을 찾기
@@ -149,6 +158,7 @@ public class ProfileService {
     /**
      * 프로필 삭제하기
      */
+    @Transactional
     public void deleteProfile(Integer profileId) {
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -156,4 +166,12 @@ public class ProfileService {
         profileRepository.delete(profileEntity);
     }
 
+    /**
+     * 여러 프로필 사진 업로드
+     */
+    public void uploadMultipleFilesToS3(MultipartFile[] files) throws IOException {
+        for (MultipartFile file : files) {
+            amazonS3Service.uploadFileToS3(file, "profile/photos");
+        }
+    }
 }
