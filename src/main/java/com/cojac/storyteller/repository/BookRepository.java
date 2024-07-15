@@ -13,4 +13,10 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     List<BookEntity> findByProfile(ProfileEntity profile);
 
     Optional<BookEntity> findByIdAndProfile(Integer id, ProfileEntity profile);
+
+    // 즐겨찾기 책 필터링
+    List<BookEntity> findByProfileAndIsFavoriteTrue(ProfileEntity profile);
+
+    // 읽고 있는 책 필터링
+    List<BookEntity> findByProfileAndIsReadingTrue(ProfileEntity profile);
 }

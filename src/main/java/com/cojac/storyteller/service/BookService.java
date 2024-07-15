@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,8 +46,13 @@ public class BookService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 프로필이 birthDate로 변경되면서 기존 age를 가져오는 코드가 안됩니다.
+        // 따라서 birthDate를 이용하여 age를 계산하는 코드를 추가했습니다.
         LocalDate birthDate = profile.getBirthDate();
-        String story = openAIService.generateStory(prompt, birthDate);
+        LocalDate currentDate = LocalDate.now();
+        int age = Period.between(birthDate, currentDate).getYears();
+
+        String story = openAIService.generateStory(prompt, age);
 
         // 제목과 내용을 분리 (Title: 과 Content: 기준)
         String title = story.split("Content:")[0].replace("Title:", "").trim();
@@ -59,7 +65,7 @@ public class BookService {
         settingRepository.save(settingEntity);
 
         // 생성한 동화 내용으로 퀴즈 생성
-        String quiz = openAIService.generateQuiz(story, birthDate);
+        String quiz = openAIService.generateQuiz(story, age);
 
         // \n을 기준으로 퀴즈 분리
         List<String> questions = Arrays.asList(quiz.split("\n"));
@@ -82,6 +88,24 @@ public class BookService {
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         List<BookEntity> books = bookRepository.findByProfile(profile);
+        return BookMapper.mapToBookListResponseDTOs(books);
+    }
+
+    // 즐겨찾기 책 필터링 기능 추가
+    public List<BookListResponseDTO> getFavoriteBooks(Integer profileId) {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        List<BookEntity> books = bookRepository.findByProfileAndIsFavoriteTrue(profile);
+        return BookMapper.mapToBookListResponseDTOs(books);
+    }
+
+    // 읽고 있는 책 필터링 기능 추가
+    public List<BookListResponseDTO> getReadingBooks(Integer profileId) {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        List<BookEntity> books = bookRepository.findByProfileAndIsReadingTrue(profile);
         return BookMapper.mapToBookListResponseDTOs(books);
     }
 
@@ -135,5 +159,24 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         bookRepository.delete(book);
+    }
+
+    @Transactional
+    public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        book.setCurrentPage(currentPage);
+        if (currentPage >= book.getTotalPageCount()) {
+            book.setReading(false);
+        } else {
+            book.setReading(true);
+        }
+        bookRepository.save(book);
+
+        return BookMapper.mapToBookDTO(book);
     }
 }

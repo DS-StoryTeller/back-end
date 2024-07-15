@@ -35,7 +35,7 @@ public class SettingEntity {
     }
 
     public void updateSetting(SettingDTO settingDTO) {
-        this.fontSize = settingDTO.getFontSize();
-        this.readingSpeed = settingDTO.getReadingSpeed();
+        this.fontSize = settingDTO.getFontSize() == null ? this.fontSize : settingDTO.getFontSize();
+        this.readingSpeed = settingDTO.getReadingSpeed() == null ? this.readingSpeed : settingDTO.getReadingSpeed();
     }
 }

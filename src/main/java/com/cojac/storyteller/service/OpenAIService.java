@@ -24,7 +24,7 @@ public class OpenAIService {
     @Value("${openai.model}")
     private String model;
 
-    public String generateStory(String prompt, LocalDate age) {
+    public String generateStory(String prompt, Integer age) {
         String url = "https://api.openai.com/v1/chat/completions";
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")
@@ -49,7 +49,7 @@ public class OpenAIService {
         return null;
     }
 
-    public String generateQuiz(String story, LocalDate age) {
+    public String generateQuiz(String story, Integer age) {
         String url = "https://api.openai.com/v1/chat/completions";
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")
