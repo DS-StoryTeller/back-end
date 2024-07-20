@@ -78,7 +78,7 @@ public class UserController {
     /**
      * 인증 코드 확인하기
      */
-    @GetMapping("/emails/verifications")
+    @PostMapping("/emails/verifications")
     public ResponseEntity<ResponseDTO> verificationEmailCode(@Valid @RequestBody EmailDTO emailDTO) {
 
         EmailDTO res = userService.verifiedCode(emailDTO.getEmail(), emailDTO.getAuthCode());
