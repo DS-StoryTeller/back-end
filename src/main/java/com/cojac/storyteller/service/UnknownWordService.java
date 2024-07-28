@@ -6,8 +6,8 @@ import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UnknownWordEntity;
 import com.cojac.storyteller.dto.request.PageRequestDTO;
-import com.cojac.storyteller.dto.unknownWord.UnknownWordDetailDto;
-import com.cojac.storyteller.dto.unknownWord.UnknownWordDto;
+import com.cojac.storyteller.dto.unknownWord.UnknownWordDetailDTO;
+import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.PageNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
@@ -27,7 +27,7 @@ public class UnknownWordService {
     private final UnknownWordRepository unknownWordRepository;
 
     // 단어 저장
-    public UnknownWordDetailDto saveUnknownWord(PageRequestDTO requestDto, UnknownWordDto unknownWordDto) {
+    public UnknownWordDetailDTO saveUnknownWord(PageRequestDTO requestDto, UnknownWordDTO unknownWordDto) {
         Integer profileId = requestDto.getProfileId();
         Integer bookId = requestDto.getBookId();
         Integer pageNum = requestDto.getPageNum();
@@ -47,8 +47,13 @@ public class UnknownWordService {
         UnknownWordEntity unknownWordEntity = new UnknownWordEntity(unknownWordDto.getUnknownWord(), unknownWordDto.getPosition(), page);
         unknownWordRepository.save(unknownWordEntity);
 
-        UnknownWordDetailDto response = new UnknownWordDetailDto(bookId, pageNum, unknownWordDto.getUnknownWord(), unknownWordDto.getPosition());
-        return response;
+        return UnknownWordDetailDTO.builder()
+                .bookId(bookId)
+                .pageId(pageNum)
+                .unknownwordId(unknownWordEntity.getId())
+                .unknownWord(unknownWordDto.getUnknownWord())
+                .position(unknownWordDto.getPosition())
+                .build();
     }
 
     public void deleteUnknownWord(Integer unknownWordId) {

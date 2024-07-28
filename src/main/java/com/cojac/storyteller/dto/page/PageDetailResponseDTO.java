@@ -1,6 +1,6 @@
 package com.cojac.storyteller.dto.page;
 
-import com.cojac.storyteller.dto.unknownWord.UnknownWordDto;
+import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
 import lombok.*;
 
 import java.util.List;
@@ -16,5 +16,5 @@ public class PageDetailResponseDTO {
     private String image;
     private String content;
     // unknownWord
-    private List<UnknownWordDto> unknownWords;
+    private List<UnknownWordDTO> unknownWords;
 }

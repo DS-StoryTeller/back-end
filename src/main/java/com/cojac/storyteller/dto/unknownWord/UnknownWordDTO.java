@@ -11,18 +11,18 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UnknownWordDto {
+public class UnknownWordDTO {
     private Integer unknownWordId;
     private String unknownWord;
     private Integer position;
 
-    public static List<UnknownWordDto> toDto(List<UnknownWordEntity> unknownWordEntities) {
-        List<UnknownWordDto> unknownWordDtos = new ArrayList<>();
+    public static List<UnknownWordDTO> toDto(List<UnknownWordEntity> unknownWordEntities) {
+        List<UnknownWordDTO> unknownWordDTOS = new ArrayList<>();
         for(UnknownWordEntity unKnownWord : unknownWordEntities) {
-            UnknownWordDto unknownWordDto = new UnknownWordDto(unKnownWord.getId(), unKnownWord.getUnknownWord(), unKnownWord.getPosition());
-            unknownWordDtos.add(unknownWordDto);
+            UnknownWordDTO unknownWordDto = new UnknownWordDTO(unKnownWord.getId(), unKnownWord.getUnknownWord(), unKnownWord.getPosition());
+            unknownWordDTOS.add(unknownWordDto);
         }
-        return unknownWordDtos;
+        return unknownWordDTOS;
     }
 
 }
