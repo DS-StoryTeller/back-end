@@ -4,14 +4,12 @@ import com.cojac.storyteller.dto.openai.CompletionRequestDto;
 import com.cojac.storyteller.dto.openai.CompletionResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -76,52 +74,50 @@ public class OpenAIService {
         return null;
     }
 
+    /**
+     * DALL-E API를 호출하여 이미지를 생성하고, base64로 인코딩된 이미지를 바이트 배열로 반환합니다.
+     * @param prompt 이미지 생성에 사용할 프롬프트
+     * @return base64로 인코딩된 이미지의 바이트 배열
+     */
     public byte[] generateImage(String prompt) {
         String url = "https://api.openai.com/v1/images/generations";
 
-
         Map<String, Object> requestDto = Map.of(
                 "prompt", prompt,
-                "size", "1024x1024" // 생성할 이미지의 크기
-
+                "size", "1024x1024",
+                "response_format", "b64_json" // 응답 형식 (base64 JSON)
         );
 
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestDto, httpHeaders);
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
-        if (response.getBody() != null) {
-//            String imageUrl = (String) response.getBody().get("url");
-//            return downloadImage(imageUrl); // 이미지 URL로부터 이미지를 다운로드합니다.
-
-
-            List<Map<String, String>> data = (List<Map<String, String>>) response.getBody().get("data");
-            if (data != null && !data.isEmpty()) {
-                String imageUrl = data.get(0).get("url");
-                return downloadImage(imageUrl);
-            }
-
-        }
-        return null;
-    }
-
-    private byte[] downloadImage(String imageUrl) {
+        // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization: ", "Bearer " + apiKey);
-        headers.set("Content-Type", "application/json");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestDto, headers);
+        ResponseEntity<Map> response;
         try {
-            ResponseEntity<byte[]> response = restTemplate.exchange(imageUrl, HttpMethod.GET, entity, byte[].class);
-            return response.getBody();
+            // DALL-E API 호출
+            response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         } catch (HttpClientErrorException e) {
-            System.out.println("이미지 다운로드 오류 (HTTP 상태 코드): " + e.getStatusCode());
+            // HTTP 클라이언트 오류 처리
+            System.out.println("OpenAI API 호출 오류 (HTTP 상태 코드): " + e.getStatusCode());
             System.out.println("오류 메시지: " + e.getResponseBodyAsString());
             return null;
         } catch (Exception e) {
-            System.out.println("이미지 다운로드 오류: ");
-            System.out.println(e.getMessage());
+            System.out.println("OpenAI API 호출 오류: " + e.getMessage());
             return null;
         }
+
+        // API 응답 처리
+        if (response.getBody() != null) {
+            // 응답 데이터에서 base64 인코딩된 이미지 추출
+            Map<String, String> data = (Map<String, String>) ((List<?>) response.getBody().get("data")).get(0);
+            if (data != null) {
+                String base64Image = data.get("b64_json");
+                // base64 문자열을 디코딩하여 바이트 배열로 변환
+                return Base64.getDecoder().decode(base64Image);
+            }
+        }
+        return null;
     }
 }

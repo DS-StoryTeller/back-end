@@ -137,23 +137,33 @@ public class AmazonS3Service {
 
         return Optional.empty();
     }
+
     /**
      * 이미지를 바이트 배열로 받아서 S3에 업로드합니다.
      * @param imageBytes 이미지의 바이트 배열
      * @return 업로드된 이미지의 URL
      */
     public String uploadImageToS3(byte[] imageBytes) throws IOException {
-        String fileName = "books/photos/" + UUID.randomUUID() + ".png"; // 파일 경로 및 이름
-        File file = new File(System.getProperty("user.dir") + "/" + fileName);
+        String dirPath = System.getProperty("user.dir") + "/books/photos";
+        String fileName = UUID.randomUUID() + ".png"; // 파일 이름
 
+        // 디렉토리가 존재하지 않으면 생성합니다.
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        File file = new File(dirPath + "/" + fileName);
+
+        // 이미지 바이트 배열을 파일로 저장
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(imageBytes);
         }
 
-        String uploadImageUrl = putS3(file, fileName);
+        // 파일을 S3로 업로드
+        String uploadImageUrl = putS3(file, "books/photos/" + fileName);
+        // 로컬 파일 삭제
         removeNewFile(file);
         return uploadImageUrl;
     }
-
-
 }
