@@ -19,6 +19,7 @@ import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -35,12 +36,13 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final SettingRepository settingRepository;
     private final OpenAIService openAIService;
+    private final ImageGenerationService imageGenerationService;
 
     /**
      * 동화와 퀴즈 생성
      */
     @Transactional
-    public List<QuizResponseDTO>  createBook(String prompt, Integer profileId) {
+    public List<QuizResponseDTO> createBook(String prompt, Integer profileId) {
         String defaultCoverImage = "defaultCover.jpg";
 
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -61,6 +63,11 @@ public class BookService {
         BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, profile);
         BookEntity savedBook = bookRepository.save(book);
 
+        // 이미지 생성 및 업로드
+        String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
+        savedBook.setCoverImage(coverImageUrl);
+        bookRepository.save(savedBook);
+
         SettingEntity settingEntity = new SettingEntity(book);
         settingRepository.save(settingEntity);
 
@@ -71,7 +78,7 @@ public class BookService {
         List<String> questions = Arrays.asList(quiz.split("\n"));
         List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
 
-        questions.forEach(question ->  {
+        questions.forEach(question -> {
             // 괄호가 있는지 확인하고 제거
             int bracketIndex = question.indexOf('(');
             if (bracketIndex != -1) {
