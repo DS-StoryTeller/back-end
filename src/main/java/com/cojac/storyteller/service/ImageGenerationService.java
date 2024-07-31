@@ -18,7 +18,8 @@ public class ImageGenerationService {
      * @return 업로드된 이미지 URL
      */
     public String generateAndUploadBookCoverImage(String bookTitle) {
-        String prompt = "Create a book cover image for a book titled \"" + bookTitle + "\". The cover should be visually appealing and relevant to the book's theme.";
+        String prompt = "Create a whimsical and enchanting book cover image for a children's storybook titled \"" + bookTitle + "\". The cover should feature bright, vibrant colors and a playful, animated style. It should capture the magical and imaginative essence of the story, with charming characters and whimsical elements that appeal to young readers. Ensure the design is eye-catching and evokes a sense of wonder and fun.";
+
         byte[] imageBytes = openAIService.generateImage(prompt);
 
         if (imageBytes == null) {
@@ -34,7 +35,8 @@ public class ImageGenerationService {
      * @return 업로드된 이미지 URL
      */
     public String generateAndUploadPageImage(String pageContent) {
-        String prompt = "Create an illustration based on the following content: \"" + pageContent + "\". The image should capture the essence of the content and be visually engaging.";
+        String prompt = "Create a charming and whimsical illustration based on the following content: \"" + pageContent + "\". The image should be in a cute, animated style with bright, vibrant colors. It should capture the essence of the content and be visually engaging for young readers, with playful and imaginative elements that bring the scene to life. Please ensure that the illustration does not include any text or titles, focusing solely on the visual representation.";
+
         byte[] imageBytes = openAIService.generateImage(prompt);
 
         if (imageBytes == null) {
