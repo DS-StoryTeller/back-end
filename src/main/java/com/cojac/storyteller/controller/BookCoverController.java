@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookCoverController {
 
@@ -15,7 +15,7 @@ public class BookCoverController {
     @PostMapping("/bookcover")
     public ResponseEntity<String> createBookCover(@RequestBody BookCoverRequest request) {
         try {
-            // 동화에 어울리는 책 이미지 커버를 생성하고, S3에 업로드합니다.
+            // 동화에 어울리는 책 이미지 커버 생성, S3에 업로드
             String filePath = bookCoverService.createAndUploadBookCover(request.getStoryPrompt());
             return ResponseEntity.ok("Image saved at: " + filePath);
         } catch (Exception e) {

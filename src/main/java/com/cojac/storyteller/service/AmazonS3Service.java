@@ -139,7 +139,7 @@ public class AmazonS3Service {
     }
 
     /**
-     * 이미지를 바이트 배열로 받아서 S3에 업로드합니다.
+     * 이미지를 바이트 배열로 받아서 S3에 업로드
      * @param imageBytes 이미지의 바이트 배열
      * @return 업로드된 이미지의 URL
      */

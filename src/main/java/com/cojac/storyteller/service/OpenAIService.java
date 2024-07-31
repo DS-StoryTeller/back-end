@@ -75,7 +75,7 @@ public class OpenAIService {
     }
 
     /**
-     * DALL-E API를 호출하여 이미지를 생성하고, base64로 인코딩된 이미지를 바이트 배열로 반환합니다.
+     * DALL-E API를 호출하여 이미지를 생성하고, base64로 인코딩된 이미지를 바이트 배열로 반환
      * @param prompt 이미지 생성에 사용할 프롬프트
      * @return base64로 인코딩된 이미지의 바이트 배열
      */
