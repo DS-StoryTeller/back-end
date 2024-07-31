@@ -29,7 +29,7 @@ public class PageService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
     private final UnknownWordRepository unknownWordRepository;
-
+    private final ImageGenerationService imageGenerationService;
 
     public PageDetailResponseDTO getPageDetail(PageRequestDTO requestDto) {
         Integer profileId = requestDto.getProfileId();
@@ -52,7 +52,6 @@ public class PageService {
         List<UnknownWordEntity> unknownWordEntities = unknownWordRepository.getByPage(page)
                 .orElseThrow(() -> new UnknownWordNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
 
-
         List<UnknownWordDTO> unknownWordDTOS = UnknownWordDTO.toDto(unknownWordEntities);
 
         return PageDetailResponseDTO.builder()
@@ -63,7 +62,6 @@ public class PageService {
                 .unknownWords(unknownWordDTOS)
                 .build();
     }
-
 
     public PageDetailResponseDTO updatePageImage(PageRequestDTO requestDto, MultipartFile imageFile) {
         // 해당 프로필 가져오기
@@ -78,20 +76,14 @@ public class PageService {
         PageEntity page = pageRepository.findByBookAndPageNumber(book, requestDto.getPageNum())
                 .orElseThrow(() -> new PageNotFoundException(ErrorCode.PAGE_NOT_FOUND));
 
-        // 이미지 파일 처리 로직 (저장 및 URL 생성)
-        String imageUrl = saveImage(imageFile);
+        // 페이지 이미지 생성 및 업로드
+        String imageUrl = imageGenerationService.generateAndUploadPageImage(page.getContent());
 
         // 페이지 엔티티 업데이트
         page.setImage(imageUrl);
         pageRepository.save(page);
 
-        // 처음 페이지가 로딩될때 이미지가 삽입되기에, 처음 본다고 가정. unknownWords는 null로 반환
+        // 처음 페이지가 로딩될 때 이미지가 삽입되기에, 처음 본다고 가정. unknownWords는 null로 반환
         return new PageDetailResponseDTO(page.getId(), page.getPageNumber(), imageUrl, page.getContent(), null);
-    }
-
-    private String saveImage(MultipartFile imageFile) {
-        // 이미지 파일을 서버에 저장하고 URL을 반환
-        // 추후 AWS 연결되면 완성하도록 하겠습니다.
-        return "path/to/saved/image.jpg"; // 임시 URL
     }
 }

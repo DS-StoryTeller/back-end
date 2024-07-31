@@ -63,9 +63,18 @@ public class BookService {
         BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, profile);
         BookEntity savedBook = bookRepository.save(book);
 
-        // 이미지 생성 및 업로드
+        // 책 표지 이미지 생성 및 업로드
         String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
         savedBook.setCoverImage(coverImageUrl);
+        bookRepository.save(savedBook);
+
+        // 각 페이지 이미지 생성 및 업데이트
+        for (PageEntity page : savedBook.getPages()) {
+            String pageImageUrl = imageGenerationService.generateAndUploadPageImage(page.getContent());
+            page.setImage(pageImageUrl);
+        }
+
+        // 페이지 엔티티 업데이트
         bookRepository.save(savedBook);
 
         SettingEntity settingEntity = new SettingEntity(book);
