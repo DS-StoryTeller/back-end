@@ -53,9 +53,11 @@ public class ImageGenerationService {
      */
     private String uploadImage(byte[] imageBytes) {
         try {
-            return amazonS3Service.uploadImageToS3(imageBytes);
+            String dirPath = System.getProperty("user.dir") + "/books/photos";
+            return amazonS3Service.uploadImageToS3(imageBytes, dirPath);
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload image to S3.", e);
         }
     }
+
 }
