@@ -64,7 +64,7 @@ public class BookService {
 
         // 책 표지 이미지 생성 및 업로드
         String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
-        savedBook.setCoverImage(coverImageUrl);
+        savedBook.updateCoverImage(coverImageUrl);
         bookRepository.save(savedBook);
 
         // 각 페이지 이미지 생성 및 업데이트
@@ -159,7 +159,7 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         boolean newFavoriteStatus = !book.isFavorite();
-        book.setFavorite(newFavoriteStatus);
+        book.updateIsFavorite(newFavoriteStatus);
         bookRepository.save(book);
 
         return newFavoriteStatus;
@@ -184,11 +184,11 @@ public class BookService {
         BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
-        book.setCurrentPage(currentPage);
+        book.updateCurrentPage(currentPage);
         if (currentPage >= book.getTotalPageCount()) {
-            book.setReading(false);
+            book.updateIsReading(false);
         } else {
-            book.setReading(true);
+            book.updateIsFavorite(true);
         }
         bookRepository.save(book);
 

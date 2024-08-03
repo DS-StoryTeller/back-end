@@ -50,7 +50,7 @@ public class ProfileEntity {
 
     public void addBook(BookEntity book) {
         books.add(book);
-        book.setProfile(this);
+        book.updateProfile(this);
     }
 
     public void updateProfile(ProfileDTO profileDTO) {

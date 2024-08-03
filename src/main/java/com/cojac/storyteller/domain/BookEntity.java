@@ -8,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -53,4 +52,28 @@ public class BookEntity {
     public int getTotalPageCount() {
         return pages.size();
     }
+
+    public void updateProfile(ProfileEntity profile) {
+        this.profile = profile;
+    }
+
+    public void updateIsReading(boolean isReading) {
+        this.isReading = isReading;
+    }
+
+    public void updateIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
+    public void updateCoverImage(String coverImage) {
+        this.coverImage = coverImage;
+    }
+
+    public void updateCurrentPage(Integer currentPage) {
+        if (currentPage < 0 || currentPage > getTotalPageCount()) {
+            throw new IllegalArgumentException("Invalid page number");
+        }
+        this.currentPage = currentPage;
+    }
+
 }
