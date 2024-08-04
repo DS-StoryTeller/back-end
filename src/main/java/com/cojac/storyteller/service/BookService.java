@@ -35,12 +35,13 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final SettingRepository settingRepository;
     private final OpenAIService openAIService;
+    private final ImageGenerationService imageGenerationService;
 
     /**
      * 동화와 퀴즈 생성
      */
     @Transactional
-    public List<QuizResponseDTO>  createBook(String prompt, Integer profileId) {
+    public List<QuizResponseDTO> createBook(String prompt, Integer profileId) {
         String defaultCoverImage = "defaultCover.jpg";
 
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -61,6 +62,20 @@ public class BookService {
         BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, profile);
         BookEntity savedBook = bookRepository.save(book);
 
+        // 책 표지 이미지 생성 및 업로드
+        String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
+        savedBook.updateCoverImage(coverImageUrl);
+        bookRepository.save(savedBook);
+
+        // 각 페이지 이미지 생성 및 업데이트
+        for (PageEntity page : savedBook.getPages()) {
+            String pageImageUrl = imageGenerationService.generateAndUploadPageImage(page.getContent());
+            page.setImage(pageImageUrl);
+        }
+
+        // 페이지 엔티티 업데이트
+        bookRepository.save(savedBook);
+
         SettingEntity settingEntity = new SettingEntity(book);
         settingRepository.save(settingEntity);
 
@@ -71,7 +86,7 @@ public class BookService {
         List<String> questions = Arrays.asList(quiz.split("\n"));
         List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
 
-        questions.forEach(question ->  {
+        questions.forEach(question -> {
             // 괄호가 있는지 확인하고 제거
             int bracketIndex = question.indexOf('(');
             if (bracketIndex != -1) {
@@ -144,7 +159,7 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         boolean newFavoriteStatus = !book.isFavorite();
-        book.setFavorite(newFavoriteStatus);
+        book.updateIsFavorite(newFavoriteStatus);
         bookRepository.save(book);
 
         return newFavoriteStatus;
@@ -169,11 +184,11 @@ public class BookService {
         BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
-        book.setCurrentPage(currentPage);
+        book.updateCurrentPage(currentPage);
         if (currentPage >= book.getTotalPageCount()) {
-            book.setReading(false);
+            book.updateIsReading(false);
         } else {
-            book.setReading(true);
+            book.updateIsFavorite(true);
         }
         bookRepository.save(book);
 
