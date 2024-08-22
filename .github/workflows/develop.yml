@@ -51,6 +51,6 @@ jobs:
           script: |
             sudo docker rm -f $(docker ps -qa)
             sudo docker stop $(docker ps -a -q)
-            docker pull ${{ secrets.DOCKER_REPO }}/storyteller
-            docker-compose up --build -d
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/storyteller
+            sudo docker-compose up --build -d
             sudo docker image prune -f
