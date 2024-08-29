@@ -151,6 +151,7 @@ public class BookService {
                 .build();
     }
 
+    // 즐겨찾기 토글 기능 추가
     public Boolean toggleFavorite(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -165,6 +166,7 @@ public class BookService {
         return newFavoriteStatus;
     }
 
+    // 책 삭제 기능 추가
     @Transactional
     public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -176,6 +178,7 @@ public class BookService {
         bookRepository.delete(book);
     }
 
+    // 현재 읽고 있는 페이지 업데이트
     @Transactional
     public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -188,7 +191,7 @@ public class BookService {
         if (currentPage >= book.getTotalPageCount()) {
             book.updateIsReading(false);
         } else {
-            book.updateIsFavorite(true);
+            book.updateIsReading(true);
         }
         bookRepository.save(book);
 
