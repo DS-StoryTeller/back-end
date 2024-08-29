@@ -41,7 +41,7 @@ public class BookService {
      * 동화와 퀴즈 생성
      */
     @Transactional
-    public List<QuizResponseDTO> createBook(String prompt, Integer profileId) {
+    public BookDTO createBook(String prompt, Integer profileId) {
         String defaultCoverImage = "defaultCover.jpg";
 
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -67,35 +67,7 @@ public class BookService {
         savedBook.updateCoverImage(coverImageUrl);
         bookRepository.save(savedBook);
 
-        // 각 페이지 이미지 생성 및 업데이트
-        for (PageEntity page : savedBook.getPages()) {
-            String pageImageUrl = imageGenerationService.generateAndUploadPageImage(page.getContent());
-            page.setImage(pageImageUrl);
-        }
-
-        // 페이지 엔티티 업데이트
-        bookRepository.save(savedBook);
-
-        SettingEntity settingEntity = new SettingEntity(book);
-        settingRepository.save(settingEntity);
-
-        // 생성한 동화 내용으로 퀴즈 생성
-        String quiz = openAIService.generateQuiz(story, age);
-
-        // \n을 기준으로 퀴즈 분리
-        List<String> questions = Arrays.asList(quiz.split("\n"));
-        List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
-
-        questions.forEach(question -> {
-            // 괄호가 있는지 확인하고 제거
-            int bracketIndex = question.indexOf('(');
-            if (bracketIndex != -1) {
-                question = question.substring(0, bracketIndex).trim();
-            }
-            quizResponseDTOS.add(new QuizResponseDTO(question));
-        });
-
-        return quizResponseDTOS;
+        return BookMapper.mapToBookDTO(savedBook);
     }
 
     public List<BookListResponseDTO> getAllBooks(Integer profileId) {

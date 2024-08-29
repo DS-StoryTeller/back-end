@@ -18,10 +18,11 @@ public class BookController {
 
     private final BookService bookService;
 
+    // 동화 내용 생성
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO<List<QuizResponseDTO>>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
-        List<QuizResponseDTO>  createdBook = bookService.createBook(request.getPrompt(), profileId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK_AND_QUIZ, createdBook));
+    public ResponseEntity<ResponseDTO<?>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
+        BookDTO  createdBook = bookService.createBook(request.getPrompt(), profileId);
+        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook));
     }
 
     @GetMapping("/booklist")
