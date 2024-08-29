@@ -168,7 +168,7 @@ public class BookService {
     }
 
     // 퀴즈만 생성
-    public List<QuizResponseDTO> createQuiz(Integer profileId, Integer bookId) {
+    public QuizResponseDTO createQuiz(Integer profileId, Integer bookId) {
         String defaultCoverImage = "defaultCover.jpg";
 
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -192,19 +192,6 @@ public class BookService {
         // 생성한 동화 내용으로 퀴즈 생성
         String quiz = openAIService.generateQuiz(story.toString(), age);
 
-        // \n을 기준으로 퀴즈 분리
-        List<String> questions = Arrays.asList(quiz.split("\n"));
-        List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
-
-        questions.forEach(question -> {
-            // 괄호가 있는지 확인하고 제거
-            int bracketIndex = question.indexOf('(');
-            if (bracketIndex != -1) {
-                question = question.substring(0, bracketIndex).trim();
-            }
-            quizResponseDTOS.add(new QuizResponseDTO(question));
-        });
-
-        return quizResponseDTOS;
+        return new QuizResponseDTO(quiz);
     }
 }

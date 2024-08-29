@@ -83,8 +83,8 @@ public class BookController {
 
     // 동화 퀴즈 생성
     @PostMapping("/create/quiz")
-    public ResponseEntity<ResponseDTO<List<QuizResponseDTO>>> createQuiz(@RequestParam Integer profileId, @RequestParam Integer bookId) {
-        List<QuizResponseDTO>  createdBook = bookService.createQuiz(profileId, bookId);
+    public ResponseEntity<ResponseDTO<?>> createQuiz(@RequestParam Integer profileId, @RequestParam Integer bookId) {
+        QuizResponseDTO  createdBook = bookService.createQuiz(profileId, bookId);
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_QUIZ, createdBook));
     }
 }
