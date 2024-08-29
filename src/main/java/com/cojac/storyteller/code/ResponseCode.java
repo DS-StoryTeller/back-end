@@ -42,6 +42,7 @@ public enum ResponseCode {
     SUCCESS_RETRIEVE_FAVORITE_BOOKS(HttpStatus.OK, "즐겨찾기 목록을 성공적으로 조회했습니다."),
     SUCCESS_RETRIEVE_READING_BOOKS(HttpStatus.OK, "읽고 있는 책 목록을 성공적으로 조회했습니다."),
     SUCCESS_UPDATE_CURRENT_PAGE(HttpStatus.OK, "현재 읽고 있는 페이지를 성공적으로 변경했습니다."),
+    SUCCESS_CREATE_QUIZ(HttpStatus.CREATED, "퀴즈를 성공적으로 생성했습니다."),
 
     /**
      * Page

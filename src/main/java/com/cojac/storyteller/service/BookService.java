@@ -194,4 +194,45 @@ public class BookService {
 
         return BookMapper.mapToBookDTO(book);
     }
+
+    // 퀴즈만 생성
+    public List<QuizResponseDTO> createQuiz(Integer profileId, Integer bookId) {
+        String defaultCoverImage = "defaultCover.jpg";
+
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+
+        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        // 책 내용 story 변수에 담기
+        StringBuilder story = new StringBuilder();
+        for (PageEntity page : book.getPages()) {
+            story.append(page.getContent());
+            story.append("\n\n");
+        }
+
+        // birthDate로 age 얻기
+        LocalDate birthDate = profile.getBirthDate();
+        LocalDate currentDate = LocalDate.now();
+        int age = Period.between(birthDate, currentDate).getYears();
+
+        // 생성한 동화 내용으로 퀴즈 생성
+        String quiz = openAIService.generateQuiz(story.toString(), age);
+
+        // \n을 기준으로 퀴즈 분리
+        List<String> questions = Arrays.asList(quiz.split("\n"));
+        List<QuizResponseDTO> quizResponseDTOS = new ArrayList<>();
+
+        questions.forEach(question -> {
+            // 괄호가 있는지 확인하고 제거
+            int bracketIndex = question.indexOf('(');
+            if (bracketIndex != -1) {
+                question = question.substring(0, bracketIndex).trim();
+            }
+            quizResponseDTOS.add(new QuizResponseDTO(question));
+        });
+
+        return quizResponseDTOS;
+    }
 }
