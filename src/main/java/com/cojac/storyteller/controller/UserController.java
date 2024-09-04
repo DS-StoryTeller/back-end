@@ -28,6 +28,16 @@ public class UserController {
     private final UserService userService;
 
     /**
+     * 카카오 소셜 로그인
+     */
+    @PostMapping("/kakao-login")
+    public ResponseEntity<ResponseDTO> kakaoLogin() {
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_REGISTER.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, null));
+    }
+
+    /**
      * 자체 회원가입
      */
     @PostMapping("/register")
