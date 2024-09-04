@@ -57,8 +57,8 @@ public class UserService {
         socialUserRepository.save(socialUserEntity);
 
         //토큰 생성
-        String accessToken = jwtUtil.createJwt("local", "access", username, role, ACCESS_TOKEN_EXPIRATION);
-        String refreshToken = jwtUtil.createJwt("local", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
+        String accessToken = jwtUtil.createJwt("social", "access", username, role, ACCESS_TOKEN_EXPIRATION);
+        String refreshToken = jwtUtil.createJwt("social", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
 
         // Redis에 refresh 토큰 저장
         String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
