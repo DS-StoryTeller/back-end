@@ -11,15 +11,14 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("S")
 public class SocialUserEntity extends UserEntity {
 
-    private String id;
+    private Integer id;
     private String accountId; // 사용자를 식별하는 아이디 (소셜명 + 특정 아이디값)
     private String username; // 사용자 이름
     private String email;
     private String role;
 
     @Builder
-    public SocialUserEntity(String id, String accountId, String username, String email, String role) {
-        this.id = id;
+    public SocialUserEntity(String accountId, String username, String email, String role) {
         this.accountId = accountId;
         this.username = username;
         this.email = email;

@@ -34,8 +34,8 @@ public class UserController {
     public ResponseEntity<ResponseDTO> kakaoLogin(@RequestBody @Valid KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response) {
         SocialUserDTO res = userService.kakaoLogin(kakaoLoginRequestDTO, response);
         return ResponseEntity
-                .status(ResponseCode.SUCCESS_REGISTER.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, res));
+                .status(ResponseCode.SUCCESS_KAKAO_LOGIN.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_KAKAO_LOGIN, res));
     }
 
     /**

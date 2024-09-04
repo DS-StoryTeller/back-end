@@ -48,13 +48,12 @@ public class UserService {
     @Transactional
     public SocialUserDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response) {
 
-        String id = kakaoLoginRequestDTO.getId();
-        String accountId = "kakao " + id;
+        String accountId = "kakao " + kakaoLoginRequestDTO.getId();
         String username = kakaoLoginRequestDTO.getUsername();
         String email = kakaoLoginRequestDTO.getEmail();
         String role = kakaoLoginRequestDTO.getRole();
 
-        SocialUserEntity socialUserEntity = findOrCreateSocialUser(id, accountId, username, email, role);
+        SocialUserEntity socialUserEntity = findOrCreateSocialUser(accountId, username, email, role);
         socialUserRepository.save(socialUserEntity);
 
         //토큰 생성
@@ -69,17 +68,18 @@ public class UserService {
         response.setHeader("access", accessToken);
         response.setHeader("refresh", refreshToken);
 
-        return SocialUserDTO.mapToUserDTO(socialUserEntity);
+        SocialUserDTO socialUserDTO = SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
+        return socialUserDTO;
     }
 
-    private SocialUserEntity findOrCreateSocialUser(String id, String accountId, String username, String email, String role) {
+    private SocialUserEntity findOrCreateSocialUser(String accountId, String username, String email, String role) {
         return socialUserRepository.findByAccountId(accountId)
                 .map(existingUser -> {
                     existingUser.updateUsername(username);
                     existingUser.updateEmail(email);
                     return existingUser;
                 })
-                .orElseGet(() -> new SocialUserEntity(id, accountId, username, email, role));
+                .orElseGet(() -> new SocialUserEntity(accountId, username, email, role));
     }
 
     /**
@@ -250,7 +250,8 @@ public class UserService {
 
         UserDTO userDTO = SocialUserDTO.builder()
                 .id(socialUserEntity.getId())
-                .username(socialUserEntity.getEmail())
+                .username(socialUserEntity.getUsername())
+                .email(socialUserEntity.getEmail())
                 .accountId(accountId)
                 .role(role)
                 .build();
