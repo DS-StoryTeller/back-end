@@ -31,10 +31,11 @@ public class UserController {
      * 카카오 소셜 로그인
      */
     @PostMapping("/kakao-login")
-    public ResponseEntity<ResponseDTO> kakaoLogin() {
+    public ResponseEntity<ResponseDTO> kakaoLogin(@RequestBody @Valid KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response) {
+        SocialUserDTO res = userService.kakaoLogin(kakaoLoginRequestDTO, response);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_REGISTER.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, null));
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, res));
     }
 
     /**

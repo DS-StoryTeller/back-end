@@ -9,17 +9,10 @@ import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.repository.LocalUserRepository;
 import com.cojac.storyteller.repository.SocialUserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +41,46 @@ public class UserService {
     private final MailService mailService;
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
+
+    /**
+     * 카카오 소셜 로그인
+     */
+    @Transactional
+    public SocialUserDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response) {
+
+        String id = kakaoLoginRequestDTO.getId();
+        String accountId = "kakao " + id;
+        String username = kakaoLoginRequestDTO.getUsername();
+        String email = kakaoLoginRequestDTO.getEmail();
+        String role = kakaoLoginRequestDTO.getRole();
+
+        SocialUserEntity socialUserEntity = findOrCreateSocialUser(id, accountId, username, email, role);
+        socialUserRepository.save(socialUserEntity);
+
+        //토큰 생성
+        String accessToken = jwtUtil.createJwt("local", "access", username, role, ACCESS_TOKEN_EXPIRATION);
+        String refreshToken = jwtUtil.createJwt("local", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
+
+        // Redis에 refresh 토큰 저장
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
+        redisService.setValues(refreshTokenKey, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRATION));
+
+        // 응답 헤더에 JWT 설정
+        response.setHeader("access", accessToken);
+        response.setHeader("refresh", refreshToken);
+
+        return SocialUserDTO.mapToUserDTO(socialUserEntity);
+    }
+
+    private SocialUserEntity findOrCreateSocialUser(String id, String accountId, String username, String email, String role) {
+        return socialUserRepository.findByAccountId(accountId)
+                .map(existingUser -> {
+                    existingUser.updateUsername(username);
+                    existingUser.updateEmail(email);
+                    return existingUser;
+                })
+                .orElseGet(() -> new SocialUserEntity(id, accountId, username, email, role));
+    }
 
     /**
      * 회원 등록하기
