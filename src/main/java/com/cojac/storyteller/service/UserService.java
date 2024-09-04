@@ -57,8 +57,8 @@ public class UserService {
         socialUserRepository.save(socialUserEntity);
 
         //토큰 생성
-        String accessToken = jwtUtil.createJwt("social", "access", username, role, ACCESS_TOKEN_EXPIRATION);
-        String refreshToken = jwtUtil.createJwt("social", "refresh", username, role, REFRESH_TOKEN_EXPIRATION);
+        String accessToken = jwtUtil.createJwt("social", "access", accountId, role, ACCESS_TOKEN_EXPIRATION);
+        String refreshToken = jwtUtil.createJwt("social", "refresh", accountId, role, REFRESH_TOKEN_EXPIRATION);
 
         // Redis에 refresh 토큰 저장
         String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
@@ -126,7 +126,7 @@ public class UserService {
     /**
      * 토큰 재발급
      */
-    public UserDTO reissueToken(HttpServletRequest request, HttpServletResponse response, @RequestBody ReissueDTO reissueDTO) throws IOException {
+    public UserDTO reissueToken(HttpServletRequest request, HttpServletResponse response, ReissueDTO reissueDTO) throws IOException {
         String refreshToken = getRefreshTokenFromRequest(request);
         validateToken(refreshToken);
         validateCategory(refreshToken);
@@ -248,15 +248,7 @@ public class UserService {
         SocialUserEntity socialUserEntity = socialUserRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        UserDTO userDTO = SocialUserDTO.builder()
-                .id(socialUserEntity.getId())
-                .username(socialUserEntity.getUsername())
-                .email(socialUserEntity.getEmail())
-                .accountId(accountId)
-                .role(role)
-                .build();
-
-        return userDTO;
+        return SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
     }
 
     private String hasValueInRedis(String userKey) {
