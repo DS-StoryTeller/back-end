@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,9 +38,11 @@ public class PageController {
                     @ApiResponse(responseCode = "200", description = "페이지 세부 정보를 성공적으로 조회했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
-    public ResponseDTO<PageDetailResponseDTO> getPageDetail(@ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
+    public ResponseEntity<ResponseDTO> getPageDetail(@ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
         PageDetailResponseDTO pageDetail = pageService.getPageDetail(pageRequestDTO);
-        return new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_PAGE_DETAILS, pageDetail);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_RETRIEVE_PAGE_DETAILS.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_PAGE_DETAILS, pageDetail));
     }
 
     /**
@@ -53,9 +56,11 @@ public class PageController {
                     @ApiResponse(responseCode = "200", description = "페이지 세부 정보를 성공적으로 조회했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
-    public ResponseDTO<PageDetailResponseDTO> updatePageDetail(@RequestParam("imageFile") MultipartFile imageFile,
+    public ResponseEntity<ResponseDTO> updatePageDetail(@RequestParam("imageFile") MultipartFile imageFile,
                                                                @ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
         PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO, imageFile);
-        return new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE, pageDetail);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE, pageDetail));
     }
 }
