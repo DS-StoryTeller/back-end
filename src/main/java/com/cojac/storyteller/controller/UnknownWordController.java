@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,17 +38,12 @@ public class UnknownWordController {
                             schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = UnknownWordDTO.class)
                     )
             ),
-            parameters = {
-                    @Parameter(name = "profileId", description = "프로필 ID", required = true, in = ParameterIn.QUERY),
-                    @Parameter(name = "bookId", description = "책 ID", required = true, in = ParameterIn.QUERY),
-                    @Parameter(name = "pageNum", description = "페이지 번호", required = true, in = ParameterIn.QUERY)
-            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "단어가 성공적으로 저장되었습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<ResponseDTO<UnknownWordDetailDTO>> createUnknownWord(
-            @ModelAttribute PageRequestDTO pageRequestDTO,
+            @ParameterObject  @ModelAttribute PageRequestDTO pageRequestDTO,
             @RequestBody UnknownWordDTO unknownWordDto) {
         UnknownWordDetailDTO response = unknownWordService.saveUnknownWord(pageRequestDTO, unknownWordDto);
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD, response));
@@ -67,9 +63,7 @@ public class UnknownWordController {
                     @ApiResponse(responseCode = "200", description = "단어가 성공적으로 삭제되었습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
-    public ResponseEntity<ResponseDTO> deleteUnknownWord(
-            @PathVariable("unknownWordId") Integer unknownWordId
-    ) {
+    public ResponseEntity<ResponseDTO> deleteUnknownWord(@PathVariable("unknownWordId") Integer unknownWordId) {
         unknownWordService.deleteUnknownWord(unknownWordId);
         return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_UNKNOWNWORD, null));
     }
