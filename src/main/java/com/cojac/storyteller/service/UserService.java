@@ -68,8 +68,7 @@ public class UserService {
         response.setHeader("access", accessToken);
         response.setHeader("refresh", refreshToken);
 
-        SocialUserDTO socialUserDTO = SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
-        return socialUserDTO;
+        return SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
     }
 
     private SocialUserEntity findOrCreateSocialUser(String accountId, String username, String email, String role) {
