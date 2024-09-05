@@ -46,7 +46,9 @@ public class UnknownWordController {
             @ParameterObject  @ModelAttribute PageRequestDTO pageRequestDTO,
             @RequestBody UnknownWordDTO unknownWordDto) {
         UnknownWordDetailDTO response = unknownWordService.saveUnknownWord(pageRequestDTO, unknownWordDto);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD, response));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD, response));
     }
 
     /**
@@ -65,6 +67,8 @@ public class UnknownWordController {
     )
     public ResponseEntity<ResponseDTO> deleteUnknownWord(@PathVariable("unknownWordId") Integer unknownWordId) {
         unknownWordService.deleteUnknownWord(unknownWordId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_UNKNOWNWORD, null));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_DELETE_UNKNOWNWORD.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_DELETE_UNKNOWNWORD, null));
     }
 }
