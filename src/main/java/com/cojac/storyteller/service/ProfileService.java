@@ -3,10 +3,7 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UserEntity;
-import com.cojac.storyteller.dto.profile.PinCheckResultDTO;
-import com.cojac.storyteller.dto.profile.PinNumberDTO;
-import com.cojac.storyteller.dto.profile.ProfileDTO;
-import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
+import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
@@ -48,14 +45,14 @@ public class ProfileService {
      * 프로필 생성하기
      */
     @Transactional
-    public ProfileDTO createProfile(ProfileDTO profileDTO) {
+    public ProfileDTO createProfile(CreateProfileDTO createProfileDTO) {
 
         // 사용자 아이디로 조회 및 예외 처리
-        UserEntity user = userRepository.findById(profileDTO.getUserId())
+        UserEntity user = userRepository.findById(createProfileDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 핀 번호 유효성 검증
-        String pinNumber = profileDTO.getPinNumber();
+        String pinNumber = createProfileDTO.getPinNumber();
         if (pinNumber == null || pinNumber.length() != 4 || !pinNumber.matches("\\d+")) {
             throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER);
         }
@@ -66,9 +63,9 @@ public class ProfileService {
 
         // 프로필 생성
         ProfileEntity profileEntity = ProfileEntity.builder()
-                .name(profileDTO.getName())
-                .birthDate(profileDTO.getBirthDate())
-                .imageUrl(profileDTO.getImageUrl())
+                .name(createProfileDTO.getName())
+                .birthDate(createProfileDTO.getBirthDate())
+                .imageUrl(createProfileDTO.getImageUrl())
                 .pinNumber(hashedPin)
                 .user(user)
                 .build();

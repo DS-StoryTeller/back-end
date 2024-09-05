@@ -1,10 +1,7 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.dto.profile.PinCheckResultDTO;
-import com.cojac.storyteller.dto.profile.PinNumberDTO;
-import com.cojac.storyteller.dto.profile.ProfileDTO;
-import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
+import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,12 +54,19 @@ public class ProfileController {
     @Operation(
             summary = "프로필 생성",
             description = "새로운 프로필을 생성 API",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "프로필 생성을 위한 정보",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = CreateProfileDTO.class)
+                    )
+            ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 생성되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
-    public ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody ProfileDTO profileDTO) {
-        ProfileDTO result = profileService.createProfile(profileDTO);
+    public ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody CreateProfileDTO createProfileDTO) {
+        ProfileDTO result = profileService.createProfile(createProfileDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_CREATE_PROFILE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_PROFILE, result));
@@ -75,6 +79,13 @@ public class ProfileController {
     @Operation(
             summary = "프로필 비밀번호 검증",
             description = "주어진 프로필 ID와 비밀번호를 검증 API",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "비밀번호 검증 정보",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PinNumberDTO.class)
+                    )
+            ),
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필의 비밀번호를 검증을 완료했습니다. valid를 확인해주세요.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
@@ -95,6 +106,13 @@ public class ProfileController {
     @Operation(
             summary = "프로필 수정",
             description = "주어진 프로필 ID를 사용하여 프로필 정보를 수정 API",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "수정할 프로필 정보",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ProfileDTO.class)
+                    )
+            ),
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 수정되었습니다.",
@@ -136,6 +154,13 @@ public class ProfileController {
     @Operation(
             summary = "프로필 목록 불러오기",
             description = "주어진 조건으로 프로필 목록 조회 API",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "검색 조건에 사용할 프로필 정보",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ProfileDTO.class)
+                    )
+            ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필 목록을 성공적으로 조회했습니다.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class)))
