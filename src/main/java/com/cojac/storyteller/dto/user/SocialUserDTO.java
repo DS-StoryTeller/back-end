@@ -1,31 +1,30 @@
 package com.cojac.storyteller.dto.user;
 
-import com.cojac.storyteller.dto.user.UserDTO;
+import com.cojac.storyteller.domain.SocialUserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class SocialUserDTO implements UserDTO {
 
     private Integer id;
     private String role;
-    private String username; // 실제 유저 이름
-    private String accountId; // 리소스 서버에서 받은 정보로 사용자의 특정 아이디값
+    private String nickname;
+    private String accountId;
+    private String email;
 
-    @Builder
-    public SocialUserDTO(Integer id, String accountId, String username, String role) {
-        this.id = id;
-        this.role = role;
-        this.username = username;
-        this.accountId = accountId;
-    }
-
-    public SocialUserDTO(String accountId, String username, String role) {
-        this.role = role;
-        this.username = username;
-        this.accountId = accountId;
+    public static SocialUserDTO mapToSocialUserDTO(SocialUserEntity socialUser) {
+        return SocialUserDTO.builder()
+                .id(socialUser.getId())
+                .role(socialUser.getRole())
+                .accountId(socialUser.getAccountId())
+                .nickname(socialUser.getNickname())
+                .email(socialUser.getEmail())
+                .build();
     }
 }
