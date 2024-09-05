@@ -49,7 +49,9 @@ public class SettingController {
             @RequestParam Integer bookId,
             @RequestBody SettingDTO settingDTO) {
         SettingDTO response = settingService.updateSetting(profileId, bookId, settingDTO);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_SETTING, response));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_UPDATE_SETTING.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_SETTING, response));
     }
 
     /**
@@ -71,6 +73,8 @@ public class SettingController {
             @RequestParam Integer profileId,
             @RequestParam Integer bookId) {
         SettingDTO response = settingService.getDetailSettings(profileId, bookId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_SETTING, response));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_RETRIEVE_SETTING.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_SETTING, response));
     }
 }
