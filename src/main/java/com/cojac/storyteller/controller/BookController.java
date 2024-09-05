@@ -2,9 +2,7 @@ package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.book.*;
-import com.cojac.storyteller.dto.response.ErrorResponseDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
-import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
 import com.cojac.storyteller.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,7 +47,9 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<?>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId) {
         BookDTO  createdBook = bookService.createBook(request.getPrompt(), profileId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_CREATE_BOOK.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_BOOK, createdBook));
     }
 
     /**
@@ -69,9 +69,13 @@ public class BookController {
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId) {
         List<BookListResponseDTO> books = bookService.getAllBooks(profileId);
         if (books.isEmpty()) {
-            return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, books));
+            return ResponseEntity
+                    .status(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST.getStatus().value())
+                    .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, books));
         }
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOKS, books));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_RETRIEVE_BOOKS.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOKS, books));
     }
 
     /**
@@ -91,7 +95,9 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<BookDetailResponseDTO>> getBookDetail(@RequestParam Integer profileId, @RequestParam Integer bookId) {
         BookDetailResponseDTO bookDetail = bookService.getBookDetail(profileId, bookId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOK_DETAILS, bookDetail));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_RETRIEVE_BOOK_DETAILS.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOK_DETAILS, bookDetail));
     }
 
     /**
@@ -111,7 +117,9 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<Boolean>> isFavorite(@RequestParam Integer profileId, @RequestParam Integer bookId) {
         Boolean newFavoriteStatus = bookService.toggleFavorite(profileId, bookId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_IS_FAVORITE, newFavoriteStatus));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_UPDATE_IS_FAVORITE.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_IS_FAVORITE, newFavoriteStatus));
     }
 
     /**
@@ -154,7 +162,9 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<BookDTO>> updateCurrentPage(@RequestParam Integer profileId, @RequestParam Integer bookId, @RequestParam Integer currentPage) {
         BookDTO updatedBook = bookService.updateCurrentPage(profileId, bookId, currentPage);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_CURRENT_PAGE, updatedBook));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_UPDATE_CURRENT_PAGE.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_CURRENT_PAGE, updatedBook));
     }
 
     /**
@@ -174,9 +184,13 @@ public class BookController {
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(@RequestParam Integer profileId) {
         List<BookListResponseDTO> favoriteBooks = bookService.getFavoriteBooks(profileId);
         if (favoriteBooks.isEmpty()) {
-            return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, favoriteBooks));
+            return ResponseEntity
+                    .status(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST.getStatus().value())
+                    .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, favoriteBooks));
         }
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_FAVORITE_BOOKS, favoriteBooks));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_RETRIEVE_FAVORITE_BOOKS.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_FAVORITE_BOOKS, favoriteBooks));
     }
 
     /**
@@ -196,9 +210,13 @@ public class BookController {
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(@RequestParam Integer profileId) {
         List<BookListResponseDTO> readingBooks = bookService.getReadingBooks(profileId);
         if (readingBooks.isEmpty()) {
-            return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, readingBooks));
+            return ResponseEntity
+                    .status(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST.getStatus().value())
+                    .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, readingBooks));
         }
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_READING_BOOKS, readingBooks));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_RETRIEVE_READING_BOOKS.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_READING_BOOKS, readingBooks));
     }
 
     /***
@@ -218,6 +236,8 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<?>> createQuiz(@RequestParam Integer profileId, @RequestParam Integer bookId) {
         QuizResponseDTO  createdBook = bookService.createQuiz(profileId, bookId);
-        return ResponseEntity.ok(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_QUIZ, createdBook));
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_CREATE_QUIZ.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_QUIZ, createdBook));
     }
 }
