@@ -90,6 +90,7 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/", "/register").permitAll()
                         .requestMatchers("/username/verifications", "/emails/verification-requests", "/emails/verifications").permitAll()
                         .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated());
 
         // 인증/인가와 관련된 예외 처리
