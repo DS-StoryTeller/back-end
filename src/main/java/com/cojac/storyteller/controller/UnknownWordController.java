@@ -42,9 +42,8 @@ public class UnknownWordController {
                     @ApiResponse(responseCode = "200", description = "단어가 성공적으로 저장되었습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
-    public ResponseEntity<ResponseDTO<UnknownWordDetailDTO>> createUnknownWord(
-            @ParameterObject  @ModelAttribute PageRequestDTO pageRequestDTO,
-            @RequestBody UnknownWordDTO unknownWordDto) {
+    public ResponseEntity<ResponseDTO<UnknownWordDetailDTO>> createUnknownWord(@ParameterObject  @ModelAttribute PageRequestDTO pageRequestDTO,
+                                                                               @RequestBody UnknownWordDTO unknownWordDto) {
         UnknownWordDetailDTO response = unknownWordService.saveUnknownWord(pageRequestDTO, unknownWordDto);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_CREATE_UNKNOWNWORD.getStatus().value())
