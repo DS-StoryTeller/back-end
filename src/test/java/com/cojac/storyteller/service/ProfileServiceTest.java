@@ -1,10 +1,7 @@
 package com.cojac.storyteller.service;
 
 import com.cojac.storyteller.domain.ProfileEntity;
-import com.cojac.storyteller.dto.profile.CreateProfileDTO;
-import com.cojac.storyteller.dto.profile.PinNumberDTO;
-import com.cojac.storyteller.dto.profile.ProfileDTO;
-import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
+import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.dto.user.LocalUserDTO;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.repository.ProfileRepository;
@@ -86,7 +83,7 @@ class ProfileServiceTest {
         ProfileDTO createdProfile = profileService.createProfile(createProfileDTO);
 
         // 프로필 수정
-        ProfileDTO updatedProfileDTO = new ProfileDTO();
+        UpdateProfileDTO updatedProfileDTO = new UpdateProfileDTO();
         updatedProfileDTO.setName("updatedName");
         updatedProfileDTO.setBirthDate(LocalDate.of(1990, 1, 1));
         updatedProfileDTO.setImageUrl("https://example.com/updated_profile.jpg");

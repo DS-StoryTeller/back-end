@@ -110,7 +110,7 @@ public class ProfileController {
                     description = "수정할 프로필 정보",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = ProfileDTO.class)
+                            schema = @Schema(implementation = UpdateProfileDTO.class)
                     )
             ),
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
@@ -120,8 +120,8 @@ public class ProfileController {
             }
     )
     public ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId,
-                                                     @Valid @RequestBody ProfileDTO profileDTO) {
-        ProfileDTO result = profileService.updateProfile(profileId, profileDTO);
+                                                     @Valid @RequestBody UpdateProfileDTO updateProfileDTO) {
+        ProfileDTO result = profileService.updateProfile(profileId, updateProfileDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_UPDATE_PROFILE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PROFILE, result));
@@ -154,20 +154,16 @@ public class ProfileController {
     @Operation(
             summary = "프로필 목록 불러오기",
             description = "주어진 조건으로 프로필 목록 조회 API",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "검색 조건에 사용할 프로필 정보",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ProfileDTO.class)
-                    )
-            ),
+            parameters = {
+                    @Parameter(name = "userId", in = ParameterIn.QUERY, description = "사용자 ID", required = true)
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필 목록을 성공적으로 조회했습니다.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class)))
             }
     )
-    public ResponseEntity<ResponseDTO> getProfileList(@RequestBody ProfileDTO profileDTO) {
-        List<ProfileDTO> result = profileService.getProfileList(profileDTO);
+    public ResponseEntity<ResponseDTO> getProfileList(@RequestParam(required = false) Integer userId) {
+        List<ProfileDTO> result = profileService.getProfileList(userId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_GET_PROFILE_LIST.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE_LIST, result));

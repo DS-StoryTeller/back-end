@@ -103,24 +103,24 @@ public class ProfileService {
      * 프로필 수정하기
      */
     @Transactional
-    public ProfileDTO updateProfile(Integer profileId, ProfileDTO profileDTO) {
+    public ProfileDTO updateProfile(Integer profileId, UpdateProfileDTO updateProfileDTO) {
 
         // 프로필 아이디로 프로필을 찾기
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         // 핀 번호 유효성 검증
-        String pinNumber = profileDTO.getPinNumber();
+        String pinNumber = updateProfileDTO.getPinNumber();
         if (pinNumber == null || pinNumber.length() != 4 || !pinNumber.matches("\\d+")) {
             throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER);
         }
 
         // 핀 번호 암호화
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        profileDTO.setPinNumber(encoder.encode(pinNumber));
+        updateProfileDTO.setPinNumber(encoder.encode(pinNumber));
 
         // 프로필 정보 업데이트
-        profileEntity.updateProfile(profileDTO);
+        profileEntity.updateProfile(updateProfileDTO);
 
         return ProfileDTO.mapEntityToDTO(profileEntity);
     }
@@ -140,9 +140,9 @@ public class ProfileService {
     /**
      * 프로필 목록 조회하기
      */
-    public List<ProfileDTO> getProfileList(ProfileDTO profileDTO) {
+    public List<ProfileDTO> getProfileList(Integer userId) {
 
-        UserEntity user = userRepository.findById(profileDTO.getUserId())
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
         List<ProfileEntity> profileEntityList = profileRepository.findByUser_Id(user.getId());

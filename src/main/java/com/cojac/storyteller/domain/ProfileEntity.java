@@ -1,6 +1,7 @@
 package com.cojac.storyteller.domain;
 
 import com.cojac.storyteller.dto.profile.ProfileDTO;
+import com.cojac.storyteller.dto.profile.UpdateProfileDTO;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,10 +54,10 @@ public class ProfileEntity {
         book.updateProfile(this);
     }
 
-    public void updateProfile(ProfileDTO profileDTO) {
-        this.name = profileDTO.getName();
-        this.birthDate = profileDTO.getBirthDate();
-        this.imageUrl = profileDTO.getImageUrl();
-        this.pinNumber = profileDTO.getPinNumber();
+    public void updateProfile(UpdateProfileDTO updateProfileDTO) {
+        this.name = updateProfileDTO.getName();
+        this.birthDate = updateProfileDTO.getBirthDate();
+        this.imageUrl = updateProfileDTO.getImageUrl();
+        this.pinNumber = updateProfileDTO.getPinNumber();
     }
 }
