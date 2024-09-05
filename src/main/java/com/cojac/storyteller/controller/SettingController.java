@@ -7,6 +7,8 @@ import com.cojac.storyteller.service.SettingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,13 @@ public class SettingController {
                     @Parameter(name = "profileId", in = ParameterIn.QUERY, description = "프로필 ID", required = true),
                     @Parameter(name = "bookId", in = ParameterIn.QUERY, description = "책 ID", required = true)
             },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "업데이트할 책 설정 정보",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SettingDTO.class)
+                    )
+            ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "책 설정을 성공적으로 변경했습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
@@ -44,7 +53,7 @@ public class SettingController {
     }
 
     /**
-     * 책 설정 조회
+     * 책 설정 조회하기
      */
     @GetMapping("/detail")
     @Operation(
