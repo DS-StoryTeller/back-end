@@ -13,8 +13,8 @@ public class KakaoLoginRequestDTO {
     private String id;
     @NotBlank(message = "role를 입력해주세요.")
     private String role;
-    @NotBlank(message = "username를 입력해주세요.")
-    private String username;
+    @NotBlank(message = "nickname을 입력해주세요.")
+    private String nickname;
     @NotBlank(message = "email를 입력해주세요.")
     private String email;
 

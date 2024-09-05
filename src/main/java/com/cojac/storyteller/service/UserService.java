@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -48,12 +47,12 @@ public class UserService {
     @Transactional
     public SocialUserDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response) {
 
-        String accountId = "kakao " + kakaoLoginRequestDTO.getId();
-        String username = kakaoLoginRequestDTO.getUsername();
+        String accountId = "kakao_" + kakaoLoginRequestDTO.getId();
+        String nickname = kakaoLoginRequestDTO.getNickname();
         String email = kakaoLoginRequestDTO.getEmail();
         String role = kakaoLoginRequestDTO.getRole();
 
-        SocialUserEntity socialUserEntity = findOrCreateSocialUser(accountId, username, email, role);
+        SocialUserEntity socialUserEntity = findOrCreateSocialUser(accountId, nickname, email, role);
         socialUserRepository.save(socialUserEntity);
 
         //토큰 생성
@@ -61,7 +60,7 @@ public class UserService {
         String refreshToken = jwtUtil.createJwt("social", "refresh", accountId, role, REFRESH_TOKEN_EXPIRATION);
 
         // Redis에 refresh 토큰 저장
-        String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + accountId;
         redisService.setValues(refreshTokenKey, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRATION));
 
         // 응답 헤더에 JWT 설정
@@ -71,14 +70,14 @@ public class UserService {
         return SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
     }
 
-    private SocialUserEntity findOrCreateSocialUser(String accountId, String username, String email, String role) {
+    private SocialUserEntity findOrCreateSocialUser(String accountId, String nickname, String email, String role) {
         return socialUserRepository.findByAccountId(accountId)
                 .map(existingUser -> {
-                    existingUser.updateUsername(username);
+                    existingUser.updateUsername(nickname);
                     existingUser.updateEmail(email);
                     return existingUser;
                 })
-                .orElseGet(() -> new SocialUserEntity(accountId, username, email, role));
+                .orElseGet(() -> new SocialUserEntity(accountId, nickname, email, role));
     }
 
     /**

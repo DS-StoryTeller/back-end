@@ -14,7 +14,7 @@ public class SocialUserDTO implements UserDTO {
 
     private Integer id;
     private String role;
-    private String username;
+    private String nickname;
     private String accountId;
     private String email;
 
@@ -23,7 +23,7 @@ public class SocialUserDTO implements UserDTO {
                 .id(socialUser.getId())
                 .role(socialUser.getRole())
                 .accountId(socialUser.getAccountId())
-                .username(socialUser.getUsername())
+                .nickname(socialUser.getNickname())
                 .email(socialUser.getEmail())
                 .build();
     }
