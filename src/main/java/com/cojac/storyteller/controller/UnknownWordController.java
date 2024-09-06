@@ -9,6 +9,8 @@ import com.cojac.storyteller.service.UnknownWordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +34,14 @@ public class UnknownWordController {
             summary = "단어 저장",
             description = "단어 저장 API",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "단어 저장에 필요한 정보",
-                    content = @io.swagger.v3.oas.annotations.media.Content(
+                    description = "단어 저장을 위한 정보",
+                    content = @Content(
                             mediaType = "application/json",
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = UnknownWordDTO.class)
+                            examples = {
+                                    @ExampleObject(
+                                            value = "{\"unknownWord\": \"모르는 단어\", \"position\": \"위치\"}"
+                                    )
+                            }
                     )
             ),
             responses = {
