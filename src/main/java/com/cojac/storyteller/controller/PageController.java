@@ -48,16 +48,16 @@ public class PageController {
     /**
      * 페이지 이미지 업데이트
      */
-    @PostMapping(value = "/updateImage", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/updateImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "페이지 세부 정보 조회",
             description = "페이지 세부 정보 조회 API",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "페이지 세부 정보를 성공적으로 조회했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+                    @ApiResponse(responseCode = "200", description = "페이지 이미지를 성공적으로 변경했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
     public ResponseEntity<ResponseDTO> updatePageDetail(@RequestParam("imageFile") MultipartFile imageFile,
-                                                               @ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
+                                                        @ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
         PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO, imageFile);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE.getStatus().value())
