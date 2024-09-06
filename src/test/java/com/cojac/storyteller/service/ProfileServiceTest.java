@@ -3,6 +3,7 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.dto.user.LocalUserDTO;
+import com.cojac.storyteller.dto.user.CreateUserRequestDTO;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.LocalUserRepository;
@@ -44,25 +45,25 @@ class ProfileServiceTest {
 
         LocalUserDTO savedLocalUserDTO = createUser();
 
-        CreateProfileDTO createProfileDTO = createProfileDTO(savedLocalUserDTO);
+        ProfileDTO profileDTO = createProfileDTO(savedLocalUserDTO);
 
         // When
-        ProfileDTO createdProfile = profileService.createProfile(createProfileDTO);
+        ProfileDTO createdProfile = profileService.createProfile(profileDTO);
 
         // Then
         assertNotNull(createdProfile.getId());
-        assertEquals(createProfileDTO.getName(), createdProfile.getName());
-        assertEquals(createProfileDTO.getBirthDate(), createdProfile.getBirthDate());
-        assertEquals(createProfileDTO.getImageUrl(), createdProfile.getImageUrl());
-        assertEquals(createProfileDTO.getUserId(), createdProfile.getUserId());
+        assertEquals(profileDTO.getName(), createdProfile.getName());
+        assertEquals(profileDTO.getBirthDate(), createdProfile.getBirthDate());
+        assertEquals(profileDTO.getImageUrl(), createdProfile.getImageUrl());
+        assertEquals(profileDTO.getUserId(), createdProfile.getUserId());
     }
 
     @Test
     void checkPinNum() {
 
         LocalUserDTO savedLocalUserDTO = createUser();
-        CreateProfileDTO createProfileDTO = createProfileDTO(savedLocalUserDTO);
-        ProfileDTO createdProfile = profileService.createProfile(createProfileDTO);
+        ProfileDTO profileDTO = createProfileDTO(savedLocalUserDTO);
+        ProfileDTO createdProfile = profileService.createProfile(profileDTO);
 
         // 올바른 PIN으로 테스트
         PinNumberDTO validPinNumberDTO  = new PinNumberDTO();
@@ -79,11 +80,11 @@ class ProfileServiceTest {
     void updateProfile() {
 
         LocalUserDTO savedLocalUserDTO = createUser();
-        CreateProfileDTO createProfileDTO = createProfileDTO(savedLocalUserDTO);
-        ProfileDTO createdProfile = profileService.createProfile(createProfileDTO);
+        ProfileDTO profileDTO = createProfileDTO(savedLocalUserDTO);
+        ProfileDTO createdProfile = profileService.createProfile(profileDTO);
 
         // 프로필 수정
-        UpdateProfileDTO updatedProfileDTO = new UpdateProfileDTO();
+        ProfileDTO updatedProfileDTO = new ProfileDTO();
         updatedProfileDTO.setName("updatedName");
         updatedProfileDTO.setBirthDate(LocalDate.of(1990, 1, 1));
         updatedProfileDTO.setImageUrl("https://example.com/updated_profile.jpg");
@@ -101,22 +102,22 @@ class ProfileServiceTest {
         assertEquals(updatedProfileDTO.getPinNumber(), updatedProfile.getPinNumber());
     }
 
-    private static CreateProfileDTO createProfileDTO(LocalUserDTO savedLocalUserDTO) {
-        CreateProfileDTO createProfileDTO = new CreateProfileDTO();
+    private static ProfileDTO createProfileDTO(LocalUserDTO savedLocalUserDTO) {
+        ProfileDTO profileDTO = new ProfileDTO();
 
-        createProfileDTO.setName("name");
-        createProfileDTO.setBirthDate(LocalDate.of(2000, 1, 1));
-        createProfileDTO.setImageUrl("https://example.com/profile.jpg");
-        createProfileDTO.setUserId(savedLocalUserDTO.getId());
-        createProfileDTO.setPinNumber("1234");
-        return createProfileDTO;
+        profileDTO.setName("name");
+        profileDTO.setBirthDate(LocalDate.of(2000, 1, 1));
+        profileDTO.setImageUrl("https://example.com/profile.jpg");
+        profileDTO.setUserId(savedLocalUserDTO.getId());
+        profileDTO.setPinNumber("1234");
+        return profileDTO;
     }
 
     private LocalUserDTO createUser() {
-        LocalUserDTO localUserDTO = new LocalUserDTO();
-        localUserDTO.setUsername("username");
-        localUserDTO.setPassword("password");
-        LocalUserDTO savedLocalUserDTO = userService.registerUser(localUserDTO);
+        CreateUserRequestDTO createUserRequestDTO = new CreateUserRequestDTO();
+        createUserRequestDTO.setUsername("username");
+        createUserRequestDTO.setPassword("password");
+        LocalUserDTO savedLocalUserDTO = userService.registerUser(createUserRequestDTO);
         return savedLocalUserDTO;
     }
 }

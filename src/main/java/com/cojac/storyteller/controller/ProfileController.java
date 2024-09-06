@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,18 +56,24 @@ public class ProfileController {
             summary = "프로필 생성",
             description = "새로운 프로필을 생성 API",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "프로필 생성을 위한 정보",
-                    content = @io.swagger.v3.oas.annotations.media.Content(
+                    description = "프로필 생성 위한 정보",
+                    content = @Content(
                             mediaType = "application/json",
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = CreateProfileDTO.class)
+                            examples = {
+                                    @ExampleObject(
+                                            value = "{\"name\": \"프로필의 이름\", \"birthDate\": \"생년월일\", " +
+                                                    "\"imageUrl\": \"프로필 이미지 URL\", \"pinNumber\": \"핀 번호\", " +
+                                                    "\"userId\": \"사용자의 아이디\"}"
+                                    )
+                            }
                     )
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 생성되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
-    public ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody CreateProfileDTO createProfileDTO) {
-        ProfileDTO result = profileService.createProfile(createProfileDTO);
+    public ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody ProfileDTO profileDTO) {
+        ProfileDTO result = profileService.createProfile(profileDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_CREATE_PROFILE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_CREATE_PROFILE, result));
@@ -107,10 +114,15 @@ public class ProfileController {
             summary = "프로필 수정",
             description = "주어진 프로필 ID를 사용하여 프로필 정보를 수정 API",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "수정할 프로필 정보",
+                    description = "프로필 수정을 위한 정보",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = UpdateProfileDTO.class)
+                            examples = {
+                                    @ExampleObject(
+                                            value = "{\"name\": \"프로필의 이름\", \"birthDate\": \"생년월일\", " +
+                                                    "\"imageUrl\": \"프로필 이미지 URL\", \"pinNumber\": \"핀 번호\"}"
+                                    )
+                            }
                     )
             ),
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
@@ -120,8 +132,8 @@ public class ProfileController {
             }
     )
     public ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId,
-                                                     @Valid @RequestBody UpdateProfileDTO updateProfileDTO) {
-        ProfileDTO result = profileService.updateProfile(profileId, updateProfileDTO);
+                                                     @Valid @RequestBody ProfileDTO profileDTO) {
+        ProfileDTO result = profileService.updateProfile(profileId, profileDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_UPDATE_PROFILE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PROFILE, result));

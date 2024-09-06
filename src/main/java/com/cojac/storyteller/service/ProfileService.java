@@ -45,14 +45,14 @@ public class ProfileService {
      * 프로필 생성하기
      */
     @Transactional
-    public ProfileDTO createProfile(CreateProfileDTO createProfileDTO) {
+    public ProfileDTO createProfile(ProfileDTO profileDTO) {
 
         // 사용자 아이디로 조회 및 예외 처리
-        UserEntity user = userRepository.findById(createProfileDTO.getUserId())
+        UserEntity user = userRepository.findById(profileDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 핀 번호 유효성 검증
-        String pinNumber = createProfileDTO.getPinNumber();
+        String pinNumber = profileDTO.getPinNumber();
         if (pinNumber == null || pinNumber.length() != 4 || !pinNumber.matches("\\d+")) {
             throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER);
         }
@@ -63,9 +63,9 @@ public class ProfileService {
 
         // 프로필 생성
         ProfileEntity profileEntity = ProfileEntity.builder()
-                .name(createProfileDTO.getName())
-                .birthDate(createProfileDTO.getBirthDate())
-                .imageUrl(createProfileDTO.getImageUrl())
+                .name(profileDTO.getName())
+                .birthDate(profileDTO.getBirthDate())
+                .imageUrl(profileDTO.getImageUrl())
                 .pinNumber(hashedPin)
                 .user(user)
                 .build();
@@ -103,24 +103,24 @@ public class ProfileService {
      * 프로필 수정하기
      */
     @Transactional
-    public ProfileDTO updateProfile(Integer profileId, UpdateProfileDTO updateProfileDTO) {
+    public ProfileDTO updateProfile(Integer profileId, ProfileDTO profileDTO) {
 
         // 프로필 아이디로 프로필을 찾기
         ProfileEntity profileEntity = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
         // 핀 번호 유효성 검증
-        String pinNumber = updateProfileDTO.getPinNumber();
+        String pinNumber = profileDTO.getPinNumber();
         if (pinNumber == null || pinNumber.length() != 4 || !pinNumber.matches("\\d+")) {
             throw new InvalidPinNumberException(ErrorCode.INVALID_PIN_NUMBER);
         }
 
         // 핀 번호 암호화
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        updateProfileDTO.setPinNumber(encoder.encode(pinNumber));
+        profileDTO.setPinNumber(encoder.encode(pinNumber));
 
         // 프로필 정보 업데이트
-        profileEntity.updateProfile(updateProfileDTO);
+        profileEntity.updateProfile(profileDTO);
 
         return ProfileDTO.mapEntityToDTO(profileEntity);
     }

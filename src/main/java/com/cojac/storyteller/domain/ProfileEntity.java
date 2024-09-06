@@ -54,10 +54,10 @@ public class ProfileEntity {
         book.updateProfile(this);
     }
 
-    public void updateProfile(UpdateProfileDTO updateProfileDTO) {
-        this.name = updateProfileDTO.getName();
-        this.birthDate = updateProfileDTO.getBirthDate();
-        this.imageUrl = updateProfileDTO.getImageUrl();
-        this.pinNumber = updateProfileDTO.getPinNumber();
+    public void updateProfile(ProfileDTO profileDTO) {
+        this.name = profileDTO.getName();
+        this.birthDate = profileDTO.getBirthDate();
+        this.imageUrl = profileDTO.getImageUrl();
+        this.pinNumber = profileDTO.getPinNumber();
     }
 }
