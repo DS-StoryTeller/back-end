@@ -1,30 +1,13 @@
-package com.cojac.storyteller.config;
+package com.cojac.storyteller.config.swagger;
 
-import com.cojac.storyteller.config.swagger.LoginSwaggerConfig;
-import com.cojac.storyteller.config.swagger.LogoutSwaggerConfig;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-import io.swagger.v3.oas.models.responses.ApiResponse;
-import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class SwaggerConfig {
@@ -43,7 +26,7 @@ public class SwaggerConfig {
 
         // Refresh 토큰 설정
         String refreshTokenKey = "refresh";
-        SecurityRequirement refreshSecurityRequirement = new SecurityRequirement().addList(refreshTokenKey);
+        new SecurityRequirement().addList(refreshTokenKey);
         SecurityScheme refreshSecurityScheme = new SecurityScheme()
                 .name(refreshTokenKey)
                 .type(SecurityScheme.Type.APIKEY)

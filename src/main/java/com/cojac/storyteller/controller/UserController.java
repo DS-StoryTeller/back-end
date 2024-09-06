@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -109,7 +110,8 @@ public class UserController {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "토큰 재발급을 성공했습니다."),
-            }
+            },
+            security = @SecurityRequirement(name = "refresh")
     )
     public ResponseEntity<ResponseDTO> reissueAccessToken(HttpServletRequest request,
                                                HttpServletResponse response,
