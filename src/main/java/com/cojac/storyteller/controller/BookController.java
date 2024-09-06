@@ -68,14 +68,10 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId) {
         List<BookListResponseDTO> books = bookService.getAllBooks(profileId);
-        if (books.isEmpty()) {
-            return ResponseEntity
-                    .status(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST.getStatus().value())
-                    .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, books));
-        }
+        ResponseCode responseCode = books.isEmpty() ? ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST : ResponseCode.SUCCESS_RETRIEVE_BOOKS;
         return ResponseEntity
-                .status(ResponseCode.SUCCESS_RETRIEVE_BOOKS.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_BOOKS, books));
+                .status(responseCode.getStatus().value())
+                .body(new ResponseDTO<>(responseCode, books));
     }
 
     /**
@@ -183,14 +179,10 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(@RequestParam Integer profileId) {
         List<BookListResponseDTO> favoriteBooks = bookService.getFavoriteBooks(profileId);
-        if (favoriteBooks.isEmpty()) {
-            return ResponseEntity
-                    .status(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST.getStatus().value())
-                    .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, favoriteBooks));
-        }
+        ResponseCode responseCode = favoriteBooks.isEmpty() ? ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST : ResponseCode.SUCCESS_RETRIEVE_FAVORITE_BOOKS;
         return ResponseEntity
-                .status(ResponseCode.SUCCESS_RETRIEVE_FAVORITE_BOOKS.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_FAVORITE_BOOKS, favoriteBooks));
+                .status(responseCode.getStatus().value())
+                .body(new ResponseDTO<>(responseCode, favoriteBooks));
     }
 
     /**
@@ -209,14 +201,10 @@ public class BookController {
     )
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(@RequestParam Integer profileId) {
         List<BookListResponseDTO> readingBooks = bookService.getReadingBooks(profileId);
-        if (readingBooks.isEmpty()) {
-            return ResponseEntity
-                    .status(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST.getStatus().value())
-                    .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST, readingBooks));
-        }
+        ResponseCode responseCode = readingBooks.isEmpty() ? ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST : ResponseCode.SUCCESS_RETRIEVE_READING_BOOKS;
         return ResponseEntity
-                .status(ResponseCode.SUCCESS_RETRIEVE_READING_BOOKS.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_READING_BOOKS, readingBooks));
+                .status(responseCode.getStatus().value())
+                .body(new ResponseDTO<>(responseCode, readingBooks));
     }
 
     /***
