@@ -9,17 +9,10 @@ import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.repository.LocalUserRepository;
 import com.cojac.storyteller.repository.SocialUserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,11 +46,11 @@ public class UserService {
      * 회원 등록하기
      */
     @Transactional
-    public LocalUserDTO registerUser(LocalUserDTO localUserDTO) {
-        String username = localUserDTO.getUsername();
-        String role = localUserDTO.getRole();
-        String email = localUserDTO.getEmail();
-        String encryptedPassword = bCryptPasswordEncoder.encode(localUserDTO.getPassword());
+    public LocalUserDTO registerUser(CreateUserRequestDTO createUserRequestDTO) {
+        String username = createUserRequestDTO.getUsername();
+        String role = createUserRequestDTO.getRole();
+        String email = createUserRequestDTO.getEmail();
+        String encryptedPassword = bCryptPasswordEncoder.encode(createUserRequestDTO.getPassword());
 
         if (localUserRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException(ErrorCode.DUPLICATE_USERNAME);
