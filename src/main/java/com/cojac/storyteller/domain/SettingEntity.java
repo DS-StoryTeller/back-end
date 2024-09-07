@@ -4,6 +4,8 @@ import com.cojac.storyteller.domain.setting.FontSize;
 import com.cojac.storyteller.domain.setting.ReadingSpeed;
 import com.cojac.storyteller.dto.setting.SettingDTO;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,8 @@ import static com.cojac.storyteller.domain.setting.ReadingSpeed.NORMAL;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SettingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
