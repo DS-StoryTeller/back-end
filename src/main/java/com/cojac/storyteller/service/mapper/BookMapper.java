@@ -3,6 +3,7 @@ package com.cojac.storyteller.service.mapper;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
+import com.cojac.storyteller.domain.SettingEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
 import com.cojac.storyteller.dto.page.PageDTO;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BookMapper {
-    public static BookEntity mapToBookEntity(String title, String content, String defaultCoverImage, ProfileEntity profile) {
+    public static BookEntity mapToBookEntity(String title, String content, String defaultCoverImage, ProfileEntity profile, SettingEntity setting) {
         BookEntity book = BookEntity.builder()
                 .title(title)
                 .coverImage(defaultCoverImage)
@@ -20,6 +21,7 @@ public class BookMapper {
                 .isReading(true)
                 .isFavorite(false)
                 .profile(profile)
+                .setting(setting)
                 .build();
 
         // \n\n 을 기준으로 동화 내용을 나눠 Page 객체를 추가
