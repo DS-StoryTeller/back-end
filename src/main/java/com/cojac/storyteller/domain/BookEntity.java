@@ -40,7 +40,7 @@ public class BookEntity {
     @Column(nullable = false)
     private boolean isFavorite;
 
-    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SettingEntity setting;
 
 
@@ -75,5 +75,4 @@ public class BookEntity {
         }
         this.currentPage = currentPage;
     }
-
 }
