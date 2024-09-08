@@ -83,7 +83,7 @@ public class BookService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        List<BookEntity> books = bookRepository.findFavoriteBooksByProfile(profile);
+        List<BookEntity> books = bookRepository.findByProfileAndIsFavoriteTrue(profile);
         return BookMapper.mapToBookListResponseDTOs(books);
     }
 
