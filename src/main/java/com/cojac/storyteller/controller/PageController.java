@@ -22,9 +22,8 @@ public class PageController {
     }
     @PostMapping("/updateImage")
     public ResponseDTO<PageDetailResponseDTO> updatePageDetail(
-            @ModelAttribute PageRequestDTO pageRequestDTO,
-            @RequestParam("imageFile") MultipartFile imageFile) {
-        PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO, imageFile);
+            @ModelAttribute PageRequestDTO pageRequestDTO) {
+        PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO);
         return new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE, pageDetail);
     }
 }
