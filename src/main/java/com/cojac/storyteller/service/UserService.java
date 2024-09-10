@@ -81,8 +81,17 @@ public class UserService {
     }
 
     /**
-     * 회원 등록하기
+     * 구글 소셜 로그인
      */
+    @Transactional
+    public void googleLogin(GoogleLoginRequestDTO googleLoginRequestDTO, HttpServletResponse response) {
+
+    }
+
+
+        /**
+         * 회원 등록하기
+         */
     @Transactional
     public LocalUserDTO registerUser(LocalUserDTO localUserDTO) {
         String username = localUserDTO.getUsername();
