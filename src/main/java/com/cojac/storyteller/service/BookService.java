@@ -67,6 +67,10 @@ public class BookService {
         savedBook.updateCoverImage(coverImageUrl);
         bookRepository.save(savedBook);
 
+        // Book에 해당하는 SettingEntity 생성
+        SettingEntity settingEntity = new SettingEntity(book);
+        settingRepository.save(settingEntity);
+
         return BookMapper.mapToBookDTO(savedBook);
     }
 
