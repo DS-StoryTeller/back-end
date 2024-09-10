@@ -8,6 +8,10 @@ import com.cojac.storyteller.exception.*;
 import com.cojac.storyteller.jwt.JWTUtil;
 import com.cojac.storyteller.repository.LocalUserRepository;
 import com.cojac.storyteller.repository.SocialUserRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +25,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Random;
 
 @Service
@@ -40,22 +45,44 @@ public class UserService {
     private final MailService mailService;
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
+    @Value("${google.client.id}")
+    private String CLIENT_ID;
 
     /**
      * 카카오 소셜 로그인
      */
     @Transactional
     public SocialUserDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response) {
+        return handleSocialLogin(
+                "kakao_" + kakaoLoginRequestDTO.getId(),
+                kakaoLoginRequestDTO.getNickname(),
+                kakaoLoginRequestDTO.getEmail(),
+                kakaoLoginRequestDTO.getRole(),
+                response
+        );
+    }
 
-        String accountId = "kakao_" + kakaoLoginRequestDTO.getId();
-        String nickname = kakaoLoginRequestDTO.getNickname();
-        String email = kakaoLoginRequestDTO.getEmail();
-        String role = kakaoLoginRequestDTO.getRole();
+    /**
+     * 구글 소셜 로그인
+     */
+    @Transactional
+    public SocialUserDTO googleLogin(GoogleLoginRequestDTO googleLoginRequestDTO, HttpServletResponse response) throws Exception {
+        GoogleIdToken.Payload payload = verifyIdToken(googleLoginRequestDTO);
 
+        return handleSocialLogin(
+                "google_" + payload.getSubject(),
+                (String) payload.get("name"),
+                payload.getEmail(),
+                googleLoginRequestDTO.getRole(),
+                response
+        );
+    }
+
+    private SocialUserDTO handleSocialLogin(String accountId, String nickname, String email, String role, HttpServletResponse response) {
         SocialUserEntity socialUserEntity = findOrCreateSocialUser(accountId, nickname, email, role);
         socialUserRepository.save(socialUserEntity);
 
-        //토큰 생성
+        // 토큰 생성
         String accessToken = jwtUtil.createJwt("social", "access", accountId, role, ACCESS_TOKEN_EXPIRATION);
         String refreshToken = jwtUtil.createJwt("social", "refresh", accountId, role, REFRESH_TOKEN_EXPIRATION);
 
@@ -70,6 +97,20 @@ public class UserService {
         return SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
     }
 
+    private GoogleIdToken.Payload verifyIdToken(GoogleLoginRequestDTO googleLoginRequestDTO) throws Exception {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
+                .setAudience(Collections.singletonList(CLIENT_ID))
+                .build();
+
+        // ID 토큰 검증
+        GoogleIdToken idToken = verifier.verify(googleLoginRequestDTO.getIdToken());
+        if (idToken != null) {
+            return idToken.getPayload(); // 사용자 정보 반환
+        } else {
+            throw new InvalidIdTokenException(ErrorCode.INVALID_ID_TOKEN);
+        }
+    }
+
     private SocialUserEntity findOrCreateSocialUser(String accountId, String nickname, String email, String role) {
         return socialUserRepository.findByAccountId(accountId)
                 .map(existingUser -> {
@@ -81,17 +122,8 @@ public class UserService {
     }
 
     /**
-     * 구글 소셜 로그인
+     * 회원 등록하기
      */
-    @Transactional
-    public void googleLogin(GoogleLoginRequestDTO googleLoginRequestDTO, HttpServletResponse response) {
-
-    }
-
-
-        /**
-         * 회원 등록하기
-         */
     @Transactional
     public LocalUserDTO registerUser(LocalUserDTO localUserDTO) {
         String username = localUserDTO.getUsername();

@@ -10,5 +10,7 @@ public class GoogleLoginRequestDTO {
 
     @NotBlank(message = "idToken을 입력해주세요.")
     private String idToken;
+    @NotBlank(message = "role를 입력해주세요.")
+    private String role;
 
 }
