@@ -1,7 +1,7 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.controller.swagger.UserControllerDocs;
+import com.cojac.storyteller.docs.UserControllerDocs;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.*;
 import com.cojac.storyteller.service.UserService;

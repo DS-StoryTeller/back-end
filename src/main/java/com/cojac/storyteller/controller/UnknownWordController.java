@@ -1,7 +1,7 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.controller.swagger.UnknownWordControllerDocs;
+import com.cojac.storyteller.docs.UnknownWordControllerDocs;
 import com.cojac.storyteller.dto.request.PageRequestDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.unknownWord.UnknownWordDetailDTO;

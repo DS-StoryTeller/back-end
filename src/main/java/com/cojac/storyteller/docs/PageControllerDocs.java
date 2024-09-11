@@ -1,4 +1,4 @@
-package com.cojac.storyteller.controller.swagger;
+package com.cojac.storyteller.docs;
 
 import com.cojac.storyteller.dto.request.PageRequestDTO;
 import com.cojac.storyteller.dto.response.ResponseDTO;
