@@ -5,7 +5,6 @@ import com.cojac.storyteller.controller.swagger.BookControllerDocs;
 import com.cojac.storyteller.dto.book.*;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.BookService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-@Tag(name = "Book Controller", description = "동화 관련 API")
 public class BookController implements BookControllerDocs {
 
     private final BookService bookService;
