@@ -1,17 +1,10 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
+import com.cojac.storyteller.controller.swagger.ProfileControllerDocs;
 import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.ProfileService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,8 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Profile Controller", description = "프로필 관련 API")
-public class ProfileController {
+public class ProfileController implements ProfileControllerDocs {
 
     private final ProfileService profileService;
 
@@ -33,13 +25,6 @@ public class ProfileController {
      * 프로필 사진 목록 가져오기
      */
     @GetMapping("/profiles/photos")
-    @Operation(
-            summary = "프로필 사진 목록 조회",
-            description = "프로필 사진의 목록을 조회 API",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필 사진 목록을 성공적으로 조회했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-            }
-    )
     public ResponseEntity<ResponseDTO> getProfilePhotos() {
         List<ProfilePhotoDTO> result = profileService.getProfilePhotos();
         return ResponseEntity
@@ -51,26 +36,6 @@ public class ProfileController {
      * 프로필 생성하기
      */
     @PostMapping("/profiles")
-    @Operation(
-            summary = "프로필 생성",
-            description = "새로운 프로필을 생성 API",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "프로필 생성 위한 정보",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            value = "{\"name\": \"프로필의 이름\", \"birthDate\": \"생년월일\", " +
-                                                    "\"imageUrl\": \"프로필 이미지 URL\", \"pinNumber\": \"핀 번호\", " +
-                                                    "\"userId\": \"사용자의 아이디\"}"
-                                    )
-                            }
-                    )
-            ),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 생성되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-            }
-    )
     public ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody ProfileDTO profileDTO) {
         ProfileDTO result = profileService.createProfile(profileDTO);
         return ResponseEntity
@@ -82,21 +47,6 @@ public class ProfileController {
      * 프로필 비밀번호 검증하기
      */
     @PostMapping("/profiles/{profileId}/pin-number/verifications")
-    @Operation(
-            summary = "프로필 비밀번호 검증",
-            description = "주어진 프로필 ID와 비밀번호를 검증 API",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "비밀번호 검증 정보",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = PinNumberDTO.class)
-                    )
-            ),
-            parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필의 비밀번호를 검증을 완료했습니다. valid를 확인해주세요.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-            }
-    )
     public ResponseEntity<ResponseDTO> verificationPinNumber(@PathVariable Integer profileId,
                                                              @Valid @RequestBody PinNumberDTO pinNumberDTO) {
         PinCheckResultDTO res = profileService.verificationPinNumber(profileId, pinNumberDTO);
@@ -109,27 +59,6 @@ public class ProfileController {
      * 프로필 수정하기
      */
     @PutMapping("/profiles/{profileId}")
-    @Operation(
-            summary = "프로필 수정",
-            description = "주어진 프로필 ID를 사용하여 프로필 정보를 수정 API",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "프로필 수정을 위한 정보",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            value = "{\"name\": \"프로필의 이름\", \"birthDate\": \"생년월일\", " +
-                                                    "\"imageUrl\": \"프로필 이미지 URL\", \"pinNumber\": \"핀 번호\"}"
-                                    )
-                            }
-                    )
-            ),
-            parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 수정되었습니다.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class)))
-            }
-    )
     public ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId,
                                                      @Valid @RequestBody ProfileDTO profileDTO) {
         ProfileDTO result = profileService.updateProfile(profileId, profileDTO);
@@ -142,15 +71,6 @@ public class ProfileController {
      * 프로필 정보 불러오기
      */
     @GetMapping("/profiles/{profileId}")
-    @Operation(
-            summary = "프로필 정보 불러오기",
-            description = "주어진 프로필 ID를 사용하여 프로필 정보 조회 API",
-            parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필을 성공적으로 조회했습니다.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class)))
-            }
-    )
     public ResponseEntity<ResponseDTO> getProfile(@PathVariable Integer profileId) {
         ProfileDTO result = profileService.getProfile(profileId);
         return ResponseEntity
@@ -162,17 +82,6 @@ public class ProfileController {
      * 프로필 목록 불러오기
      */
     @GetMapping("/users/{userId}/profiles")
-    @Operation(
-            summary = "프로필 목록 불러오기",
-            description = "주어진 조건으로 프로필 목록 조회 API",
-            parameters = {
-                    @Parameter(name = "userId", in = ParameterIn.QUERY, description = "사용자 ID", required = true)
-            },
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필 목록을 성공적으로 조회했습니다.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class)))
-            }
-    )
     public ResponseEntity<ResponseDTO> getProfileList(@PathVariable Integer userId) {
         List<ProfileDTO> result = profileService.getProfileList(userId);
         return ResponseEntity
@@ -184,14 +93,6 @@ public class ProfileController {
      * 프로필 삭제하기
      */
     @DeleteMapping("/profiles/{profileId}")
-    @Operation(
-            summary = "프로필 삭제하기",
-            description = "주어진 프로필 ID를 사용하여 프로필을 삭제 API",
-            parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 삭제되었습니다."),
-            }
-    )
     public ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId) {
         profileService.deleteProfile(profileId);
         return ResponseEntity
@@ -203,13 +104,6 @@ public class ProfileController {
      * 프로필 사진 S3에 업로드
      */
     @PostMapping(value = "/profiles/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "프로필 사진 업로드",
-            description = "프로필 사진을 S3에 업로드합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필 사진들을 성공적으로 업로드했습니다."),
-            }
-    )
     public ResponseEntity<ResponseDTO> uploadProfilePhotos(@RequestParam("files") MultipartFile[] files) throws IOException {
         profileService.uploadMultipleFilesToS3(files);
         return ResponseEntity
