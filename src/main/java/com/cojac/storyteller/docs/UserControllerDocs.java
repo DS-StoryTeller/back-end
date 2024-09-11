@@ -32,6 +32,8 @@ public interface UserControllerDocs {
             description = "자체 회원가입 API",
             responses = {
                     @ApiResponse(responseCode = "200", description = "회원가입을 성공했습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+                    @ApiResponse(responseCode = "409", description = "중복된 유저 아이디입니다."),
             }
     )
     ResponseEntity<ResponseDTO> registerUser(@ParameterObject @Valid CreateUserRequestDTO createUserRequestDTO);
@@ -55,6 +57,7 @@ public interface UserControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "아이디가 사용 검증 완료했습니다. authResult를 확인해주세요."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
             }
     )
     ResponseEntity<ResponseDTO> verifiedUsername(@Valid @RequestBody UsernameDTO usernameDTO);
@@ -83,6 +86,9 @@ public interface UserControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "토큰 재발급을 성공했습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+                    @ApiResponse(responseCode = "401", description = "유효하지 않은 Refresh 토큰입니다."),
+                    @ApiResponse(responseCode = "401", description = "토큰이 만료되었습니다."),
             },
             security = @SecurityRequirement(name = "refresh")
     )
@@ -109,6 +115,9 @@ public interface UserControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "해당 이메일로 인증 코드가 전송되었습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+                    @ApiResponse(responseCode = "500", description = "내부 서버 오류입니다."),
+
             }
     )
     ResponseEntity<ResponseDTO> sendEmailVerification(@Valid @RequestBody EmailDTO emailDTO);
@@ -132,6 +141,8 @@ public interface UserControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "인증 코드가 검증 완료했습니다. authResult를 확인해주세요."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+                    @ApiResponse(responseCode = "409", description = "이미 가입된 이메일입니다."),
             }
     )
     ResponseEntity<ResponseDTO> verificationEmailCode(@Valid @RequestBody EmailDTO emailDTO);
