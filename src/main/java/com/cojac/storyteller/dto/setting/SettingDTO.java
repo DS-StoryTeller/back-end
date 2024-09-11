@@ -17,6 +17,9 @@ public class SettingDTO {
     private ReadingSpeed readingSpeed;
 
     public static SettingDTO toDto(SettingEntity settingEntity) {
-        return new SettingDTO(settingEntity.getFontSize(), settingEntity.getReadingSpeed());
+        return SettingDTO.builder()
+                .fontSize(settingEntity.getFontSize())
+                .readingSpeed(settingEntity.getReadingSpeed())
+                .build();
     }
 }

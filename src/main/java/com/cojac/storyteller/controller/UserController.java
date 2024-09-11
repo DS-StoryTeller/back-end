@@ -39,6 +39,17 @@ public class UserController {
     }
 
     /**
+     * 구글 소셜 로그인
+     */
+    @PostMapping("/google-login")
+    public ResponseEntity<ResponseDTO> googleLogin(@RequestBody @Valid GoogleLoginRequestDTO googleLoginRequestDTO, HttpServletResponse response) throws Exception {
+        SocialUserDTO res = userService.googleLogin(googleLoginRequestDTO, response);
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_GOOGLE_LOGIN.getStatus().value())
+                .body(new ResponseDTO<>(ResponseCode.SUCCESS_GOOGLE_LOGIN, res));
+    }
+
+    /**
      * 자체 회원가입
      */
     @PostMapping("/register")
