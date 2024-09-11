@@ -63,7 +63,7 @@ public class PageService {
                 .build();
     }
 
-    public PageDetailResponseDTO updatePageImage(PageRequestDTO requestDto, MultipartFile imageFile) {
+    public PageDetailResponseDTO updatePageImage(PageRequestDTO requestDto) {
         // 해당 프로필 가져오기
         ProfileEntity profile = profileRepository.findById(requestDto.getProfileId())
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));

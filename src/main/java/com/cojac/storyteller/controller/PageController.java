@@ -56,9 +56,8 @@ public class PageController {
                     @ApiResponse(responseCode = "200", description = "페이지 이미지를 성공적으로 변경했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
             }
     )
-    public ResponseEntity<ResponseDTO> updatePageDetail(@RequestParam("imageFile") MultipartFile imageFile,
-                                                        @ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
-        PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO, imageFile);
+    public ResponseEntity<ResponseDTO> updatePageDetail(@ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
+        PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE, pageDetail));
