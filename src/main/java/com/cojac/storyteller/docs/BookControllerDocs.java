@@ -37,8 +37,8 @@ public interface BookControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "동화가 성공적으로 생성되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
 
             }
     )
@@ -55,8 +55,8 @@ public interface BookControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "동화 목록을 성공적으로 조회했습니다.", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId);
@@ -73,9 +73,9 @@ public interface BookControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "동화 세부 정보를 성공적으로 조회했습니다.", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<BookDetailResponseDTO>> getBookDetail(@RequestParam Integer profileId, @RequestParam Integer bookId);
@@ -92,9 +92,9 @@ public interface BookControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "즐겨찾기 상태를 성공적으로 변경했습니다.", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<Boolean>> isFavorite(@RequestParam Integer profileId, @RequestParam Integer bookId);
@@ -110,10 +110,10 @@ public interface BookControllerDocs {
                     @Parameter(name = "bookId", in = ParameterIn.PATH, description = "동화 ID", required = true)
             },
             responses = {
-                    @ApiResponse(responseCode = "200", description = "동화를 성공적으로 삭제했습니다."),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "200", description = "동화를 성공적으로 삭제했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> deleteBook(@RequestParam Integer profileId, @RequestParam Integer bookId);
@@ -131,9 +131,9 @@ public interface BookControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "현재 읽고 있는 페이지를 성공적으로 변경했습니다.", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<BookDTO>> updateCurrentPage(@RequestParam Integer profileId, @RequestParam Integer bookId, @RequestParam Integer currentPage);
@@ -149,8 +149,8 @@ public interface BookControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "즐겨찾기 목록을 성공적으로 조회했습니다.", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(@RequestParam Integer profileId);
@@ -166,8 +166,8 @@ public interface BookControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "읽고 있는 동화 목록을 성공적으로 조회했습니다.", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(@RequestParam Integer profileId);
@@ -184,9 +184,9 @@ public interface BookControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "퀴즈가 성공적으로 생성되었습니다.", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<?>> createQuiz(@RequestParam Integer profileId, @RequestParam Integer bookId);

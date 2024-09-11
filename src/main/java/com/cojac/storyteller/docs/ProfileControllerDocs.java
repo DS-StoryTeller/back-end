@@ -32,7 +32,7 @@ public interface ProfileControllerDocs {
             description = "프로필 사진의 목록을 조회 API",
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필 사진 목록을 성공적으로 조회했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> getProfilePhotos();
@@ -58,8 +58,8 @@ public interface ProfileControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 생성되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "400", description = "잘못된 핀 번호입니다."),
+                    @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 핀 번호입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody ProfileDTO profileDTO);
@@ -80,8 +80,8 @@ public interface ProfileControllerDocs {
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
             responses = {
                     @ApiResponse(responseCode = "200", description = "프로필의 비밀번호를 검증을 완료했습니다. valid를 확인해주세요.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "400", description = "프로필을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> verificationPinNumber(@PathVariable Integer profileId,
@@ -106,11 +106,10 @@ public interface ProfileControllerDocs {
             ),
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 수정되었습니다.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class))),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필릏 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "400", description = "잘못된 핀 번호입니다."),
+                    @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 수정되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필릏 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 핀 번호입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId,
@@ -124,10 +123,9 @@ public interface ProfileControllerDocs {
             description = "주어진 프로필 ID를 사용하여 프로필 정보 조회 API",
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필을 성공적으로 조회했습니다.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class))),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필릏 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "200", description = "프로필을 성공적으로 조회했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필릏 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> getProfile(@PathVariable Integer profileId);
@@ -139,10 +137,9 @@ public interface ProfileControllerDocs {
             summary = "프로필 목록 불러오기",
             description = "주어진 조건으로 프로필 목록 조회 API",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필 목록을 성공적으로 조회했습니다.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class))),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "200", description = "프로필 목록을 성공적으로 조회했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> getProfileList(@PathVariable Integer userId);
@@ -155,9 +152,9 @@ public interface ProfileControllerDocs {
             description = "주어진 프로필 ID를 사용하여 프로필을 삭제 API",
             parameters = @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 삭제되었습니다."),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필릏 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "200", description = "프로필이 성공적으로 삭제되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필릏 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId);

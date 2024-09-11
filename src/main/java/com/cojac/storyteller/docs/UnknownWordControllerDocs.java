@@ -39,10 +39,10 @@ public interface UnknownWordControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "단어가 성공적으로 저장되었습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "페이지를 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "페이지를 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<UnknownWordDetailDTO>> createUnknownWord(@ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO,
@@ -59,8 +59,8 @@ public interface UnknownWordControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "단어가 성공적으로 삭제되었습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO> deleteUnknownWord(@PathVariable("unknownWordId") Integer unknownWordId);

@@ -35,9 +35,9 @@ public interface SettingControllerDocs {
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "책 설정을 성공적으로 변경했습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<SettingDTO>> updateSettings(
@@ -58,9 +58,9 @@ public interface SettingControllerDocs {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "책 설정을 성공적으로 조회했습니다", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
-                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다."),
-                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다."),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
     ResponseEntity<ResponseDTO<SettingDTO>> getDetailSettings(
