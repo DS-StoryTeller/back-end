@@ -4,7 +4,6 @@ import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
-import com.cojac.storyteller.domain.SettingEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
