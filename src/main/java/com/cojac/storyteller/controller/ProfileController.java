@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/profiles")
 @RequiredArgsConstructor
 @Tag(name = "Profile Controller", description = "프로필 관련 API")
 public class ProfileController {
@@ -33,7 +32,7 @@ public class ProfileController {
     /**
      * 프로필 사진 목록 가져오기
      */
-    @GetMapping("/photos")
+    @GetMapping("/profiles/photos")
     @Operation(
             summary = "프로필 사진 목록 조회",
             description = "프로필 사진의 목록을 조회 API",
@@ -51,7 +50,7 @@ public class ProfileController {
     /**
      * 프로필 생성하기
      */
-    @PostMapping
+    @PostMapping("/profiles")
     @Operation(
             summary = "프로필 생성",
             description = "새로운 프로필을 생성 API",
@@ -82,7 +81,7 @@ public class ProfileController {
     /**
      * 프로필 비밀번호 검증하기
      */
-    @PostMapping("/{profileId}/pin-number/verifications")
+    @PostMapping("/profiles/{profileId}/pin-number/verifications")
     @Operation(
             summary = "프로필 비밀번호 검증",
             description = "주어진 프로필 ID와 비밀번호를 검증 API",
@@ -109,7 +108,7 @@ public class ProfileController {
     /**
      * 프로필 수정하기
      */
-    @PutMapping("/{profileId}")
+    @PutMapping("/profiles/{profileId}")
     @Operation(
             summary = "프로필 수정",
             description = "주어진 프로필 ID를 사용하여 프로필 정보를 수정 API",
@@ -142,7 +141,7 @@ public class ProfileController {
     /**
      * 프로필 정보 불러오기
      */
-    @GetMapping("/{profileId}")
+    @GetMapping("/profiles/{profileId}")
     @Operation(
             summary = "프로필 정보 불러오기",
             description = "주어진 프로필 ID를 사용하여 프로필 정보 조회 API",
@@ -162,7 +161,7 @@ public class ProfileController {
     /**
      * 프로필 목록 불러오기
      */
-    @GetMapping
+    @GetMapping("/users/{userId}/profiles")
     @Operation(
             summary = "프로필 목록 불러오기",
             description = "주어진 조건으로 프로필 목록 조회 API",
@@ -174,7 +173,7 @@ public class ProfileController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class)))
             }
     )
-    public ResponseEntity<ResponseDTO> getProfileList(@RequestParam(required = false) Integer userId) {
+    public ResponseEntity<ResponseDTO> getProfileList(@PathVariable Integer userId) {
         List<ProfileDTO> result = profileService.getProfileList(userId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_GET_PROFILE_LIST.getStatus().value())
@@ -184,7 +183,7 @@ public class ProfileController {
     /**
      * 프로필 삭제하기
      */
-    @DeleteMapping("/{profileId}")
+    @DeleteMapping("/profiles/{profileId}")
     @Operation(
             summary = "프로필 삭제하기",
             description = "주어진 프로필 ID를 사용하여 프로필을 삭제 API",
@@ -203,7 +202,7 @@ public class ProfileController {
     /**
      * 프로필 사진 S3에 업로드
      */
-    @PostMapping(value = "/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/profiles/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "프로필 사진 업로드",
             description = "프로필 사진을 S3에 업로드합니다.",
