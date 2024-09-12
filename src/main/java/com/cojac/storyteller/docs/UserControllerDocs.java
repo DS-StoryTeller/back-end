@@ -1,10 +1,8 @@
 package com.cojac.storyteller.docs;
 
+import com.cojac.storyteller.code.ResponseCode;
 import com.cojac.storyteller.dto.response.ResponseDTO;
-import com.cojac.storyteller.dto.user.CreateUserRequestDTO;
-import com.cojac.storyteller.dto.user.EmailDTO;
-import com.cojac.storyteller.dto.user.ReissueDTO;
-import com.cojac.storyteller.dto.user.UsernameDTO;
+import com.cojac.storyteller.dto.user.*;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,12 +15,41 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 
 @Tag(name = "User Controller", description = "유저 관련 API")
 public interface UserControllerDocs {
+
+    /**
+     * 카카오 소셜 로그인
+     */
+    @Operation(
+            summary = "카카오 소셜 로그인",
+            description = "카카오 소셜 로그인 API",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "회원가입을 성공했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "401", description = "토큰이 만료되었습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            }
+    )
+    ResponseEntity<ResponseDTO> kakaoLogin(@RequestBody @Valid KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response);
+
+    /**
+     * 구글 소셜 로그인
+     */
+    @Operation(
+            summary = "구글 소셜 로그인",
+            description = "구글 소셜 로그인 API",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "회원가입을 성공했습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 구글의 IdToken입니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            }
+    )
+    ResponseEntity<ResponseDTO> googleLogin(@RequestBody @Valid GoogleLoginRequestDTO googleLoginRequestDTO, HttpServletResponse response) throws Exception;
 
     /**
      * 자체 회원가입

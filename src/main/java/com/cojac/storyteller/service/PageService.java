@@ -29,7 +29,6 @@ public class PageService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
     private final UnknownWordRepository unknownWordRepository;
-    private final ImageGenerationService imageGenerationService;
 
     public PageDetailResponseDTO getPageDetail(PageRequestDTO requestDto) {
         Integer profileId = requestDto.getProfileId();
