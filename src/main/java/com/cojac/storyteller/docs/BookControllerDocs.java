@@ -59,7 +59,11 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId);
+    ResponseEntity<ResponseDTO>  getBookList(
+            @RequestParam Integer profileId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "id,asc") String[] sort);
 
     /**
      * 동화 세부 정보 조회

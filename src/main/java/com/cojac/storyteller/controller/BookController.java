@@ -6,6 +6,10 @@ import com.cojac.storyteller.dto.book.*;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +37,15 @@ public class BookController implements BookControllerDocs {
      * 동화 목록 조회
      */
     @GetMapping("/booklist")
-    public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId) {
-        List<BookListResponseDTO> books = bookService.getAllBooks(profileId);
+    public ResponseEntity<ResponseDTO> getBookList(
+            @RequestParam Integer profileId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id,asc") String[] sort) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort[0]).ascending());
+
+        List<BookListResponseDTO> books = bookService.getBooksPage(profileId, pageable);
         ResponseCode responseCode = books.isEmpty() ? ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST : ResponseCode.SUCCESS_RETRIEVE_BOOKS;
         return ResponseEntity
                 .status(responseCode.getStatus().value())

@@ -16,6 +16,8 @@ import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,12 +70,15 @@ public class BookService {
         return BookMapper.mapToBookDTO(savedBook);
     }
 
-    public List<BookListResponseDTO> getAllBooks(Integer profileId) {
+    /**
+     * 책 목록 조회
+     */
+    public List<BookListResponseDTO> getBooksPage(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        List<BookEntity> books = bookRepository.findByProfile(profile);
-        return BookMapper.mapToBookListResponseDTOs(books);
+        Page<BookEntity> booksPage = bookRepository.findByProfile(profile, pageable);
+        return BookMapper.mapToBookListResponseDTOs(booksPage.getContent());
     }
 
     // 즐겨찾기 책 필터링 기능 추가
