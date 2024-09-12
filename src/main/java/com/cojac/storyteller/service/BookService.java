@@ -82,21 +82,21 @@ public class BookService {
     }
 
     // 즐겨찾기 책 필터링 기능 추가
-    public List<BookListResponseDTO> getFavoriteBooks(Integer profileId) {
+    public List<BookListResponseDTO> getFavoriteBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        List<BookEntity> books = bookRepository.findByProfileAndIsFavoriteTrue(profile);
-        return BookMapper.mapToBookListResponseDTOs(books);
+        Page<BookEntity> books = bookRepository.findByProfileAndIsFavoriteTrue(profile, pageable);
+        return BookMapper.mapToBookListResponseDTOs(books.getContent());
     }
 
     // 읽고 있는 책 필터링 기능 추가
-    public List<BookListResponseDTO> getReadingBooks(Integer profileId) {
+    public List<BookListResponseDTO> getReadingBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        List<BookEntity> books = bookRepository.findByProfileAndIsReadingTrue(profile);
-        return BookMapper.mapToBookListResponseDTOs(books);
+        Page<BookEntity> books = bookRepository.findByProfileAndIsReadingTrue(profile, pageable);
+        return BookMapper.mapToBookListResponseDTOs(books.getContent());
     }
 
     public BookDetailResponseDTO getBookDetail(Integer profileId, Integer bookId) {

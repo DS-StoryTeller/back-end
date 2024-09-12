@@ -5,11 +5,12 @@ import com.cojac.storyteller.docs.BookControllerDocs;
 import com.cojac.storyteller.dto.book.*;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.BookService;
+import jakarta.persistence.EntityListeners;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +41,9 @@ public class BookController implements BookControllerDocs {
     public ResponseEntity<ResponseDTO> getBookList(
             @RequestParam Integer profileId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) {
+            @RequestParam(defaultValue = "12") int size) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort[0]).ascending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         List<BookListResponseDTO> books = bookService.getBooksPage(profileId, pageable);
         ResponseCode responseCode = books.isEmpty() ? ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST : ResponseCode.SUCCESS_RETRIEVE_BOOKS;
@@ -97,11 +97,18 @@ public class BookController implements BookControllerDocs {
     }
 
     /**
-     * 즐겨찾기 동화 필터링
+     * 즐겨찾기 동화 조회
      */
     @GetMapping("/favorites")
-    public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(@RequestParam Integer profileId) {
-        List<BookListResponseDTO> favoriteBooks = bookService.getFavoriteBooks(profileId);
+    public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(
+            @RequestParam Integer profileId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort[0]).ascending());
+
+        List<BookListResponseDTO> favoriteBooks = bookService.getFavoriteBooks(profileId, pageable);
         ResponseCode responseCode = favoriteBooks.isEmpty() ? ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST : ResponseCode.SUCCESS_RETRIEVE_FAVORITE_BOOKS;
         return ResponseEntity
                 .status(responseCode.getStatus().value())
@@ -109,11 +116,18 @@ public class BookController implements BookControllerDocs {
     }
 
     /**
-     * 읽고 있는 동화 필터링
+     * 읽고 있는 동화 조회
      */
     @GetMapping("/reading")
-    public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(@RequestParam Integer profileId) {
-        List<BookListResponseDTO> readingBooks = bookService.getReadingBooks(profileId);
+    public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(
+            @RequestParam Integer profileId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String[] sort) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort[0]).ascending());
+
+        List<BookListResponseDTO> readingBooks = bookService.getReadingBooks(profileId, pageable);
         ResponseCode responseCode = readingBooks.isEmpty() ? ResponseCode.SUCCESS_RETRIEVE_EMPTY_LIST : ResponseCode.SUCCESS_RETRIEVE_READING_BOOKS;
         return ResponseEntity
                 .status(responseCode.getStatus().value())
