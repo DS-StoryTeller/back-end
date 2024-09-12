@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -41,6 +40,45 @@ public class UserService {
     private final MailService mailService;
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
+
+    /**
+     * 카카오 소셜 로그인
+     */
+    @Transactional
+    public SocialUserDTO kakaoLogin(KakaoLoginRequestDTO kakaoLoginRequestDTO, HttpServletResponse response) {
+
+        String accountId = "kakao_" + kakaoLoginRequestDTO.getId();
+        String nickname = kakaoLoginRequestDTO.getNickname();
+        String email = kakaoLoginRequestDTO.getEmail();
+        String role = kakaoLoginRequestDTO.getRole();
+
+        SocialUserEntity socialUserEntity = findOrCreateSocialUser(accountId, nickname, email, role);
+        socialUserRepository.save(socialUserEntity);
+
+        //토큰 생성
+        String accessToken = jwtUtil.createJwt("social", "access", accountId, role, ACCESS_TOKEN_EXPIRATION);
+        String refreshToken = jwtUtil.createJwt("social", "refresh", accountId, role, REFRESH_TOKEN_EXPIRATION);
+
+        // Redis에 refresh 토큰 저장
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + accountId;
+        redisService.setValues(refreshTokenKey, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRATION));
+
+        // 응답 헤더에 JWT 설정
+        response.setHeader("access", accessToken);
+        response.setHeader("refresh", refreshToken);
+
+        return SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
+    }
+
+    private SocialUserEntity findOrCreateSocialUser(String accountId, String nickname, String email, String role) {
+        return socialUserRepository.findByAccountId(accountId)
+                .map(existingUser -> {
+                    existingUser.updateUsername(nickname);
+                    existingUser.updateEmail(email);
+                    return existingUser;
+                })
+                .orElseGet(() -> new SocialUserEntity(accountId, nickname, email, role));
+    }
 
     /**
      * 회원 등록하기
@@ -86,7 +124,7 @@ public class UserService {
     /**
      * 토큰 재발급
      */
-    public UserDTO reissueToken(HttpServletRequest request, HttpServletResponse response, @RequestBody ReissueDTO reissueDTO) throws IOException {
+    public UserDTO reissueToken(HttpServletRequest request, HttpServletResponse response, ReissueDTO reissueDTO) throws IOException {
         String refreshToken = getRefreshTokenFromRequest(request);
         validateToken(refreshToken);
         validateCategory(refreshToken);
@@ -208,14 +246,7 @@ public class UserService {
         SocialUserEntity socialUserEntity = socialUserRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        UserDTO userDTO = SocialUserDTO.builder()
-                .id(socialUserEntity.getId())
-                .username(socialUserEntity.getEmail())
-                .accountId(accountId)
-                .role(role)
-                .build();
-
-        return userDTO;
+        return SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
     }
 
     private String hasValueInRedis(String userKey) {

@@ -89,6 +89,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/register").permitAll()
                         .requestMatchers("/username/verifications", "/emails/verification-requests", "/emails/verifications").permitAll()
+                        .requestMatchers("/kakao-login", "/google-login").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/storyTeller-api/**").permitAll()
                         .anyRequest().authenticated());
