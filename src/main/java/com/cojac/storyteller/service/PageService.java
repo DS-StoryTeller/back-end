@@ -62,27 +62,4 @@ public class PageService {
                 .build();
     }
 
-    public PageDetailResponseDTO updatePageImage(PageRequestDTO requestDto) {
-        // 해당 프로필 가져오기
-        ProfileEntity profile = profileRepository.findById(requestDto.getProfileId())
-                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
-
-        // 해당 프로필에 해당하는 책 가져오기
-        BookEntity book = bookRepository.findByIdAndProfile(requestDto.getBookId(), profile)
-                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
-
-        // 해당 책에 해당하는 페이지 가져오기
-        PageEntity page = pageRepository.findByBookAndPageNumber(book, requestDto.getPageNum())
-                .orElseThrow(() -> new PageNotFoundException(ErrorCode.PAGE_NOT_FOUND));
-
-        // 페이지 이미지 생성 및 업로드
-        String imageUrl = imageGenerationService.generateAndUploadPageImage(page.getContent());
-
-        // 페이지 엔티티 업데이트
-        page.setImage(imageUrl);
-        pageRepository.save(page);
-
-        // 처음 페이지가 로딩될 때 이미지가 삽입되기에, 처음 본다고 가정. unknownWords는 null로 반환
-        return new PageDetailResponseDTO(page.getId(), page.getPageNumber(), imageUrl, page.getContent(), null);
-    }
 }

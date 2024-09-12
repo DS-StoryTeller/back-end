@@ -29,14 +29,4 @@ public class PageController implements PageControllerDocs {
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_PAGE_DETAILS, pageDetail));
     }
 
-    /**
-     * 페이지 이미지 업데이트
-     */
-    @PostMapping(value = "/updateImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO> updatePageDetail(@ParameterObject @ModelAttribute PageRequestDTO pageRequestDTO) {
-        PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO);
-        return ResponseEntity
-                .status(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE.getStatus().value())
-                .body(new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE, pageDetail));
-    }
 }
