@@ -14,7 +14,6 @@ import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.SettingRepository;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,10 +64,6 @@ public class BookService {
         String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
         savedBook.updateCoverImage(coverImageUrl);
         bookRepository.save(savedBook);
-
-        // Book에 해당하는 SettingEntity 생성
-        SettingEntity settingEntity = new SettingEntity(book);
-        settingRepository.save(settingEntity);
 
         return BookMapper.mapToBookDTO(savedBook);
     }

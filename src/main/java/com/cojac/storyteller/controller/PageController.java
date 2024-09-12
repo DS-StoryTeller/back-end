@@ -7,7 +7,6 @@ import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.PageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/pages")
@@ -20,10 +19,5 @@ public class PageController {
         PageDetailResponseDTO pageDetail = pageService.getPageDetail(pageRequestDTO);
         return new ResponseDTO<>(ResponseCode.SUCCESS_RETRIEVE_PAGE_DETAILS, pageDetail);
     }
-    @PostMapping("/updateImage")
-    public ResponseDTO<PageDetailResponseDTO> updatePageDetail(
-            @ModelAttribute PageRequestDTO pageRequestDTO) {
-        PageDetailResponseDTO pageDetail = pageService.updatePageImage(pageRequestDTO);
-        return new ResponseDTO<>(ResponseCode.SUCCESS_UPDATE_PAGE_IMAGE, pageDetail);
-    }
+
 }

@@ -1,14 +1,13 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
-import com.cojac.storyteller.dto.profile.PinCheckResultDTO;
-import com.cojac.storyteller.dto.profile.PinNumberDTO;
-import com.cojac.storyteller.dto.profile.ProfileDTO;
-import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
+import com.cojac.storyteller.docs.ProfileControllerDocs;
+import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,16 +16,15 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/profiles")
 @RequiredArgsConstructor
-public class ProfileController {
+public class ProfileController implements ProfileControllerDocs {
 
     private final ProfileService profileService;
 
     /**
      * 프로필 사진 목록 가져오기
      */
-    @GetMapping("/photos")
+    @GetMapping("/profiles/photos")
     public ResponseEntity<ResponseDTO> getProfilePhotos() {
         List<ProfilePhotoDTO> result = profileService.getProfilePhotos();
         return ResponseEntity
@@ -37,7 +35,7 @@ public class ProfileController {
     /**
      * 프로필 생성하기
      */
-    @PostMapping
+    @PostMapping("/profiles")
     public ResponseEntity<ResponseDTO> createProfile(@Valid @RequestBody ProfileDTO profileDTO) {
         ProfileDTO result = profileService.createProfile(profileDTO);
         return ResponseEntity
@@ -46,9 +44,9 @@ public class ProfileController {
     }
 
     /**
-     * 프로필 비밀번호 체크하기
+     * 프로필 비밀번호 검증하기
      */
-    @PostMapping("/{profileId}/pin-number/verifications")
+    @PostMapping("/profiles/{profileId}/pin-number/verifications")
     public ResponseEntity<ResponseDTO> verificationPinNumber(@PathVariable Integer profileId,
                                                              @Valid @RequestBody PinNumberDTO pinNumberDTO) {
         PinCheckResultDTO res = profileService.verificationPinNumber(profileId, pinNumberDTO);
@@ -60,7 +58,7 @@ public class ProfileController {
     /**
      * 프로필 수정하기
      */
-    @PutMapping("/{profileId}")
+    @PutMapping("/profiles/{profileId}")
     public ResponseEntity<ResponseDTO> updateProfile(@PathVariable Integer profileId,
                                                      @Valid @RequestBody ProfileDTO profileDTO) {
         ProfileDTO result = profileService.updateProfile(profileId, profileDTO);
@@ -72,7 +70,7 @@ public class ProfileController {
     /**
      * 프로필 정보 불러오기
      */
-    @GetMapping("/{profileId}")
+    @GetMapping("/profiles/{profileId}")
     public ResponseEntity<ResponseDTO> getProfile(@PathVariable Integer profileId) {
         ProfileDTO result = profileService.getProfile(profileId);
         return ResponseEntity
@@ -83,9 +81,9 @@ public class ProfileController {
     /**
      * 프로필 목록 불러오기
      */
-    @GetMapping
-    public ResponseEntity<ResponseDTO> getProfileList(@RequestBody ProfileDTO profileDTO) {
-        List<ProfileDTO> result = profileService.getProfileList(profileDTO);
+    @GetMapping("/users/{userId}/profiles")
+    public ResponseEntity<ResponseDTO> getProfileList(@PathVariable Integer userId) {
+        List<ProfileDTO> result = profileService.getProfileList(userId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_GET_PROFILE_LIST.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_GET_PROFILE_LIST, result));
@@ -94,7 +92,7 @@ public class ProfileController {
     /**
      * 프로필 삭제하기
      */
-    @DeleteMapping("/{profileId}")
+    @DeleteMapping("/profiles/{profileId}")
     public ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId) {
         profileService.deleteProfile(profileId);
         return ResponseEntity
@@ -105,7 +103,7 @@ public class ProfileController {
     /**
      * 프로필 사진 S3에 업로드
      */
-    @PostMapping("/photos")
+    @PostMapping(value = "/profiles/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDTO> uploadProfilePhotos(@RequestParam("files") MultipartFile[] files) throws IOException {
         profileService.uploadMultipleFilesToS3(files);
         return ResponseEntity

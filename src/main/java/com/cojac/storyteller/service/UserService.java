@@ -125,11 +125,11 @@ public class UserService {
      * 회원 등록하기
      */
     @Transactional
-    public LocalUserDTO registerUser(LocalUserDTO localUserDTO) {
-        String username = localUserDTO.getUsername();
-        String role = localUserDTO.getRole();
-        String email = localUserDTO.getEmail();
-        String encryptedPassword = bCryptPasswordEncoder.encode(localUserDTO.getPassword());
+    public LocalUserDTO registerUser(CreateUserRequestDTO createUserRequestDTO) {
+        String username = createUserRequestDTO.getUsername();
+        String role = createUserRequestDTO.getRole();
+        String email = createUserRequestDTO.getEmail();
+        String encryptedPassword = bCryptPasswordEncoder.encode(createUserRequestDTO.getPassword());
 
         if (localUserRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException(ErrorCode.DUPLICATE_USERNAME);

@@ -3,10 +3,7 @@ package com.cojac.storyteller.service;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UserEntity;
-import com.cojac.storyteller.dto.profile.PinCheckResultDTO;
-import com.cojac.storyteller.dto.profile.PinNumberDTO;
-import com.cojac.storyteller.dto.profile.ProfileDTO;
-import com.cojac.storyteller.dto.profile.ProfilePhotoDTO;
+import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
@@ -18,11 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -143,9 +137,9 @@ public class ProfileService {
     /**
      * 프로필 목록 조회하기
      */
-    public List<ProfileDTO> getProfileList(ProfileDTO profileDTO) {
+    public List<ProfileDTO> getProfileList(Integer userId) {
 
-        UserEntity user = userRepository.findById(profileDTO.getUserId())
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
         List<ProfileEntity> profileEntityList = profileRepository.findByUser_Id(user.getId());

@@ -1,6 +1,7 @@
 package com.cojac.storyteller.controller;
 
 import com.cojac.storyteller.code.ResponseCode;
+import com.cojac.storyteller.docs.UserControllerDocs;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.dto.user.*;
 import com.cojac.storyteller.service.UserService;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +25,7 @@ import java.util.Iterator;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserControllerDocs {
 
     private final UserService userService;
 
@@ -53,8 +55,8 @@ public class UserController {
      * 자체 회원가입
      */
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> registerUser(@Valid LocalUserDTO localUserDTO) {
-        LocalUserDTO res = userService.registerUser(localUserDTO);
+    public ResponseEntity<ResponseDTO> registerUser(@ParameterObject @Valid CreateUserRequestDTO createUserRequestDTO) {
+        LocalUserDTO res = userService.registerUser(createUserRequestDTO);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_REGISTER.getStatus().value())
                 .body(new ResponseDTO<>(ResponseCode.SUCCESS_REGISTER, res));

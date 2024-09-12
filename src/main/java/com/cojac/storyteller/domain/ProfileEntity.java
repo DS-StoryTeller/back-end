@@ -1,6 +1,7 @@
 package com.cojac.storyteller.domain;
 
 import com.cojac.storyteller.dto.profile.ProfileDTO;
+import com.cojac.storyteller.dto.profile.UpdateProfileDTO;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
