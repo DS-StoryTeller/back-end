@@ -4,6 +4,7 @@ import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
+import com.cojac.storyteller.domain.SettingEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.book.BookDetailResponseDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
@@ -13,7 +14,6 @@ import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.SettingRepository;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,6 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
-    private final SettingRepository settingRepository;
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
 
@@ -44,8 +43,7 @@ public class BookService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        // 프로필이 birthDate로 변경되면서 기존 age를 가져오는 코드가 안됩니다.
-        // 따라서 birthDate를 이용하여 age를 계산하는 코드를 추가했습니다.
+        // birthDate를 이용하여 age를 계산하는 코드를 추가했습니다.
         LocalDate birthDate = profile.getBirthDate();
         LocalDate currentDate = LocalDate.now();
         int age = Period.between(birthDate, currentDate).getYears();
@@ -56,7 +54,10 @@ public class BookService {
         String title = story.split("Content:")[0].replace("Title:", "").trim();
         String content = story.split("Content:")[1].trim();
 
-        BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, profile);
+        // Setting 초기 설정
+        SettingEntity setting  = SettingEntity.createDefaultSetting();
+
+        BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, profile, setting);
         BookEntity savedBook = bookRepository.save(book);
 
         // 책 표지 이미지 생성 및 업로드

@@ -9,7 +9,6 @@ import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.SettingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SettingService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
-    private final SettingRepository settingRepository;
 
     @Transactional
     public SettingDTO updateSetting(Integer profileId, Integer bookId, SettingDTO settingDTO) {
@@ -27,18 +25,15 @@ public class SettingService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        // 해당 프로필에 해당하는 책 가져오기
-        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
-                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
-
-        // 책에 해당하는 설정 정보 가져오기
-        SettingEntity settingEntity = settingRepository.findByBook(book)
+        // 해당 프로필에 해당하는 책 가져오기(페치 조인으로 book + setting 정보 가져오기)
+        BookEntity book = bookRepository.findByIdAndProfileWithSetting(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         // 설정 정보 업데이트
-        settingEntity.updateSetting(settingDTO);
+        SettingEntity setting = book.getSetting();
+        setting.updateSetting(settingDTO);
 
-        return SettingDTO.toDto(settingEntity);
+        return SettingDTO.toDto(setting);
     }
 
     public SettingDTO getDetailSettings(Integer profileId, Integer bookId) {
@@ -46,15 +41,11 @@ public class SettingService {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        // 해당 프로필에 해당하는 책 가져오기
-        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
-                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
-
-        // 책에 해당하는 설정 정보 가져오기
-        SettingEntity settingEntity = settingRepository.findByBook(book)
+        // 해당 프로필에 해당하는 책 가져오기(페치 조인으로 book + setting 정보 가져오기)
+        BookEntity book = bookRepository.findByIdAndProfileWithSetting(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
         // 설정 정보 업데이트
-        return SettingDTO.toDto(settingEntity);
+        return SettingDTO.toDto(book.getSetting());
     }
 }

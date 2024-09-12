@@ -74,6 +74,15 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ErrorCode.NO_SUCH_ALGORITHM));
     }
 
+    @ExceptionHandler(InvalidIdTokenException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleInvalidIdTokenException(final InvalidIdTokenException e) {
+        log.error("handleInvalidIdTokenException : {}", e.getErrorCode().getMessage());
+        return ResponseEntity
+                .status(ErrorCode.NO_SUCH_ALGORITHM.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NO_SUCH_ALGORITHM));
+    }
+
+
     /**
      * Profile
      */

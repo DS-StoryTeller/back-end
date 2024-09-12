@@ -27,4 +27,5 @@ public class SocialUserDTO implements UserDTO {
                 .email(socialUser.getEmail())
                 .build();
     }
+
 }
