@@ -5,12 +5,10 @@ import com.cojac.storyteller.docs.BookControllerDocs;
 import com.cojac.storyteller.dto.book.*;
 import com.cojac.storyteller.dto.response.ResponseDTO;
 import com.cojac.storyteller.service.BookService;
-import jakarta.persistence.EntityListeners;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
