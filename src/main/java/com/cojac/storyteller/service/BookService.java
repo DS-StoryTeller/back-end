@@ -63,7 +63,6 @@ public class BookService {
         // 책 표지 이미지 생성 및 업로드
         String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
         savedBook.updateCoverImage(coverImageUrl);
-        bookRepository.save(savedBook);
 
         // 각 페이지 이미지 생성 및 업데이트
         for (PageEntity page : savedBook.getPages()) {
