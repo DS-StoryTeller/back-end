@@ -61,7 +61,7 @@ public class BookService {
         BookEntity savedBook = bookRepository.save(book);
 
         // 책 표지 이미지 생성 및 업로드
-        String coverImageUrl = imageGenerationService.gene23rateAndUploadBookCoverImage(title);
+        String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
         savedBook.updateCoverImage(coverImageUrl);
         bookRepository.save(savedBook);
 
