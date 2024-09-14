@@ -31,9 +31,12 @@ public class OpenAIService {
         CompletionRequestDto.Message message = CompletionRequestDto.Message.builder()
                 .role("user")
                 // 제목과 내용을 Title: 과 Content: 로 구분하여 요청
-                .content("Generate a story with the following theme: " + prompt + ". Provide the response in the following format:\n\nTitle: [Your Title]\n\nContent: [Your Content]. " +
-                        "Please generate an English fairy tale suitable for the difficulty level appropriate for " + age + " years old." +
-                        "Please write at least 10 paragraphs"
+                .content("Generate a story with the following theme: " + prompt + ". Provide the response in the following format:\n\n" +
+                        "Title: [Your Title]\n\n" +
+                        "Content: [Your Content]. " +
+                        "Please generate an English fairy tale suitable for the difficulty level appropriate for " + age + " years old. " +
+                        "Please write at least 5 paragraphs. " +
+                        "Ensure that the entire content contains no more than 10 words."
                 )
                 .build();
         CompletionRequestDto requestDto = CompletionRequestDto.builder()

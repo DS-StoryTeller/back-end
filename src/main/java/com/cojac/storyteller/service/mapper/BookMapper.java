@@ -7,13 +7,14 @@ import com.cojac.storyteller.domain.SettingEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
 import com.cojac.storyteller.dto.page.PageDTO;
+import com.cojac.storyteller.service.ImageGenerationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BookMapper {
-    public static BookEntity mapToBookEntity(String title, String content, String defaultCoverImage, ProfileEntity profile, SettingEntity setting) {
+    public static BookEntity mapToBookEntity(String title, String content, String defaultCoverImage, ProfileEntity profile, SettingEntity setting, ImageGenerationService imageGenerationService) {
         BookEntity book = BookEntity.builder()
                 .title(title)
                 .coverImage(defaultCoverImage)
@@ -27,12 +28,15 @@ public class BookMapper {
         // \n\n 을 기준으로 동화 내용을 나눠 Page 객체를 추가
         String[] contentParts = content.split("\n\n");
         List<PageEntity> pages = IntStream.range(0, contentParts.length)
-                .mapToObj(i -> PageEntity.builder()
-                        .pageNumber(i + 1)
-                        .content(contentParts[i].trim())
-                        .image("defaultPageImage.jpg")
-                        .book(book)
-                        .build())
+                .mapToObj(i -> {
+                    String trimContent = contentParts[i].trim();
+                    return PageEntity.builder()
+                            .pageNumber(i + 1)
+                            .content(trimContent)
+                            .image(imageGenerationService.generateAndUploadPageImage(trimContent))
+                            .book(book)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         pages.forEach(book::addPage);
