@@ -13,6 +13,7 @@ import com.cojac.storyteller.dto.page.PageDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
+import com.cojac.storyteller.repository.PageBatchRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
+    private final PageBatchRepository pageBatchRepository;
 
     /**
      * 동화 생성
@@ -58,10 +61,31 @@ public class BookService {
         // 책 표지 이미지 생성 및 업로드
         String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
 
-        BookEntity book = BookMapper.mapToBookEntity(title, content, coverImageUrl, profile, setting, imageGenerationService);
+        BookEntity book = BookMapper.mapToBookEntity(title, coverImageUrl, profile, setting);
         BookEntity savedBook = bookRepository.save(book);
 
-        return BookMapper.mapToBookDTO(savedBook);
+        // 페이지 생성
+        List<PageEntity> pages = createPage(savedBook, content);
+        pageBatchRepository.batchInsertPages(pages);
+
+        return BookMapper.mapToBookDTO(savedBook, pages);
+    }
+
+    private List<PageEntity> createPage(BookEntity book, String content) {
+        String[] contentParts = content.split("\n\n");
+        List<PageEntity> pages = IntStream.range(0, contentParts.length)
+                .mapToObj(i -> {
+                    String trimContent = contentParts[i].trim();
+                    return PageEntity.builder()
+                            .pageNumber(i + 1)
+                            .content(trimContent)
+                            .image(imageGenerationService.generateAndUploadPageImage(trimContent))
+                            .book(book)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return pages;
     }
 
     public List<BookListResponseDTO> getAllBooks(Integer profileId) {
