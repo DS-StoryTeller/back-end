@@ -92,7 +92,7 @@ public class SecurityConfig {
                         .requestMatchers("/kakao-login", "/google-login").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/storyTeller-api/**").permitAll()
-                        .requestMatchers("/actuator").permitAll()
+                        .requestMatchers("/management/**").permitAll()
                         .anyRequest().authenticated());
 
         // 인증/인가와 관련된 예외 처리
