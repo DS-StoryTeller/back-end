@@ -7,6 +7,7 @@ import com.cojac.storyteller.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,9 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final LocalUserRepository localUserRepository;
     private final SocialUserRepository socialUserRepository;
+
+    @Value("${management.endpoints.web.base-path}")
+    private String endpoints;
 
     // AuthenticationManager Bean 등록
     @Bean
@@ -92,7 +96,7 @@ public class SecurityConfig {
                         .requestMatchers("/kakao-login", "/google-login").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/storyTeller-api/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers(endpoints+"/**").permitAll()
                         .anyRequest().authenticated());
 
         // 인증/인가와 관련된 예외 처리
