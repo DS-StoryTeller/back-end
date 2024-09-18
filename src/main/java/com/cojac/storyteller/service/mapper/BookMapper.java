@@ -7,6 +7,7 @@ import com.cojac.storyteller.domain.SettingEntity;
 import com.cojac.storyteller.dto.book.BookDTO;
 import com.cojac.storyteller.dto.book.BookListResponseDTO;
 import com.cojac.storyteller.dto.page.PageDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;

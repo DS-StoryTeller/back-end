@@ -2,6 +2,8 @@ package com.cojac.storyteller.repository;
 
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Integer> {
-    List<BookEntity> findByProfile(ProfileEntity profile);
+    Page<BookEntity> findByProfile(ProfileEntity profile, Pageable pageable);
 
     Optional<BookEntity> findByIdAndProfile(Integer id, ProfileEntity profile);
 
@@ -19,8 +21,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     Optional<BookEntity> findByIdAndProfileWithSetting(Integer bookId, ProfileEntity profile);
 
     // 즐겨찾기 책 필터링
-    List<BookEntity> findByProfileAndIsFavoriteTrue(ProfileEntity profile);
+    Page<BookEntity> findByProfileAndIsFavoriteTrue(ProfileEntity profile, Pageable pageable);
 
     // 읽고 있는 책 필터링
-    List<BookEntity> findByProfileAndIsReadingTrue(ProfileEntity profile);
+    Page<BookEntity> findByProfileAndIsReadingTrue(ProfileEntity profile, Pageable pageable);
 }

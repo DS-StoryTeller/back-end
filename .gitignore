@@ -38,3 +38,7 @@ out/
 
 ### application ###
 /src/main/resources/application.yml
+
+### application - 테스트용 ###
+/src/test/resources/application.yml
+/src/test/java/com/cojac/storyteller/performance

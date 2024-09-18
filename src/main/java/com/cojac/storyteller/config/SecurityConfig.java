@@ -23,11 +23,15 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${server.deployed-url}")
+    private String deployedUrl;
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
@@ -63,8 +67,8 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
+                        configuration.setAllowedOrigins(List.of("http://localhost:3000", deployedUrl));
+                        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
@@ -95,7 +99,7 @@ public class SecurityConfig {
                         .requestMatchers("/username/verifications", "/emails/verification-requests", "/emails/verifications").permitAll()
                         .requestMatchers("/kakao-login", "/google-login").permitAll()
                         .requestMatchers("/reissue").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/storyTeller-api/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/storyteller-api/**").permitAll()
                         .requestMatchers(endpoints+"/**").permitAll()
                         .anyRequest().authenticated());
 

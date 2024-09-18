@@ -2,7 +2,10 @@ package com.cojac.storyteller.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class BookEntity {
 
     @Id
@@ -43,6 +47,9 @@ public class BookEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SettingEntity setting;
 
+    @CreatedDate
+    @JoinColumn(name = "created_at")
+    private LocalDateTime createdAt; // 생성일
 
     public void addPage(PageEntity page) {
         pages.add(page);

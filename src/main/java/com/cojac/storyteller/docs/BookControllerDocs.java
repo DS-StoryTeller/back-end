@@ -59,7 +59,10 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getBookList(@RequestParam Integer profileId);
+    ResponseEntity<ResponseDTO>  getBookList(
+            @RequestParam Integer profileId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size);
 
     /**
      * 동화 세부 정보 조회
@@ -142,7 +145,7 @@ public interface BookControllerDocs {
      * 즐겨찾기 동화 필터링
      */
     @Operation(
-            summary = "즐겨찾기 동화 필터링",
+            summary = "즐겨찾기 동화 조회",
             description = "즐겨찾기 목록에 있는 동화 조회 API",
             parameters = {
                     @Parameter(name = "profileId", in = ParameterIn.PATH, description = "프로필 ID", required = true)
@@ -153,7 +156,11 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(@RequestParam Integer profileId);
+    ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(
+            @RequestParam Integer profileId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String[] sort);
 
     /**
      * 읽고 있는 동화 필터링
@@ -170,7 +177,11 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(@RequestParam Integer profileId);
+    ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(
+            @RequestParam Integer profileId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String[] sort);
 
     /**
      * 동화 퀴즈 생성
