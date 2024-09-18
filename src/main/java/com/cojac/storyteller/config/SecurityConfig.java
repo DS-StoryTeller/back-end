@@ -41,6 +41,9 @@ public class SecurityConfig {
     private final LocalUserRepository localUserRepository;
     private final SocialUserRepository socialUserRepository;
 
+    @Value("${management.endpoints.web.base-path}")
+    private String endpoints;
+
     // AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -97,6 +100,7 @@ public class SecurityConfig {
                         .requestMatchers("/kakao-login", "/google-login").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/storyteller-api/**").permitAll()
+                        .requestMatchers(endpoints+"/**").permitAll()
                         .anyRequest().authenticated());
 
         // 인증/인가와 관련된 예외 처리
