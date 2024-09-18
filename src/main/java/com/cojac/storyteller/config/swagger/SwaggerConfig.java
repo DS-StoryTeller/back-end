@@ -5,12 +5,19 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class SwaggerConfig {
+
+    @Value("${server.deployed-url}")
+    private String deployedUrl;
 
     @Bean
     public OpenAPI openAPI() {
@@ -38,10 +45,20 @@ public class SwaggerConfig {
                 .addSecuritySchemes(accessTokenKey, accessSecurityScheme)
                 .addSecuritySchemes(refreshTokenKey, refreshSecurityScheme);
 
+        Server lcoalServer = new Server()
+                .url("http://localhost:8080")
+                .description("Localhost 서버");
+
+        // 배포된 서버의 IP 또는 도메인 주소 설정
+        Server deployedServer = new Server()
+                .url(deployedUrl)
+                .description("배포된 서버");
+
         return new OpenAPI()
                 .components(components)
                 .info(apiInfo())
-                .addSecurityItem(accessSecurityRequirement);
+                .addSecurityItem(accessSecurityRequirement)
+                .servers(List.of(lcoalServer, deployedServer));
     }
 
     @Bean
