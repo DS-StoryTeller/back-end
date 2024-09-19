@@ -16,6 +16,8 @@ import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,7 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
-    
+
     /**
      * 동화와 퀴즈 생성
      */
@@ -73,6 +75,7 @@ public class BookService {
     /**
      * 책 목록 조회
      */
+    @Cacheable(value = "bookListCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getBooksPage(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -84,6 +87,7 @@ public class BookService {
     /**
      * 즐겨찾기 책 목록 조회
      */
+    @Cacheable(value = "favoriteBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getFavoriteBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -95,6 +99,7 @@ public class BookService {
     /**
      * 읽고 있는 책 목록 조회
      */
+    @Cacheable(value = "readingBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getReadingBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -136,6 +141,7 @@ public class BookService {
     /**
      * 즐겨찾기 토글 기능 추가
      */
+    @CacheEvict(value = {"bookListCache", "favoriteBooksCache"}, key = "#profileId")
     public Boolean toggleFavorite(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -154,6 +160,7 @@ public class BookService {
      * 책 삭제 기능
      */
     @Transactional
+    @CacheEvict(value = {"bookListCache", "favoriteBooksCache", "readingBooksCache"}, allEntries = true)
     public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -168,6 +175,7 @@ public class BookService {
      * 현재 읽고 있는 페이지 업데이트
      */
     @Transactional
+    @CacheEvict(value = {"bookListCache", "readingBooksCache"}, key = "#profileId")
     public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
