@@ -59,6 +59,12 @@ dependencies {
 	// cache
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 
+	// Spring Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Micrometer Prometheus 구현체
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
