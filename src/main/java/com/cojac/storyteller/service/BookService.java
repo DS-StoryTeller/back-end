@@ -34,7 +34,7 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
-
+    
     /**
      * 동화와 퀴즈 생성
      */
@@ -151,9 +151,8 @@ public class BookService {
     }
 
     /**
-     * 책 삭제 기능 추가
+     * 책 삭제 기능
      */
-
     @Transactional
     public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
         ProfileEntity profile = profileRepository.findById(profileId)
