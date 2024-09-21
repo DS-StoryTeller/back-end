@@ -4,21 +4,18 @@ import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
-import com.cojac.storyteller.domain.UnknownWordEntity;
 import com.cojac.storyteller.dto.page.PageDetailResponseDTO;
 import com.cojac.storyteller.dto.request.PageRequestDTO;
 import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.PageNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
-import com.cojac.storyteller.exception.UnknownWordNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.PageRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.UnknownWordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,8 +25,7 @@ public class PageService {
     private final PageRepository pageRepository;
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
-    private final UnknownWordRepository unknownWordRepository;
-
+    
     public PageDetailResponseDTO getPageDetail(PageRequestDTO requestDto) {
         Integer profileId = requestDto.getProfileId();
         Integer bookId = requestDto.getBookId();
