@@ -142,7 +142,7 @@ public class ProfileService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        List<ProfileEntity> profileEntityList = profileRepository.findByUser_Id(user.getId());
+        List<ProfileEntity> profileEntityList = profileRepository.findByUser(user);
 
         return profileEntityList.stream()
                 .map(ProfileDTO::mapEntityToDTO)
