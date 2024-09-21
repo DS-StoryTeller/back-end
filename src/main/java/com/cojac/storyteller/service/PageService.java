@@ -43,15 +43,11 @@ public class PageService {
         BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
                 .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
 
-        // 해당 책에 해당하는 페이지 가져오기
-        PageEntity page = pageRepository.findByBookAndPageNumber(book, pageNum)
+        // 해당 책에 해당하는 페이지 가져오기(모르는 단어와 같이)
+        PageEntity page = pageRepository.findPageWithUnknownWords(book, pageNum)
                 .orElseThrow(() -> new PageNotFoundException(ErrorCode.PAGE_NOT_FOUND));
 
-        // 페이지에 해당하는 모르는 단어 가져오기
-        List<UnknownWordEntity> unknownWordEntities = unknownWordRepository.getByPage(page)
-                .orElseThrow(() -> new UnknownWordNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
-
-        List<UnknownWordDTO> unknownWordDTOS = UnknownWordDTO.toDto(unknownWordEntities);
+        List<UnknownWordDTO> unknownWordDTOS = UnknownWordDTO.toDto(page.getUnknownWords());
 
         return PageDetailResponseDTO.builder()
                 .pageId(page.getId())
