@@ -11,6 +11,7 @@ import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.PageNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
+import com.cojac.storyteller.exception.UnknownWordNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.PageRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
@@ -31,6 +32,7 @@ public class UnknownWordService {
         Integer profileId = requestDto.getProfileId();
         Integer bookId = requestDto.getBookId();
         Integer pageNum = requestDto.getPageNum();
+
         // 해당 프로필 가져오기
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -59,7 +61,7 @@ public class UnknownWordService {
     public void deleteUnknownWord(Integer unknownWordId) {
         // unknownword 가져오기
         UnknownWordEntity unknownWordEntity = unknownWordRepository.findById(unknownWordId)
-                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
+                .orElseThrow(() -> new UnknownWordNotFoundException(ErrorCode.UNKNOWN_NOT_FOUND));
 
         unknownWordRepository.delete(unknownWordEntity);
     }

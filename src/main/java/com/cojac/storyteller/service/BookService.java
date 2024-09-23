@@ -14,6 +14,7 @@ import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
+import com.cojac.storyteller.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
+    private final BatchBookDelete batchBookDelete;
 
     /**
      * 동화와 퀴즈 생성
@@ -152,13 +154,16 @@ public class BookService {
     // 책 삭제 기능 추가
     @Transactional
     public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
-        ProfileEntity profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
-                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+        if (!profileRepository.existsById(profileId)) {
+            throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
+        }
 
-        bookRepository.delete(book);
+        if (!bookRepository.existsById(bookId)) {
+            throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
+        }
+
+        batchBookDelete.deleteByBookId(bookId);
     }
 
     // 현재 읽고 있는 페이지 업데이트
