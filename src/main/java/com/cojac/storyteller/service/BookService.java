@@ -17,6 +17,8 @@ import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -83,6 +85,7 @@ public class BookService {
     /**
      * 책 목록 조회
      */
+    @Cacheable(value = "bookListCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getBooksPage(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -91,7 +94,10 @@ public class BookService {
         return BookMapper.mapToBookListResponseDTOs(booksPage.getContent());
     }
 
-    // 즐겨찾기 책 필터링 기능 추가
+    /**
+     * 즐겨찾기 책 목록 조회
+     */
+    @Cacheable(value = "favoriteBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getFavoriteBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -100,7 +106,10 @@ public class BookService {
         return BookMapper.mapToBookListResponseDTOs(books.getContent());
     }
 
-    // 읽고 있는 책 필터링 기능 추가
+    /**
+     * 읽고 있는 책 목록 조회
+     */
+    @Cacheable(value = "readingBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getReadingBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -109,6 +118,9 @@ public class BookService {
         return BookMapper.mapToBookListResponseDTOs(books.getContent());
     }
 
+    /**
+     * 책 세부 조회
+     */
     public BookDetailResponseDTO getBookDetail(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -136,7 +148,10 @@ public class BookService {
                 .build();
     }
 
-    // 즐겨찾기 토글 기능 추가
+    /**
+     * 즐겨찾기 토글 기능 추가
+     */
+    @CacheEvict(value = {"bookListCache", "favoriteBooksCache"}, key = "#profileId")
     public Boolean toggleFavorite(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -151,8 +166,11 @@ public class BookService {
         return newFavoriteStatus;
     }
 
-    // 책 삭제 기능 추가
+    /**
+     * 책 삭제 기능
+     */
     @Transactional
+    @CacheEvict(value = {"bookListCache", "favoriteBooksCache", "readingBooksCache"}, allEntries = true)
     public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
 
         if (!profileRepository.existsById(profileId)) {
@@ -166,8 +184,11 @@ public class BookService {
         batchBookDelete.deleteByBookId(bookId);
     }
 
-    // 현재 읽고 있는 페이지 업데이트
+    /**
+     * 현재 읽고 있는 페이지 업데이트
+     */
     @Transactional
+    @CacheEvict(value = {"bookListCache", "readingBooksCache"}, key = "#profileId")
     public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -186,7 +207,9 @@ public class BookService {
         return BookMapper.mapToBookDTO(book);
     }
 
-    // 퀴즈만 생성
+    /**
+     * 퀴즈만 생성
+     */
     public QuizResponseDTO createQuiz(Integer profileId, Integer bookId) {
         String defaultCoverImage = "defaultCover.jpg";
 
