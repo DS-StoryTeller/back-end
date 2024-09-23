@@ -9,6 +9,7 @@ import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.LocalUserRepository;
+import com.cojac.storyteller.repository.batch.BatchProfileDelete;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class ProfileService {
     private final AmazonS3Service amazonS3Service;
     private final LocalUserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final BatchProfileDelete batchProfileDelete;
 
     /**
      * S3에서 /profile/photos 경로에 있는 사진 목록 가져오기
@@ -154,10 +156,11 @@ public class ProfileService {
      */
     @Transactional
     public void deleteProfile(Integer profileId) {
-        ProfileEntity profileEntity = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+        if (!profileRepository.existsById(profileId)) {
+            throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
+        }
 
-        profileRepository.delete(profileEntity);
+        batchProfileDelete.deleteByProfileId(profileId);
     }
 
     /**
