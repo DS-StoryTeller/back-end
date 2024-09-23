@@ -13,7 +13,6 @@ import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.PageRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
-import com.cojac.storyteller.repository.UnknownWordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class PageService {
     private final PageRepository pageRepository;
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
-    
+
     public PageDetailResponseDTO getPageDetail(PageRequestDTO requestDto) {
         Integer profileId = requestDto.getProfileId();
         Integer bookId = requestDto.getBookId();
