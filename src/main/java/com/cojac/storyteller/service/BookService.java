@@ -13,6 +13,7 @@ import com.cojac.storyteller.dto.page.PageDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
+import com.cojac.storyteller.repository.PageBatchRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.service.mapper.BookMapper;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -37,15 +39,14 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
+    private final PageBatchRepository pageBatchRepository;
     private final BatchBookDelete batchBookDelete;
 
     /**
-     * 동화와 퀴즈 생성
+     * 동화 생성
      */
     @Transactional
     public BookDTO createBook(String prompt, Integer profileId) {
-        String defaultCoverImage = "defaultCover.jpg";
-
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
@@ -63,23 +64,34 @@ public class BookService {
         // Setting 초기 설정
         SettingEntity setting  = SettingEntity.createDefaultSetting();
 
-        BookEntity book = BookMapper.mapToBookEntity(title, content, defaultCoverImage, profile, setting);
-        BookEntity savedBook = bookRepository.save(book);
-
         // 책 표지 이미지 생성 및 업로드
         String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
-        savedBook.updateCoverImage(coverImageUrl);
 
-        // 각 페이지 이미지 생성 및 업데이트
-        for (PageEntity page : savedBook.getPages()) {
-            String pageImageUrl = imageGenerationService.generateAndUploadPageImage(page.getContent());
-            page.setImage(pageImageUrl);
-        }
+        BookEntity book = BookMapper.mapToBookEntity(title, coverImageUrl, profile, setting);
+        BookEntity savedBook = bookRepository.save(book);
 
-        // 페이지 엔티티 업데이트
-        bookRepository.save(savedBook);
+        // 페이지 생성
+        List<PageEntity> pages = createPage(savedBook, content);
+        pageBatchRepository.batchInsertPages(pages);
 
-        return BookMapper.mapToBookDTO(savedBook);
+        return BookMapper.mapToBookDTO(savedBook, pages);
+    }
+
+    private List<PageEntity> createPage(BookEntity book, String content) {
+        String[] contentParts = content.split("\n\n");
+        List<PageEntity> pages = IntStream.range(0, contentParts.length)
+                .mapToObj(i -> {
+                    String trimContent = contentParts[i].trim();
+                    return PageEntity.builder()
+                            .pageNumber(i + 1)
+                            .content(trimContent)
+                            .image(imageGenerationService.generateAndUploadPageImage(trimContent))
+                            .book(book)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return pages;
     }
 
     /**

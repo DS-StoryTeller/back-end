@@ -11,13 +11,14 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
 
 public class BookMapper {
-    public static BookEntity mapToBookEntity(String title, String content, String defaultCoverImage, ProfileEntity profile, SettingEntity setting) {
-        BookEntity book = BookEntity.builder()
+    public static BookEntity mapToBookEntity(String title, String coverImageUrl, ProfileEntity profile, SettingEntity setting) {
+
+        return BookEntity.builder()
                 .title(title)
-                .coverImage(defaultCoverImage)
+                .coverImage(coverImageUrl)
                 .currentPage(0)
                 .isReading(true)
                 .isFavorite(false)
@@ -25,20 +26,30 @@ public class BookMapper {
                 .setting(setting)
                 .build();
 
-        // \n\n 을 기준으로 동화 내용을 나눠 Page 객체를 추가
-        String[] contentParts = content.split("\n\n");
-        List<PageEntity> pages = IntStream.range(0, contentParts.length)
-                .mapToObj(i -> PageEntity.builder()
-                        .pageNumber(i + 1)
-                        .content(contentParts[i].trim())
-                        .image("defaultPageImage.jpg")
-                        .book(book)
+    }
+
+    public static BookDTO mapToBookDTO(BookEntity book, List<PageEntity> pages) {
+        List<PageDTO> pageDTOs = pages.stream()
+                .map(page -> PageDTO.builder()
+                        .id(page.getId())
+                        .pageNumber(page.getPageNumber())
+                        .image(page.getImage())
+                        .content(page.getContent())
+                        .bookId(page.getBook().getId())
                         .build())
                 .collect(Collectors.toList());
 
-        pages.forEach(book::addPage);
-
-        return book;
+        return BookDTO.builder()
+                .id(book.getId())
+                .title(book.getTitle())
+                .coverImage(book.getCoverImage())
+                .currentPage(book.getCurrentPage())
+                .pages(pageDTOs)
+                .isReading(book.isReading())
+                .isFavorite(book.isFavorite())
+                .totalPageCount(book.getPages().size())
+                .profileId(book.getProfile().getId())
+                .build();
     }
 
     public static BookDTO mapToBookDTO(BookEntity book) {

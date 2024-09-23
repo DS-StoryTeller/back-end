@@ -51,11 +51,6 @@ public class BookEntity {
     @JoinColumn(name = "created_at")
     private LocalDateTime createdAt; // 생성일
 
-    public void addPage(PageEntity page) {
-        pages.add(page);
-        page.setBook(this);
-    }
-
     public int getTotalPageCount() {
         return pages.size();
     }
@@ -70,10 +65,6 @@ public class BookEntity {
 
     public void updateIsFavorite(boolean isFavorite) {
         this.isFavorite = isFavorite;
-    }
-
-    public void updateCoverImage(String coverImage) {
-        this.coverImage = coverImage;
     }
 
     public void updateCurrentPage(Integer currentPage) {
