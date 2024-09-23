@@ -15,8 +15,13 @@ import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.PageBatchRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
+import com.cojac.storyteller.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +40,7 @@ public class BookService {
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
     private final PageBatchRepository pageBatchRepository;
+    private final BatchBookDelete batchBookDelete;
 
     /**
      * 동화 생성
@@ -88,32 +94,45 @@ public class BookService {
         return pages;
     }
 
-    public List<BookListResponseDTO> getAllBooks(Integer profileId) {
+    /**
+     * 책 목록 조회
+     */
+    @Cacheable(value = "bookListCache", key = "#profileId", unless = "#result.isEmpty()")
+    public List<BookListResponseDTO> getBooksPage(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        List<BookEntity> books = bookRepository.findByProfile(profile);
-        return BookMapper.mapToBookListResponseDTOs(books);
+        Page<BookEntity> booksPage = bookRepository.findByProfile(profile, pageable);
+        return BookMapper.mapToBookListResponseDTOs(booksPage.getContent());
     }
 
-    // 즐겨찾기 책 필터링 기능 추가
-    public List<BookListResponseDTO> getFavoriteBooks(Integer profileId) {
+    /**
+     * 즐겨찾기 책 목록 조회
+     */
+    @Cacheable(value = "favoriteBooksCache", key = "#profileId", unless = "#result.isEmpty()")
+    public List<BookListResponseDTO> getFavoriteBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        List<BookEntity> books = bookRepository.findByProfileAndIsFavoriteTrue(profile);
-        return BookMapper.mapToBookListResponseDTOs(books);
+        Page<BookEntity> books = bookRepository.findByProfileAndIsFavoriteTrue(profile, pageable);
+        return BookMapper.mapToBookListResponseDTOs(books.getContent());
     }
 
-    // 읽고 있는 책 필터링 기능 추가
-    public List<BookListResponseDTO> getReadingBooks(Integer profileId) {
+    /**
+     * 읽고 있는 책 목록 조회
+     */
+    @Cacheable(value = "readingBooksCache", key = "#profileId", unless = "#result.isEmpty()")
+    public List<BookListResponseDTO> getReadingBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        List<BookEntity> books = bookRepository.findByProfileAndIsReadingTrue(profile);
-        return BookMapper.mapToBookListResponseDTOs(books);
+        Page<BookEntity> books = bookRepository.findByProfileAndIsReadingTrue(profile, pageable);
+        return BookMapper.mapToBookListResponseDTOs(books.getContent());
     }
 
+    /**
+     * 책 세부 조회
+     */
     public BookDetailResponseDTO getBookDetail(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -141,7 +160,10 @@ public class BookService {
                 .build();
     }
 
-    // 즐겨찾기 토글 기능 추가
+    /**
+     * 즐겨찾기 토글 기능 추가
+     */
+    @CacheEvict(value = {"bookListCache", "favoriteBooksCache"}, key = "#profileId")
     public Boolean toggleFavorite(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -156,20 +178,29 @@ public class BookService {
         return newFavoriteStatus;
     }
 
-    // 책 삭제 기능 추가
+    /**
+     * 책 삭제 기능
+     */
     @Transactional
+    @CacheEvict(value = {"bookListCache", "favoriteBooksCache", "readingBooksCache"}, allEntries = true)
     public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
-        ProfileEntity profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        BookEntity book = bookRepository.findByIdAndProfile(bookId, profile)
-                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+        if (!profileRepository.existsById(profileId)) {
+            throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
+        }
 
-        bookRepository.delete(book);
+        if (!bookRepository.existsById(bookId)) {
+            throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
+        }
+
+        batchBookDelete.deleteByBookId(bookId);
     }
 
-    // 현재 읽고 있는 페이지 업데이트
+    /**
+     * 현재 읽고 있는 페이지 업데이트
+     */
     @Transactional
+    @CacheEvict(value = {"bookListCache", "readingBooksCache"}, key = "#profileId")
     public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -188,7 +219,9 @@ public class BookService {
         return BookMapper.mapToBookDTO(book);
     }
 
-    // 퀴즈만 생성
+    /**
+     * 퀴즈만 생성
+     */
     public QuizResponseDTO createQuiz(Integer profileId, Integer bookId) {
         String defaultCoverImage = "defaultCover.jpg";
 

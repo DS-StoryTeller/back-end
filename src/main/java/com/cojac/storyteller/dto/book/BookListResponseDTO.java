@@ -3,9 +3,14 @@ package com.cojac.storyteller.dto.book;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @Getter
 @Builder
-public class BookListResponseDTO {
+public class BookListResponseDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Integer bookId;
     private String title;
     private String coverImage;
