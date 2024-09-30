@@ -157,7 +157,7 @@ public interface ProfileControllerDocs {
                     @ApiResponse(responseCode = "404", description = "프로필릏 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId);
+    ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId) throws Exception;
 
     /**
      * 프로필 사진 S3에 업로드

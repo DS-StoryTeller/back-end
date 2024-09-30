@@ -119,7 +119,7 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO> deleteBook(@RequestParam Integer profileId, @RequestParam Integer bookId);
+    ResponseEntity<ResponseDTO> deleteBook(@RequestParam Integer profileId, @RequestParam Integer bookId) throws Exception;
 
     /**
      * 현재 읽고 있는 페이지 업데이트

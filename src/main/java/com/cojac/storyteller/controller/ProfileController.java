@@ -93,7 +93,7 @@ public class ProfileController implements ProfileControllerDocs {
      * 프로필 삭제하기
      */
     @DeleteMapping("/profiles/{profileId}")
-    public ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId) {
+    public ResponseEntity<ResponseDTO> deleteProfile(@PathVariable Integer profileId) throws Exception {
         profileService.deleteProfile(profileId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_DELETE_PROFILE.getStatus().value())
