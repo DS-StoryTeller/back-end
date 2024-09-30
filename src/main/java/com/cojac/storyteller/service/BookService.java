@@ -13,7 +13,7 @@ import com.cojac.storyteller.dto.page.PageDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.repository.BookRepository;
-import com.cojac.storyteller.repository.PageBatchRepository;
+import com.cojac.storyteller.repository.batch.BatchPageInsert;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.service.mapper.BookMapper;
@@ -39,7 +39,7 @@ public class BookService {
     private final ProfileRepository profileRepository;
     private final OpenAIService openAIService;
     private final ImageGenerationService imageGenerationService;
-    private final PageBatchRepository pageBatchRepository;
+    private final BatchPageInsert batchPageInsert;
     private final BatchBookDelete batchBookDelete;
 
     /**
@@ -72,7 +72,7 @@ public class BookService {
 
         // 페이지 생성
         List<PageEntity> pages = createPage(savedBook, content);
-        pageBatchRepository.batchInsertPages(pages);
+        batchPageInsert.batchInsertPages(pages);
 
         return BookMapper.mapToBookDTO(savedBook, pages);
     }
