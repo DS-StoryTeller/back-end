@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,6 +42,7 @@ public class BookService {
     private final ImageGenerationService imageGenerationService;
     private final BatchPageInsert batchPageInsert;
     private final BatchBookDelete batchBookDelete;
+    private final AmazonS3Service amazonS3Service;
 
     /**
      * 동화 생성
@@ -183,17 +185,37 @@ public class BookService {
      */
     @Transactional
     @CacheEvict(value = {"bookListCache", "favoriteBooksCache", "readingBooksCache"}, allEntries = true)
-    public void deleteBook(Integer profileId, Integer bookId) throws ProfileNotFoundException, BookNotFoundException {
+    public void deleteBook(Integer profileId, Integer bookId) throws Exception {
 
         if (!profileRepository.existsById(profileId)) {
             throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
         }
 
-        if (!bookRepository.existsById(bookId)) {
-            throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
-        }
+        BookEntity book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException(ErrorCode.BOOK_NOT_FOUND));
+
+        // 책과 페이지 이미지 삭제
+        deleteBookAndPageImages(book);
 
         batchBookDelete.deleteByBookId(bookId);
+    }
+
+    private void deleteBookAndPageImages(BookEntity book) throws Exception {
+        // S3에서 책 표지 이미지 삭제
+        deleteImageIfNotNull(book.getCoverImage());
+
+        // 각 페이지의 이미지 삭제
+        for (PageEntity page : book.getPages()) {
+            if (page.getImage() != null) {
+                amazonS3Service.deleteS3(page.getImage());
+            }
+        }
+    }
+
+    private void deleteImageIfNotNull(String imageUrl) throws Exception {
+        if (imageUrl != null) {
+            amazonS3Service.deleteS3(imageUrl);
+        }
     }
 
     /**
