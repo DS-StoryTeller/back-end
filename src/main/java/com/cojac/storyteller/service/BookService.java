@@ -75,7 +75,6 @@ public class BookService {
 
             // OpenAI 서비스로부터 동화 생성
             String story = openAIService.generateStory(prompt, age);
-            log.info("Generated story: {}", story);
 
             // 제목과 내용을 분리 (Title: 과 Content: 기준)
             String title = story.split("Content:")[0].replace("Title:", "").trim();
@@ -110,9 +109,6 @@ public class BookService {
 
         for (int i = 0; i < contentParts.length; i++) {
             String trimContent = contentParts[i].trim();
-
-            // 페이지 이미지 생성 및 업로드
-             // log.info("Creating page {} with content: {}", i + 1, trimContent);
 
             String imageUrl = imageGenerationService.generateAndUploadPageImage(trimContent);
 
