@@ -76,7 +76,7 @@ public class BookController implements BookControllerDocs {
      * 동화 삭제
      */
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDTO> deleteBook(@RequestParam Integer profileId, @RequestParam Integer bookId) {
+    public ResponseEntity<ResponseDTO> deleteBook(@RequestParam Integer profileId, @RequestParam Integer bookId) throws Exception {
         bookService.deleteBook(profileId, bookId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_DELETE_BOOK.getStatus().value())

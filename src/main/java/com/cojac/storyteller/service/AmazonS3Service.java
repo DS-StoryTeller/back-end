@@ -66,7 +66,7 @@ public class AmazonS3Service {
      */
     public void deleteS3(String filePath) throws Exception {
         try{
-            String key = filePath.substring(56); // 폴더/파일.확장자
+            String key = filePath.substring(filePath.indexOf(bucket) + bucket.length() + 1);
 
             try {
                 amazonS3Client.deleteObject(bucket, key);

@@ -1,12 +1,15 @@
 package com.cojac.storyteller.service;
 
 import com.cojac.storyteller.code.ErrorCode;
+import com.cojac.storyteller.domain.BookEntity;
+import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.domain.UserEntity;
 import com.cojac.storyteller.dto.profile.*;
 import com.cojac.storyteller.exception.InvalidPinNumberException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
 import com.cojac.storyteller.exception.UserNotFoundException;
+import com.cojac.storyteller.repository.BookRepository;
 import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.LocalUserRepository;
 import com.cojac.storyteller.repository.batch.BatchProfileDelete;
@@ -29,6 +32,7 @@ public class ProfileService {
     private final LocalUserRepository userRepository;
     private final ProfileRepository profileRepository;
     private final BatchProfileDelete batchProfileDelete;
+    private final BookRepository bookRepository;
 
     /**
      * S3에서 /profile/photos 경로에 있는 사진 목록 가져오기
@@ -155,12 +159,36 @@ public class ProfileService {
      * 프로필 삭제하기
      */
     @Transactional
-    public void deleteProfile(Integer profileId) {
-        if (!profileRepository.existsById(profileId)) {
-            throw new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND);
-        }
+    public void deleteProfile(Integer profileId) throws Exception {
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
+        // 프로필에 연관된 책들 조회
+        List<BookEntity> books = bookRepository.findByProfile(profile);
+
+        // 각 책과 페이지의 이미지 삭제
+        deleteBookAndPageImages(books);
+
+        // 프로필 삭제
         batchProfileDelete.deleteByProfileId(profileId);
+    }
+
+    private void deleteBookAndPageImages(List<BookEntity> books) throws Exception {
+        for (BookEntity book : books) {
+            deleteImageIfNotNull(book.getCoverImage());
+
+            for (PageEntity page : book.getPages()) {
+                if (page.getImage() != null) {
+                    amazonS3Service.deleteS3(page.getImage());
+                }
+            }
+        }
+    }
+
+    private void deleteImageIfNotNull(String imageUrl) throws Exception {
+        if (imageUrl != null) {
+            amazonS3Service.deleteS3(imageUrl);
+        }
     }
 
     /**
