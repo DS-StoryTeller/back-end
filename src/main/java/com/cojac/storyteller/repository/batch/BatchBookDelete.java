@@ -22,28 +22,19 @@ public class BatchBookDelete {
         // 페이지 ID 목록 조회
         List<Integer> pageIds = jdbcTemplate.queryForList("SELECT id FROM PageEntity WHERE book_id = ?", Integer.class, bookId);
 
-        // 페이지가 있는 경우에만 모르는 단어 삭제
-        if (!pageIds.isEmpty()) {
-            // 각 페이지에 대해 모르는 단어 ID 목록 조회
-            List<Integer> unknownWordIds = jdbcTemplate.queryForList(
-                    "SELECT id FROM UnknownWordEntity WHERE page_id IN (?)", Integer.class, pageIds);
-
-            // 모르는 단어가 있는 경우 삭제
-            if (!unknownWordIds.isEmpty()) {
-                jdbcTemplate.batchUpdate(
-                        "DELETE FROM UnknownWordEntity WHERE id = ?", new BatchPreparedStatementSetter() {
-                            @Override
-                            public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                                preparedStatement.setInt(1, unknownWordIds.get(i));
-                            }
-                            @Override
-                            public int getBatchSize() {
-                                return unknownWordIds.size();
-                            }
-                        }
-                );
-            }
-        }
+        // 모르는 단어 삭제
+        jdbcTemplate.batchUpdate(
+                "DELETE FROM UnknownWordEntity WHERE page_id = ?", new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                        preparedStatement.setInt(1, pageIds.get(i));
+                    }
+                    @Override
+                    public int getBatchSize() {
+                        return pageIds.size();
+                    }
+                }
+        );
 
         // 페이지 삭제
         jdbcTemplate.batchUpdate(
