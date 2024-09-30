@@ -1,5 +1,6 @@
 package com.cojac.storyteller.service;
 
+import ch.qos.logback.classic.Logger;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
@@ -18,6 +19,7 @@ import com.cojac.storyteller.repository.ProfileRepository;
 import com.cojac.storyteller.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.service.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -27,12 +29,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class BookService {
 
@@ -44,54 +49,79 @@ public class BookService {
     private final BatchBookDelete batchBookDelete;
     private final AmazonS3Service amazonS3Service;
 
+    // 동화 생성 중인지 확인하는 맵 (프로필 ID를 키로 사용)
+    private final ConcurrentHashMap<Integer, Boolean> creatingBooks = new ConcurrentHashMap<>();
+
     /**
      * 동화 생성
      */
     @Transactional
     public BookDTO createBook(String prompt, Integer profileId) {
-        ProfileEntity profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+        // 동화 생성 중복 확인
+        if (creatingBooks.getOrDefault(profileId, false)) {
+            throw new IllegalStateException("이미 동화가 생성 중입니다. 나중에 다시 시도해주세요.");
+        }
 
-        // birthDate를 이용하여 age를 계산하는 코드를 추가했습니다.
-        LocalDate birthDate = profile.getBirthDate();
-        LocalDate currentDate = LocalDate.now();
-        int age = Period.between(birthDate, currentDate).getYears();
+        // 동화 생성 중 상태로 설정
+        creatingBooks.put(profileId, true);
 
-        String story = openAIService.generateStory(prompt, age);
+        try {
+            // 프로필 확인
+            ProfileEntity profile = profileRepository.findById(profileId)
+                    .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        // 제목과 내용을 분리 (Title: 과 Content: 기준)
-        String title = story.split("Content:")[0].replace("Title:", "").trim();
-        String content = story.split("Content:")[1].trim();
+            // 나이를 계산 (birthDate 기준)
+            LocalDate birthDate = profile.getBirthDate();
+            LocalDate currentDate = LocalDate.now();
+            int age = Period.between(birthDate, currentDate).getYears();
 
-        // Setting 초기 설정
-        SettingEntity setting  = SettingEntity.createDefaultSetting();
+            // OpenAI 서비스로부터 동화 생성
+            String story = openAIService.generateStory(prompt, age);
 
-        // 책 표지 이미지 생성 및 업로드
-        String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
+            // 제목과 내용을 분리 (Title: 과 Content: 기준)
+            String title = story.split("Content:")[0].replace("Title:", "").trim();
+            String content = story.split("Content:")[1].trim();
 
-        BookEntity book = BookMapper.mapToBookEntity(title, coverImageUrl, profile, setting);
-        BookEntity savedBook = bookRepository.save(book);
+            // Setting 초기 설정
+            SettingEntity setting = SettingEntity.createDefaultSetting();
 
-        // 페이지 생성
-        List<PageEntity> pages = createPage(savedBook, content);
-        batchPageInsert.batchInsertPages(pages);
+            // 책 표지 이미지 생성 및 업로드
+            String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
 
-        return BookMapper.mapToBookDTO(savedBook, pages);
+            // 책 엔티티 생성
+            BookEntity book = BookMapper.mapToBookEntity(title, coverImageUrl, profile, setting);
+            BookEntity savedBook = bookRepository.save(book);
+
+            // 페이지 생성
+            List<PageEntity> pages = createPage(savedBook, content);
+            pageBatchRepository.batchInsertPages(pages);
+
+            // 성공적으로 생성된 동화 반환
+            return BookMapper.mapToBookDTO(savedBook, pages);
+
+        } finally {
+            // 동화 생성이 끝나면 상태를 제거하여 다시 요청 가능하게 함
+            creatingBooks.remove(profileId);
+        }
     }
 
     private List<PageEntity> createPage(BookEntity book, String content) {
         String[] contentParts = content.split("\n\n");
-        List<PageEntity> pages = IntStream.range(0, contentParts.length)
-                .mapToObj(i -> {
-                    String trimContent = contentParts[i].trim();
-                    return PageEntity.builder()
-                            .pageNumber(i + 1)
-                            .content(trimContent)
-                            .image(imageGenerationService.generateAndUploadPageImage(trimContent))
-                            .book(book)
-                            .build();
-                })
-                .collect(Collectors.toList());
+        List<PageEntity> pages = new ArrayList<>();
+
+        for (int i = 0; i < contentParts.length; i++) {
+            String trimContent = contentParts[i].trim();
+
+            String imageUrl = imageGenerationService.generateAndUploadPageImage(trimContent);
+
+            PageEntity pageEntity = PageEntity.builder()
+                    .pageNumber(i + 1)
+                    .content(trimContent)
+                    .image(imageUrl)
+                    .book(book)
+                    .build();
+            pages.add(pageEntity);
+        }
 
         return pages;
     }
