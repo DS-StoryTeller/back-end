@@ -1,4 +1,4 @@
-package com.cojac.storyteller.repository;
+package com.cojac.storyteller.repository.batch;
 
 import com.cojac.storyteller.domain.PageEntity;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class PageBatchRepository {
+public class BatchPageInsert {
 
     private final JdbcTemplate jdbcTemplate;
 
