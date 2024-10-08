@@ -25,10 +25,7 @@ public class PageService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
 
-    public PageDetailResponseDTO getPageDetail(PageRequestDTO requestDto) {
-        Integer profileId = requestDto.getProfileId();
-        Integer bookId = requestDto.getBookId();
-        Integer pageNum = requestDto.getPageNum();
+    public PageDetailResponseDTO getPageDetail(Integer profileId, Integer bookId, Integer pageNum) {
 
         // 해당 프로필 가져오기
         ProfileEntity profile = profileRepository.findById(profileId)

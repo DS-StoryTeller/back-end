@@ -25,7 +25,7 @@ public class BookController implements BookControllerDocs {
      * 동화 내용 생성
      */
     @PostMapping("/profiles/{profileId}/books")
-    public ResponseEntity<ResponseDTO<BookDTO>> createBook(@PathVariable Integer profileId, @RequestBody CreateBookRequest request) {
+    public ResponseEntity<ResponseDTO> createBook(@PathVariable Integer profileId, @RequestBody CreateBookRequest request) {
         BookDTO  createdBook = bookService.createBook(request.getPrompt(), profileId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_CREATE_BOOK.getStatus().value())
