@@ -5,7 +5,6 @@ import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
 import com.cojac.storyteller.domain.ProfileEntity;
 import com.cojac.storyteller.dto.page.PageDetailResponseDTO;
-import com.cojac.storyteller.dto.request.PageRequestDTO;
 import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.PageNotFoundException;
@@ -25,10 +24,7 @@ public class PageService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
 
-    public PageDetailResponseDTO getPageDetail(PageRequestDTO requestDto) {
-        Integer profileId = requestDto.getProfileId();
-        Integer bookId = requestDto.getBookId();
-        Integer pageNum = requestDto.getPageNum();
+    public PageDetailResponseDTO getPageDetail(Integer profileId, Integer bookId, Integer pageNum) {
 
         // 해당 프로필 가져오기
         ProfileEntity profile = profileRepository.findById(profileId)

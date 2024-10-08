@@ -42,7 +42,7 @@ public interface BookControllerDocs {
 
             }
     )
-    ResponseEntity<ResponseDTO<?>> createBook(@RequestBody CreateBookRequest request, @RequestParam Integer profileId);
+    ResponseEntity<ResponseDTO> createBook(@PathVariable Integer profileId, @RequestBody CreateBookRequest request);
 
     /**
      * 동화 목록 조회
@@ -60,7 +60,7 @@ public interface BookControllerDocs {
             }
     )
     ResponseEntity<ResponseDTO>  getBookList(
-            @RequestParam Integer profileId,
+            @PathVariable Integer profileId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size);
 
@@ -81,7 +81,7 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<BookDetailResponseDTO>> getBookDetail(@RequestParam Integer profileId, @RequestParam Integer bookId);
+    ResponseEntity<ResponseDTO<BookDetailResponseDTO>> getBookDetail(@PathVariable Integer profileId, @PathVariable Integer bookId);
 
     /**
      * 즐겨찾기 상태로 업데이트
@@ -100,7 +100,7 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<Boolean>> isFavorite(@RequestParam Integer profileId, @RequestParam Integer bookId);
+    ResponseEntity<ResponseDTO<Boolean>> isFavorite(@PathVariable Integer profileId, @PathVariable Integer bookId);
 
     /**
      * 동화 삭제
@@ -119,7 +119,7 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO> deleteBook(@RequestParam Integer profileId, @RequestParam Integer bookId) throws Exception;
+    ResponseEntity<ResponseDTO> deleteBook(@PathVariable Integer profileId, @PathVariable Integer bookId) throws Exception;
 
     /**
      * 현재 읽고 있는 페이지 업데이트
@@ -139,7 +139,7 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<BookDTO>> updateCurrentPage(@RequestParam Integer profileId, @RequestParam Integer bookId, @RequestParam Integer currentPage);
+    ResponseEntity<ResponseDTO<BookDTO>> updateCurrentPage(@PathVariable Integer profileId, @PathVariable Integer bookId, @RequestParam Integer currentPage);
 
     /**
      * 즐겨찾기 동화 필터링
@@ -157,7 +157,7 @@ public interface BookControllerDocs {
             }
     )
     ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(
-            @RequestParam Integer profileId,
+            @PathVariable Integer profileId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "createdAt,desc") String[] sort);
@@ -178,7 +178,7 @@ public interface BookControllerDocs {
             }
     )
     ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(
-            @RequestParam Integer profileId,
+            @PathVariable Integer profileId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "createdAt,desc") String[] sort);
@@ -200,6 +200,6 @@ public interface BookControllerDocs {
                     @ApiResponse(responseCode = "404", description = "책을 찾을 수 없습니다.", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             }
     )
-    ResponseEntity<ResponseDTO<?>> createQuiz(@RequestParam Integer profileId, @RequestParam Integer bookId);
+    ResponseEntity<ResponseDTO> createQuiz(@PathVariable Integer profileId, @PathVariable Integer bookId);
 
 }

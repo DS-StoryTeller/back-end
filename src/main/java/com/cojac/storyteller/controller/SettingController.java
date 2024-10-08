@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/settings")
+@RequestMapping("/profiles/{profileId}/books/{bookId}/settings")
 @RequiredArgsConstructor
 public class SettingController implements SettingControllerDocs {
     private final SettingService settingService;
@@ -18,10 +18,10 @@ public class SettingController implements SettingControllerDocs {
     /**
      * 책 설정 업데이트
      */
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<ResponseDTO<SettingDTO>> updateSettings(
-            @RequestParam Integer profileId,
-            @RequestParam Integer bookId,
+            @PathVariable Integer profileId,
+            @PathVariable Integer bookId,
             @RequestBody SettingDTO settingDTO) {
         SettingDTO response = settingService.updateSetting(profileId, bookId, settingDTO);
         return ResponseEntity
@@ -32,10 +32,10 @@ public class SettingController implements SettingControllerDocs {
     /**
      * 책 설정 조회하기
      */
-    @GetMapping("/detail")
+    @GetMapping
     public ResponseEntity<ResponseDTO<SettingDTO>> getDetailSettings(
-            @RequestParam Integer profileId,
-            @RequestParam Integer bookId) {
+            @PathVariable Integer profileId,
+            @PathVariable Integer bookId) {
         SettingDTO response = settingService.getDetailSettings(profileId, bookId);
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_RETRIEVE_SETTING.getStatus().value())
