@@ -12,10 +12,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Book;
 import java.util.List;
 
 @RestController
+@RequestMapping("/profiles/{profileId}/books")
 @RequiredArgsConstructor
 public class BookController implements BookControllerDocs {
 
@@ -24,7 +24,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 동화 내용 생성
      */
-    @PostMapping("/profiles/{profileId}/books")
+    @PostMapping
     public ResponseEntity<ResponseDTO> createBook(@PathVariable Integer profileId, @RequestBody CreateBookRequest request) {
         BookDTO  createdBook = bookService.createBook(request.getPrompt(), profileId);
         return ResponseEntity
@@ -35,7 +35,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 동화 목록 조회
      */
-    @GetMapping("/profiles/{profileId}/books")
+    @GetMapping
     public ResponseEntity<ResponseDTO> getBookList(
             @PathVariable Integer profileId,
             @RequestParam(defaultValue = "0") int page,
@@ -53,7 +53,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 동화 세부 정보 조회
      */
-    @GetMapping("/profiles/{profileId}/books/{bookId}")
+    @GetMapping("/{bookId}")
     public ResponseEntity<ResponseDTO<BookDetailResponseDTO>> getBookDetail(@PathVariable Integer profileId, @PathVariable Integer bookId) {
         BookDetailResponseDTO bookDetail = bookService.getBookDetail(profileId, bookId);
         return ResponseEntity
@@ -64,7 +64,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 즐겨찾기 상태로 업데이트
      */
-    @PutMapping("/profiles/{profileId}/books/{bookId}/favorite")
+    @PutMapping("/{bookId}/favorite")
     public ResponseEntity<ResponseDTO<Boolean>> isFavorite(@PathVariable Integer profileId, @PathVariable Integer bookId) {
         Boolean newFavoriteStatus = bookService.toggleFavorite(profileId, bookId);
         return ResponseEntity
@@ -75,7 +75,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 동화 삭제
      */
-    @DeleteMapping("/profiles/{profileId}/books/{bookId}")
+    @DeleteMapping("/{bookId}")
     public ResponseEntity<ResponseDTO> deleteBook(@PathVariable Integer profileId, @PathVariable Integer bookId) throws Exception {
         bookService.deleteBook(profileId, bookId);
         return ResponseEntity
@@ -86,7 +86,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 현재 읽고 있는 페이지 업데이트
      */
-    @PutMapping("/profiles/{profileId}/books/{bookId}/current")
+    @PutMapping("/{bookId}/current")
     public ResponseEntity<ResponseDTO<BookDTO>> updateCurrentPage(@PathVariable Integer profileId, @PathVariable Integer bookId, @RequestParam Integer currentPage) {
         BookDTO updatedBook = bookService.updateCurrentPage(profileId, bookId, currentPage);
         return ResponseEntity
@@ -97,7 +97,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 즐겨찾기 동화 조회
      */
-    @GetMapping("/profiles/{profileId}/books/favorites")
+    @GetMapping("/favorites")
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getFavoriteBooks(
             @PathVariable Integer profileId,
             @RequestParam(defaultValue = "0") int page,
@@ -116,7 +116,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 읽고 있는 동화 조회
      */
-    @GetMapping("/profiles/{profileId}/books/reading")
+    @GetMapping("/reading")
     public ResponseEntity<ResponseDTO<List<BookListResponseDTO>>> getReadingBooks(
             @PathVariable Integer profileId,
             @RequestParam(defaultValue = "0") int page,
@@ -135,7 +135,7 @@ public class BookController implements BookControllerDocs {
     /**
      * 동화 퀴즈 생성
      */
-    @PostMapping("/profiles/{profileId}/books/{bookId}/quiz")
+    @PostMapping("/{bookId}/quiz")
     public ResponseEntity<ResponseDTO> createQuiz(@PathVariable Integer profileId, @PathVariable Integer bookId) {
         QuizResponseDTO  createdBook = bookService.createQuiz(profileId, bookId);
         return ResponseEntity
