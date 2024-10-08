@@ -8,6 +8,7 @@ import com.cojac.storyteller.domain.UnknownWordEntity;
 import com.cojac.storyteller.dto.request.PageRequestDTO;
 import com.cojac.storyteller.dto.unknownWord.UnknownWordDetailDTO;
 import com.cojac.storyteller.dto.unknownWord.UnknownWordDTO;
+import com.cojac.storyteller.dto.unknownWord.UnknownWordRequestDTO;
 import com.cojac.storyteller.exception.BookNotFoundException;
 import com.cojac.storyteller.exception.PageNotFoundException;
 import com.cojac.storyteller.exception.ProfileNotFoundException;
@@ -28,10 +29,10 @@ public class UnknownWordService {
     private final UnknownWordRepository unknownWordRepository;
 
     // 단어 저장
-    public UnknownWordDetailDTO saveUnknownWord(PageRequestDTO requestDto, UnknownWordDTO unknownWordDto) {
-        Integer profileId = requestDto.getProfileId();
-        Integer bookId = requestDto.getBookId();
-        Integer pageNum = requestDto.getPageNum();
+    public UnknownWordDetailDTO saveUnknownWord(UnknownWordRequestDTO unknownWordRequestDTO) {
+        Integer profileId = unknownWordRequestDTO.getProfileId();
+        Integer bookId = unknownWordRequestDTO.getBookId();
+        Integer pageNum = unknownWordRequestDTO.getPageNum();
 
         // 해당 프로필 가져오기
         ProfileEntity profile = profileRepository.findById(profileId)
@@ -46,15 +47,15 @@ public class UnknownWordService {
                 .orElseThrow(() -> new PageNotFoundException(ErrorCode.PAGE_NOT_FOUND));
 
         // UnknownWord 저장
-        UnknownWordEntity unknownWordEntity = new UnknownWordEntity(unknownWordDto.getUnknownWord(), unknownWordDto.getPosition(), page);
+        UnknownWordEntity unknownWordEntity = new UnknownWordEntity(unknownWordRequestDTO.getUnknownWord(), unknownWordRequestDTO.getPosition(), page);
         unknownWordRepository.save(unknownWordEntity);
 
         return UnknownWordDetailDTO.builder()
                 .bookId(bookId)
                 .pageId(pageNum)
                 .unknownwordId(unknownWordEntity.getId())
-                .unknownWord(unknownWordDto.getUnknownWord())
-                .position(unknownWordDto.getPosition())
+                .unknownWord(unknownWordRequestDTO.getUnknownWord())
+                .position(unknownWordRequestDTO.getPosition())
                 .build();
     }
 
