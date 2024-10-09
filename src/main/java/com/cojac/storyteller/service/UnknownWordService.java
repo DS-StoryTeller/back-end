@@ -26,7 +26,9 @@ public class UnknownWordService {
     private final ProfileRepository profileRepository;
     private final UnknownWordRepository unknownWordRepository;
 
-    // 단어 저장
+    /**
+     * 단어 저장
+     */
     public UnknownWordDetailDTO saveUnknownWord(UnknownWordRequestDTO unknownWordRequestDTO) {
         Integer profileId = unknownWordRequestDTO.getProfileId();
         Integer bookId = unknownWordRequestDTO.getBookId();
@@ -57,6 +59,9 @@ public class UnknownWordService {
                 .build();
     }
 
+    /**
+     * 단어 삭제
+     */
     public void deleteUnknownWord(Integer unknownWordId) {
         // unknownword 가져오기
         UnknownWordEntity unknownWordEntity = unknownWordRepository.findById(unknownWordId)
