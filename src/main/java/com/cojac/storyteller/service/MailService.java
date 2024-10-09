@@ -24,7 +24,7 @@ public class MailService {
         try {
             emailSender.send(emailForm);
         } catch (RuntimeException e) {
-            log.debug("MailService.sendEmail exception occur toEmail: {}", e);
+            log.debug("MailService.sendEmail 예외 발생 toEmail: {}", e);
             throw new EmailSendingException(ErrorCode.UNABLE_TO_SEND_EMAIL);
         }
     }
