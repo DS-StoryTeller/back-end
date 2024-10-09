@@ -24,6 +24,9 @@ public class PageService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
 
+    /**
+     * 페이지 세부 정보 가져오기
+     */
     public PageDetailResponseDTO getPageDetail(Integer profileId, Integer bookId, Integer pageNum) {
 
         // 해당 프로필 가져오기
