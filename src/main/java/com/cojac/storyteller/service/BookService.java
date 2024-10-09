@@ -1,6 +1,5 @@
 package com.cojac.storyteller.service;
 
-import ch.qos.logback.classic.Logger;
 import com.cojac.storyteller.code.ErrorCode;
 import com.cojac.storyteller.domain.BookEntity;
 import com.cojac.storyteller.domain.PageEntity;
@@ -32,9 +31,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -94,7 +91,7 @@ public class BookService {
 
             // 페이지 생성
             List<PageEntity> pages = createPage(savedBook, content);
-            pageBatchRepository.batchInsertPages(pages);
+            batchPageInsert.batchInsertPages(pages);
 
             // 성공적으로 생성된 동화 반환
             return BookMapper.mapToBookDTO(savedBook, pages);
