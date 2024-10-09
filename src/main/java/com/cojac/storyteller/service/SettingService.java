@@ -19,6 +19,9 @@ public class SettingService {
     private final BookRepository bookRepository;
     private final ProfileRepository profileRepository;
 
+    /**
+     * 설정 업데이트
+     */
     @Transactional
     public SettingDTO updateSetting(Integer profileId, Integer bookId, SettingDTO settingDTO) {
         // 프로필이 존재하는지 확인
@@ -36,6 +39,9 @@ public class SettingService {
         return SettingDTO.toDto(setting);
     }
 
+    /**
+     * 설정 조회하기
+     */
     public SettingDTO getDetailSettings(Integer profileId, Integer bookId) {
         // 프로필이 존재하는지 확인
         ProfileEntity profile = profileRepository.findById(profileId)
