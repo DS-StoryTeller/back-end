@@ -41,7 +41,8 @@ public class ProfileEntity {
     private List<BookEntity> books = new ArrayList<>();
 
     @Builder
-    public ProfileEntity(String name, LocalDate birthDate, String imageUrl, String pinNumber, UserEntity user) {
+    public ProfileEntity(Integer id, String name, LocalDate birthDate, String imageUrl, String pinNumber, UserEntity user) {
+        this.id = id; // ID 필드 추가
         this.name = name;
         this.birthDate = birthDate;
         this.imageUrl = imageUrl;
