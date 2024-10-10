@@ -1,18 +1,18 @@
 package com.cojac.storyteller.test.unit.unknownWord;
 
 import com.cojac.storyteller.book.entity.BookEntity;
+import com.cojac.storyteller.book.exception.BookNotFoundException;
+import com.cojac.storyteller.book.repository.BookRepository;
 import com.cojac.storyteller.page.entity.PageEntity;
+import com.cojac.storyteller.page.exception.PageNotFoundException;
+import com.cojac.storyteller.page.repository.PageRepository;
 import com.cojac.storyteller.profile.entity.ProfileEntity;
-import com.cojac.storyteller.unknownWord.entity.UnknownWordEntity;
+import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
+import com.cojac.storyteller.profile.repository.ProfileRepository;
 import com.cojac.storyteller.unknownWord.dto.UnknownWordDetailDTO;
 import com.cojac.storyteller.unknownWord.dto.UnknownWordRequestDTO;
-import com.cojac.storyteller.book.exception.BookNotFoundException;
-import com.cojac.storyteller.page.exception.PageNotFoundException;
-import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
+import com.cojac.storyteller.unknownWord.entity.UnknownWordEntity;
 import com.cojac.storyteller.unknownWord.exception.UnknownWordNotFoundException;
-import com.cojac.storyteller.book.repository.BookRepository;
-import com.cojac.storyteller.page.repository.PageRepository;
-import com.cojac.storyteller.profile.repository.ProfileRepository;
 import com.cojac.storyteller.unknownWord.repository.UnknownWordRepository;
 import com.cojac.storyteller.unknownWord.service.UnknownWordService;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +28,15 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * 단위 테스트
+ *
+ * 개별 메서드 및 클래스의 동작을 검증하기 위한 테스트 클래스입니다.
+ * 각 테스트는 특정 기능이나 비즈니스 로직을 독립적으로 확인하며,
+ * 외부 의존성을 최소화하기 위해 모의 객체를 사용합니다.
+ */
 @ExtendWith(MockitoExtension.class)
-class UnknownWordServiceTest {
+class UnknownWordServiceUnitTest {
 
     @Mock
     private PageRepository pageRepository;
@@ -63,7 +70,7 @@ class UnknownWordServiceTest {
      * 단어 저장
      */
     @Test
-    @DisplayName("단어 저장 - 성공")
+    @DisplayName("Unknown Word 저장 단위 테스트 - 성공")
     void testSaveUnknownWord_Success() {
         // given
         UnknownWordRequestDTO unknownWordRequestDTO = new UnknownWordRequestDTO();
@@ -96,7 +103,7 @@ class UnknownWordServiceTest {
     }
 
     @Test
-    @DisplayName("단어 저장 - 프로필 없음 예외")
+    @DisplayName("Unknown Word 저장 단위 테스트 - 프로필이 존재하지 않을 때 예외 처리")
     void testSaveUnknownWord_ProfileNotFound() {
         // given
         UnknownWordRequestDTO unknownWordRequestDTO = new UnknownWordRequestDTO();
@@ -111,7 +118,7 @@ class UnknownWordServiceTest {
     }
 
     @Test
-    @DisplayName("단어 저장 - 책 없음 예외")
+    @DisplayName("Unknown Word 저장 단위 테스트 - 책이 존재하지 않을 때 예외 처리")
     void testSaveUnknownWord_BookNotFound() {
         // given
         UnknownWordRequestDTO unknownWordRequestDTO = new UnknownWordRequestDTO();
@@ -127,7 +134,7 @@ class UnknownWordServiceTest {
     }
 
     @Test
-    @DisplayName("단어 저장 - 페이지 없음 예외")
+    @DisplayName("Unknown Word 저장 단위 테스트 - 페이지가 존재하지 않을 때 예외 처리")
     void testSaveUnknownWord_PageNotFound() {
         // given
         UnknownWordRequestDTO unknownWordRequestDTO = new UnknownWordRequestDTO();
@@ -147,7 +154,7 @@ class UnknownWordServiceTest {
      * 단어 삭제
      */
     @Test
-    @DisplayName("단어 삭제 - 성공")
+    @DisplayName("Unknown Word 삭제 단위 테스트 - 성공")
     void testDeleteUnknownWord_Success() {
         // given
         Integer unknownWordId = 1;
@@ -163,7 +170,7 @@ class UnknownWordServiceTest {
     }
 
     @Test
-    @DisplayName("단어 삭제 - 단어 없음 예외")
+    @DisplayName("Unknown Word 삭제 단위 테스트 - Unknown Word가 존재하지 않을 때 예외 처리")
     void testDeleteUnknownWord_NotFound() {
         // given
         Integer unknownWordId = 1;

@@ -1,15 +1,15 @@
 package com.cojac.storyteller.test.unit.page;
 
 import com.cojac.storyteller.book.entity.BookEntity;
-import com.cojac.storyteller.page.entity.PageEntity;
-import com.cojac.storyteller.profile.entity.ProfileEntity;
-import com.cojac.storyteller.page.dto.PageDetailResponseDTO;
 import com.cojac.storyteller.book.exception.BookNotFoundException;
-import com.cojac.storyteller.page.exception.PageNotFoundException;
-import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
-import com.cojac.storyteller.page.service.PageService;
 import com.cojac.storyteller.book.repository.BookRepository;
+import com.cojac.storyteller.page.dto.PageDetailResponseDTO;
+import com.cojac.storyteller.page.entity.PageEntity;
+import com.cojac.storyteller.page.exception.PageNotFoundException;
 import com.cojac.storyteller.page.repository.PageRepository;
+import com.cojac.storyteller.page.service.PageService;
+import com.cojac.storyteller.profile.entity.ProfileEntity;
+import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
 import com.cojac.storyteller.profile.repository.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,8 +24,15 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * 단위 테스트
+ *
+ * 개별 메서드 및 클래스의 동작을 검증하기 위한 테스트 클래스입니다.
+ * 각 테스트는 특정 기능이나 비즈니스 로직을 독립적으로 확인하며,
+ * 외부 의존성을 최소화하기 위해 모의 객체를 사용합니다.
+ */
 @ExtendWith(MockitoExtension.class)
-class PageServiceTest {
+class PageServiceUnitTest {
 
     @Mock
     private PageRepository pageRepository;
@@ -54,7 +61,7 @@ class PageServiceTest {
      * 페이지 세부 정보 가져오기
      */
     @Test
-    @DisplayName("페이지 세부 정보 조회 - 성공")
+    @DisplayName("페이지 세부 정보 가져오기 단위 테스트 - 성공")
     void testGetPageDetail_Success() {
         // given
         Integer profileId = 1;
@@ -81,7 +88,7 @@ class PageServiceTest {
     }
 
     @Test
-    @DisplayName("페이지 세부 정보 조회 - 프로필 없음 예외")
+    @DisplayName("페이지 세부 정보 가져오기 단위 테스트 - 프로필이 존재하지 않을 때 예외 처리")
     void testGetPageDetail_ProfileNotFound() {
         // given
         Integer profileId = 1;
@@ -95,7 +102,7 @@ class PageServiceTest {
     }
 
     @Test
-    @DisplayName("페이지 세부 정보 조회 - 책 없음 예외")
+    @DisplayName("페이지 세부 정보 가져오기 단위 테스트 - 책이 존재하지 않을 때 예외 처리")
     void testGetPageDetail_BookNotFound() {
         // given
         Integer profileId = 1;
@@ -110,7 +117,7 @@ class PageServiceTest {
     }
 
     @Test
-    @DisplayName("페이지 세부 정보 조회 - 페이지 없음 예외")
+    @DisplayName("페이지 세부 정보 가져오기 단위 테스트 - 페이지가 존재하지 않을 때 예외 처리")
     void testGetPageDetail_PageNotFound() {
         // given
         Integer profileId = 1;

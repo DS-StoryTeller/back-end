@@ -1,24 +1,26 @@
 package com.cojac.storyteller.test.unit.profile;
 
 import com.cojac.storyteller.book.entity.BookEntity;
+import com.cojac.storyteller.book.repository.BookRepository;
 import com.cojac.storyteller.common.amazon.AmazonS3Service;
-import com.cojac.storyteller.profile.service.ProfileService;
-import com.cojac.storyteller.user.entity.LocalUserEntity;
-import com.cojac.storyteller.profile.entity.ProfileEntity;
 import com.cojac.storyteller.profile.dto.PinCheckResultDTO;
 import com.cojac.storyteller.profile.dto.PinNumberDTO;
 import com.cojac.storyteller.profile.dto.ProfileDTO;
 import com.cojac.storyteller.profile.dto.ProfilePhotoDTO;
-import com.cojac.storyteller.user.exception.InvalidPinNumberException;
+import com.cojac.storyteller.profile.entity.ProfileEntity;
 import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
-import com.cojac.storyteller.user.exception.UserNotFoundException;
-import com.cojac.storyteller.book.repository.BookRepository;
 import com.cojac.storyteller.profile.repository.ProfileRepository;
-import com.cojac.storyteller.user.repository.LocalUserRepository;
 import com.cojac.storyteller.profile.repository.batch.BatchProfileDelete;
+import com.cojac.storyteller.profile.service.ProfileService;
+import com.cojac.storyteller.user.entity.LocalUserEntity;
+import com.cojac.storyteller.user.exception.InvalidPinNumberException;
+import com.cojac.storyteller.user.exception.UserNotFoundException;
+import com.cojac.storyteller.user.repository.LocalUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -30,11 +32,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ProfileServiceTest {
+/**
+ * 단위 테스트
+ *
+ * 개별 메서드 및 클래스의 동작을 검증하기 위한 테스트 클래스입니다.
+ * 각 테스트는 특정 기능이나 비즈니스 로직을 독립적으로 확인하며,
+ * 외부 의존성을 최소화하기 위해 모의 객체를 사용합니다.
+ */
+class ProfileServiceUnitTest {
 
     @Mock
     private AmazonS3Service amazonS3Service;
@@ -59,11 +69,15 @@ class ProfileServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    private static Stream<String> provideInvalidPinNumbers() {
+        return Stream.of(null, "", "123", "abcd", "12345");
+    }
+
     /**
-     * S3에서 /profile/photos 경로에 있는 사진 목록 가져오기
+     * 프로필 사진 가져오기
      */
     @Test
-    @DisplayName("프로필 사진 가져오기 - 성공")
+    @DisplayName("프로필 사진 가져오기 단위 테스트 - 성공")
     void testGetProfilePhotos_Success() {
         // given
         List<String> photoUrls = Arrays.asList("url1", "url2");
@@ -79,7 +93,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    @DisplayName("프로필 사진 가져오기 - 빈 리스트")
+    @DisplayName("프로필 사진 가져오기 단위 테스트 - 빈 리스트")
     void testGetProfilePhotos_EmptyList() {
         // given
         when(amazonS3Service.getAllPhotos("profile/photos")).thenReturn(List.of());
@@ -95,7 +109,7 @@ class ProfileServiceTest {
      * 프로필 생성하기
      */
     @Test
-    @DisplayName("프로필 생성 - 성공")
+    @DisplayName("프로필 생성하기 단위 테스트 - 성공")
     void testCreateProfile_Success() {
         // given
         ProfileDTO profileDTO = new ProfileDTO();
@@ -122,7 +136,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    @DisplayName("프로필 생성 - 사용자 없음 예외")
+    @DisplayName("프로필 생성하기 단위 테스트 - 사용자 없음 예외")
     void testCreateProfile_UserNotFound() {
         // given
         ProfileDTO profileDTO = new ProfileDTO();
@@ -133,15 +147,15 @@ class ProfileServiceTest {
         assertThrows(UserNotFoundException.class, () -> profileService.createProfile(profileDTO));
     }
 
-    @Test
-    @DisplayName("프로필 생성 - 잘못된 핀 번호 예외")
-    void testCreateProfile_InvalidPinNumber() {
+    @ParameterizedTest
+    @DisplayName("프로필 생성하기 단위 테스트 - 잘못된 핀 번호 형식 예외")
+    @MethodSource("provideInvalidPinNumbers")
+    void testCreateProfile_InvalidPinNumber(String pinNumber) {
         // given
         ProfileDTO profileDTO = new ProfileDTO();
         profileDTO.setUserId(1);
-        profileDTO.setPinNumber("12");
+        profileDTO.setPinNumber(pinNumber);
 
-        // UserRepository에서 유효한 사용자 반환하도록 모킹
         LocalUserEntity userEntity = new LocalUserEntity();
         when(userRepository.findById(1)).thenReturn(Optional.of(userEntity));
 
@@ -153,14 +167,13 @@ class ProfileServiceTest {
      * 암호된 프로필 비밀번호 체크하기
      */
     @Test
-    @DisplayName("핀 번호 검증 - 성공")
+    @DisplayName("핀 번호 검증하기 단위 테스트 - 성공")
     void testVerificationPinNumber_Success() {
         // given
         Integer profileId = 1;
         PinNumberDTO pinNumberDTO = new PinNumberDTO();
         pinNumberDTO.setPinNumber("1234");
 
-        // 실제로 BCryptPasswordEncoder를 사용하여 암호화된 핀 생성
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPin = encoder.encode("1234");
 
@@ -178,7 +191,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    @DisplayName("핀 번호 검증 - 프로필 없음 예외")
+    @DisplayName("핀 번호 검증하기 단위 테스트 - 프로필 없음 예외")
     void testVerificationPinNumber_ProfileNotFound() {
         // given
         Integer profileId = 1;
@@ -190,14 +203,13 @@ class ProfileServiceTest {
     }
 
     @Test
-    @DisplayName("핀 번호 검증 - 잘못된 핀 번호")
+    @DisplayName("핀 번호 검증하기 단위 테스트 - 잘못된 핀 번호")
     void testVerificationPinNumber_InvalidPin() {
         // given
         Integer profileId = 1;
         PinNumberDTO pinNumberDTO = new PinNumberDTO();
-        pinNumberDTO.setPinNumber("1234"); // 사용자가 입력한 핀 번호
+        pinNumberDTO.setPinNumber("1234");
 
-        // 실제로 BCryptPasswordEncoder를 사용하여 암호화된 잘못된 핀 번호 생성
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPin = encoder.encode("5678");
 
@@ -218,7 +230,7 @@ class ProfileServiceTest {
      * 프로필 업데이트
      */
     @Test
-    @DisplayName("프로필 업데이트 - 성공")
+    @DisplayName("프로필 업데이트 단위 테스트 - 성공")
     void testUpdateProfile_Success() {
         // given
         Integer profileId = 1;
@@ -228,7 +240,7 @@ class ProfileServiceTest {
         LocalUserEntity userEntity = new LocalUserEntity("username", "password", "email", "ROLE_USER");
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPin = encoder.encode("oldPin");  // 이전 해시된 핀 번호
+        String hashedPin = encoder.encode("oldPin");
 
         ProfileEntity profileEntity = ProfileEntity.builder()
                 .id(profileId)
@@ -248,7 +260,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    @DisplayName("프로필 업데이트 - 프로필 없음 예외")
+    @DisplayName("프로필 업데이트 단위 테스트 - 프로필 없음 예외")
     void testUpdateProfile_ProfileNotFound() {
         // given
         Integer profileId = 1;
@@ -259,13 +271,14 @@ class ProfileServiceTest {
         assertThrows(ProfileNotFoundException.class, () -> profileService.updateProfile(profileId, profileDTO));
     }
 
-    @Test
-    @DisplayName("프로필 업데이트 - 잘못된 핀 번호 예외")
-    void testUpdateProfile_InvalidPinNumber() {
+    @ParameterizedTest
+    @DisplayName("프로필 업데이트 단위 테스트 - 잘못된 핀 번호 형식 예외")
+    @MethodSource("provideInvalidPinNumbers")
+    void testUpdateProfile_InvalidPinNumber(String pinNumber) {
         // given
         Integer profileId = 1;
         ProfileDTO profileDTO = new ProfileDTO();
-        profileDTO.setPinNumber("12");  // 잘못된 핀 번호
+        profileDTO.setPinNumber(pinNumber);  // 잘못된 핀 번호
 
         ProfileEntity profileEntity = new ProfileEntity();
         when(profileRepository.findById(profileId)).thenReturn(Optional.of(profileEntity));
@@ -278,7 +291,7 @@ class ProfileServiceTest {
      * 프로필 정보 조회하기
      */
     @Test
-    @DisplayName("프로필 가져오기 - 성공")
+    @DisplayName("프로필 가져오기 단위 테스트 - 성공")
     void testGetProfile_Success() {
         // given
         Integer profileId = 1; // 테스트에 사용할 ID
@@ -315,7 +328,7 @@ class ProfileServiceTest {
      * 프로필 목록 조회하기
      */
     @Test
-    @DisplayName("프로필 목록 조회 - 성공")
+    @DisplayName("프로필 목록 조회 단위 테스트 - 성공")
     void testGetProfileList_Success() {
         // given
         Integer userId = 1;
@@ -325,7 +338,6 @@ class ProfileServiceTest {
         ProfileEntity profile2 = ProfileEntity.builder().user(user).build();
         List<ProfileEntity> profiles = Arrays.asList(profile1, profile2);
 
-        // UserRepository와 ProfileRepository의 동작 모킹
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(profileRepository.findByUser(user)).thenReturn(profiles);
 
@@ -340,7 +352,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    @DisplayName("프로필 목록 조회 - 유저를 찾을 수 없을 때 예외")
+    @DisplayName("프로필 목록 조회 단위 테스트 - 유저를 찾을 수 없을 때 예외")
     void testGetProfileList_UserNotFound() {
         // given
         Integer userId = 1;
@@ -354,7 +366,7 @@ class ProfileServiceTest {
      * 프로필 삭제하기
      */
     @Test
-    @DisplayName("프로필 삭제 - 성공")
+    @DisplayName("프로필 삭제하기 단위 테스트 - 성공")
     void testDeleteProfile_Success() throws Exception {
         // given
         Integer profileId = 1;
@@ -383,7 +395,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    @DisplayName("프로필 삭제 - 프로필을 찾을 수 없을 때 예외")
+    @DisplayName("프로필 삭제하기 단위 테스트 - 프로필을 찾을 수 없을 때 예외")
     void testDeleteProfile_ProfileNotFound() {
         // given
         Integer profileId = 1;

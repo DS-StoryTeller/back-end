@@ -1,20 +1,20 @@
 package com.cojac.storyteller.test.unit.book;
 
-import com.cojac.storyteller.book.entity.BookEntity;
-import com.cojac.storyteller.book.service.BookService;
-import com.cojac.storyteller.common.openAI.ImageGenerationService;
-import com.cojac.storyteller.common.openAI.OpenAIService;
-import com.cojac.storyteller.profile.entity.ProfileEntity;
 import com.cojac.storyteller.book.dto.BookDTO;
 import com.cojac.storyteller.book.dto.BookDetailResponseDTO;
 import com.cojac.storyteller.book.dto.BookListResponseDTO;
 import com.cojac.storyteller.book.dto.QuizResponseDTO;
+import com.cojac.storyteller.book.entity.BookEntity;
 import com.cojac.storyteller.book.exception.BookNotFoundException;
-import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
 import com.cojac.storyteller.book.repository.BookRepository;
-import com.cojac.storyteller.profile.repository.ProfileRepository;
 import com.cojac.storyteller.book.repository.batch.BatchBookDelete;
+import com.cojac.storyteller.book.service.BookService;
+import com.cojac.storyteller.common.openAI.ImageGenerationService;
+import com.cojac.storyteller.common.openAI.OpenAIService;
 import com.cojac.storyteller.page.repository.batch.BatchPageInsert;
+import com.cojac.storyteller.profile.entity.ProfileEntity;
+import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
+import com.cojac.storyteller.profile.repository.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,8 +34,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * 단위 테스트
+ *
+ * 개별 메서드 및 클래스의 동작을 검증하기 위한 테스트 클래스입니다.
+ * 각 테스트는 특정 기능이나 비즈니스 로직을 독립적으로 확인하며,
+ * 외부 의존성을 최소화하기 위해 모의 객체를 사용합니다.
+ */
 @ExtendWith(MockitoExtension.class)
-class BookServiceTest {
+class BookServiceUnitTest {
 
     @InjectMocks
     private BookService bookService;
@@ -71,7 +78,7 @@ class BookServiceTest {
      * 동화 생성
      */
     @Test
-    @DisplayName("동화 생성하기 - 성공")
+    @DisplayName("동화 생성하기 단위 테스트 - 성공")
     void testCreateBook_Success() {
         // given
         String prompt = "Create a story";
@@ -94,7 +101,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("동화 생성하기 - 프로필 없음 예외")
+    @DisplayName("동화 생성하기 단위 테스트 - 프로필 없음 예외")
     void testCreateBook_ProfileNotFound() {
         // given
         String prompt = "Create a story";
@@ -108,7 +115,7 @@ class BookServiceTest {
      * 책 목록 조회
      */
     @Test
-    @DisplayName("동화 목록 조회 - 성공")
+    @DisplayName("책 목록 페이지 조회하기 단위 테스트 - 성공")
     void testGetBooksPage_Success() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -125,7 +132,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("동화 목록 조회 - 프로필 없음 예외")
+    @DisplayName("책 목록 페이지 조회하기 단위 테스트 - 프로필 없음 예외")
     void testGetBooksPage_ProfileNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.empty());
@@ -138,12 +145,12 @@ class BookServiceTest {
      * 즐겨찾기 책 목록 조회
      */
     @Test
-    @DisplayName("즐겨찾기 책 목록 조회 - 성공")
+    @DisplayName("즐겨찾기 책 조회하기 단위 테스트 - 성공")
     void testGetFavoriteBooks_Success() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
         when(bookRepository.findByProfileAndIsFavoriteTrue(profile, Pageable.unpaged()))
-                .thenReturn(new PageImpl<>(Collections.singletonList(book))); // 즐겨찾기 책 리스트 반환
+                .thenReturn(new PageImpl<>(Collections.singletonList(book)));
 
         // when
         List<BookListResponseDTO> result = bookService.getFavoriteBooks(profile.getId(), Pageable.unpaged());
@@ -157,7 +164,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("즐겨찾기 책 목록 조회 - 프로필 없음 예외")
+    @DisplayName("즐겨찾기 책 조회하기 단위 테스트 - 프로필 없음 예외")
     void testGetFavoriteBooks_ProfileNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.empty());
@@ -170,12 +177,12 @@ class BookServiceTest {
      * 읽고 있는 책 목록 조회
      */
     @Test
-    @DisplayName("읽고 있는 책 목록 조회 - 성공")
+    @DisplayName("읽고 있는 책 조회하기 단위 테스트 - 성공")
     void testGetReadingBooks_Success() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
         when(bookRepository.findByProfileAndIsReadingTrue(profile, Pageable.unpaged()))
-                .thenReturn(new PageImpl<>(Collections.singletonList(book))); // 읽고 있는 책 리스트 반환
+                .thenReturn(new PageImpl<>(Collections.singletonList(book)));
 
         // when
         List<BookListResponseDTO> result = bookService.getReadingBooks(profile.getId(), Pageable.unpaged());
@@ -189,7 +196,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("읽고 있는 책 목록 조회 - 프로필 없음 예외")
+    @DisplayName("읽고 있는 책 조회하기 단위 테스트 - 프로필 없음 예외")
     void testGetReadingBook_ProfileNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.empty());
@@ -202,7 +209,7 @@ class BookServiceTest {
      * 책 세부 조회
      */
     @Test
-    @DisplayName("동화 세부 조회 - 성공")
+    @DisplayName("책 상세 조회하기 단위 테스트 - 성공")
     void testGetBookDetail_Success() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -219,7 +226,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("동화 세부 조회 - 책 없음 예외")
+    @DisplayName("책 상세 조회하기 단위 테스트 - 책 없음 예외")
     void testGetBookDetail_BookNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -233,7 +240,7 @@ class BookServiceTest {
      * 즐겨찾기 토글 기능 추가
      */
     @Test
-    @DisplayName("즐겨찾기 동화 목록 조회 - 성공")
+    @DisplayName("즐겨찾기 상태 토글하기 단위 테스트 - 성공")
     void testToggleFavorite_Success() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -248,7 +255,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("즐겨찾기 동화 목록 조회 - 책 없음 예외")
+    @DisplayName("즐겨찾기 상태 토글하기 단위 테스트 - 책 없음 예외")
     void testToggleFavorite_BookNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -262,7 +269,7 @@ class BookServiceTest {
      * 책 삭제 기능
      */
     @Test
-    @DisplayName("동화 삭제하기 - 성공")
+    @DisplayName("책 삭제하기 단위 테스트 - 성공")
     void testDeleteBook_Success() throws Exception {
         // given
         when(profileRepository.existsById(profile.getId())).thenReturn(true);
@@ -276,7 +283,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("동화 삭제하기 - 프로필 없음 예외")
+    @DisplayName("책 삭제하기 단위 테스트 - 프로필 없음 예외")
     void testDeleteBook_ProfileNotFound() {
         // given
         when(profileRepository.existsById(profile.getId())).thenReturn(false);
@@ -286,7 +293,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("동화 삭제하기 - 책 없음 예외")
+    @DisplayName("책 삭제하기 단위 테스트 - 책 없음 예외")
     void testDeleteBook_BookNotFound() {
         // given
         when(profileRepository.existsById(profile.getId())).thenReturn(true);
@@ -300,7 +307,7 @@ class BookServiceTest {
      * 현재 읽고 있는 페이지 업데이트
      */
     @Test
-    @DisplayName("현재 읽고 있는 페이지 업데이트 - 성공")
+    @DisplayName("현재 페이지 업데이트하기 단위 테스트 - 성공")
     void testUpdateCurrentPage_Success() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -320,7 +327,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("현재 읽고 있는 페이지 업데이트 - 프로필 없음 예외")
+    @DisplayName("현재 페이지 업데이트하기 단위 테스트 - 프로필 없음 예외")
     void testUpdateCurrentPage_ProfileNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.empty());
@@ -330,7 +337,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("현재 읽고 있는 페이지 업데이트 - 책 없음 예외")
+    @DisplayName("현재 페이지 업데이트하기 단위 테스트 - 책 없음 예외")
     void testUpdateCurrentPage_BookNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -344,7 +351,7 @@ class BookServiceTest {
      * 퀴즈만 생성
      */
     @Test
-    @DisplayName("퀴즈만 생성하기 - 성공")
+    @DisplayName("퀴즈 생성하기 단위 테스트 - 성공")
     void testCreateQuiz_Success() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));
@@ -360,7 +367,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("퀴즈만 생성하기 - 프로필 없음 예외")
+    @DisplayName("퀴즈 생성하기 단위 테스트 - 프로필 없음 예외")
     void testCreateQuiz_ProfileNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.empty());
@@ -370,7 +377,7 @@ class BookServiceTest {
     }
 
     @Test
-    @DisplayName("퀴즈만 생성하기 - 책 없음 예외")
+    @DisplayName("퀴즈 생성하기 단위 테스트 - 책 없음 예외")
     void testCreateQuiz_BookNotFound() {
         // given
         when(profileRepository.findById(profile.getId())).thenReturn(Optional.of(profile));

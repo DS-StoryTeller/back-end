@@ -1,13 +1,13 @@
 package com.cojac.storyteller.test.unit.setting;
 
 import com.cojac.storyteller.book.entity.BookEntity;
-import com.cojac.storyteller.profile.entity.ProfileEntity;
-import com.cojac.storyteller.setting.entity.SettingEntity;
-import com.cojac.storyteller.setting.dto.SettingDTO;
 import com.cojac.storyteller.book.exception.BookNotFoundException;
-import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
 import com.cojac.storyteller.book.repository.BookRepository;
+import com.cojac.storyteller.profile.entity.ProfileEntity;
+import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
 import com.cojac.storyteller.profile.repository.ProfileRepository;
+import com.cojac.storyteller.setting.dto.SettingDTO;
+import com.cojac.storyteller.setting.entity.SettingEntity;
 import com.cojac.storyteller.setting.service.SettingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +20,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+/**
+ * 단위 테스트
+ *
+ * 개별 메서드 및 클래스의 동작을 검증하기 위한 테스트 클래스입니다.
+ * 각 테스트는 특정 기능이나 비즈니스 로직을 독립적으로 확인하며,
+ * 외부 의존성을 최소화하기 위해 모의 객체를 사용합니다.
+ */
 @ExtendWith(MockitoExtension.class)
-class SettingServiceTest {
+class SettingServiceUnitTest {
 
     @Mock
     private BookRepository bookRepository;
@@ -50,7 +58,7 @@ class SettingServiceTest {
      * 설정 업데이트
      */
     @Test
-    @DisplayName("설정 업데이트 - 성공")
+    @DisplayName("설정 업데이트 단위 테스트 - 성공")
     void testUpdateSetting_Success() {
         // given
         Integer profileId = 1;
@@ -70,7 +78,7 @@ class SettingServiceTest {
     }
 
     @Test
-    @DisplayName("설정 업데이트 - 프로필 없음 예외")
+    @DisplayName("설정 업데이트 단위 테스트 - 프로필이 존재하지 않을 때 예외 처리")
     void testUpdateSetting_ProfileNotFound() {
         // given
         Integer profileId = 1;
@@ -84,7 +92,7 @@ class SettingServiceTest {
     }
 
     @Test
-    @DisplayName("설정 업데이트 - 책 없음 예외")
+    @DisplayName("설정 업데이트 단위 테스트 - 책이 존재하지 않을 때 예외 처리")
     void testUpdateSetting_BookNotFound() {
         // given
         Integer profileId = 1;
@@ -102,7 +110,7 @@ class SettingServiceTest {
      * 설정 조회하기
      */
     @Test
-    @DisplayName("설정 조회 - 성공")
+    @DisplayName("설정 조회 단위 테스트 - 성공")
     void testGetDetailSettings_Success() {
         // given
         Integer profileId = 1;
@@ -121,7 +129,7 @@ class SettingServiceTest {
     }
 
     @Test
-    @DisplayName("설정 조회 - 프로필 없음 예외")
+    @DisplayName("설정 조회 단위 테스트 - 프로필이 존재하지 않을 때 예외 처리")
     void testGetDetailSettings_ProfileNotFound() {
         // given
         Integer profileId = 1;
@@ -134,7 +142,7 @@ class SettingServiceTest {
     }
 
     @Test
-    @DisplayName("설정 조회 - 책 없음 예외")
+    @DisplayName("설정 조회 단위 테스트 - 책이 존재하지 않을 때 예외 처리")
     void testGetDetailSettings_BookNotFound() {
         // given
         Integer profileId = 1;
