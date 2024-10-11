@@ -1,12 +1,13 @@
-package com.cojac.storyteller.user.jwt;
+package com.cojac.storyteller.user.security;
 
 import com.cojac.storyteller.response.code.ErrorCode;
 import com.cojac.storyteller.response.code.ResponseCode;
 import com.cojac.storyteller.response.dto.ErrorResponseDTO;
 import com.cojac.storyteller.response.dto.ResponseDTO;
-import com.cojac.storyteller.user.dto.CustomUserDetails;
+import com.cojac.storyteller.user.dto.security.CustomUserDetails;
 import com.cojac.storyteller.user.dto.LocalUserDTO;
 import com.cojac.storyteller.common.redis.RedisService;
+import com.cojac.storyteller.user.jwt.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

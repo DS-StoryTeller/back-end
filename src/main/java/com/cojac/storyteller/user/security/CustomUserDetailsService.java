@@ -1,6 +1,6 @@
-package com.cojac.storyteller.user.service;
+package com.cojac.storyteller.user.security;
 
-import com.cojac.storyteller.user.dto.CustomUserDetails;
+import com.cojac.storyteller.user.dto.security.CustomUserDetails;
 import com.cojac.storyteller.user.repository.LocalUserRepository;
 import com.cojac.storyteller.user.entity.LocalUserEntity;
 import lombok.RequiredArgsConstructor;

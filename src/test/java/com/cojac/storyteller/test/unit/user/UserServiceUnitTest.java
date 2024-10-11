@@ -3,6 +3,8 @@ package com.cojac.storyteller.test.unit.user;
 import com.cojac.storyteller.common.mail.MailService;
 import com.cojac.storyteller.common.redis.RedisService;
 import com.cojac.storyteller.user.dto.*;
+import com.cojac.storyteller.user.dto.oauth.GoogleLoginRequestDTO;
+import com.cojac.storyteller.user.dto.oauth.KakaoLoginRequestDTO;
 import com.cojac.storyteller.user.entity.LocalUserEntity;
 import com.cojac.storyteller.user.entity.SocialUserEntity;
 import com.cojac.storyteller.user.exception.DuplicateEmailException;
@@ -11,21 +13,21 @@ import com.cojac.storyteller.user.exception.RequestParsingException;
 import com.cojac.storyteller.user.jwt.JWTUtil;
 import com.cojac.storyteller.user.repository.LocalUserRepository;
 import com.cojac.storyteller.user.repository.SocialUserRepository;
+import com.cojac.storyteller.user.jwt.oauth.GoogleTokenVerifier;
 import com.cojac.storyteller.user.service.UserService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
-import static com.cojac.storyteller.user.jwt.LogoutFilter.REFRESH_TOKEN_PREFIX;
+import static com.cojac.storyteller.user.security.LogoutFilter.REFRESH_TOKEN_PREFIX;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -67,10 +69,12 @@ public class UserServiceUnitTest {
     private HttpServletResponse response;
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    @Mock
+    private GoogleTokenVerifier googleTokenVerifier;
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
     }
 
     /**
@@ -79,7 +83,7 @@ public class UserServiceUnitTest {
     @Test
     @DisplayName("카카오 소셜 로그인 요청이 유효할 경우 SocialUserDTO 반환")
     void kakaoLogin_ShouldReturnSocialUserDTO_WhenValidKakaoLoginRequest() throws Exception {
-        // Arrange
+        // given
         KakaoLoginRequestDTO kakaoLoginRequestDTO = new KakaoLoginRequestDTO("12345", "nickname", "email@example.com", "USER");
         HttpServletResponse response = mock(HttpServletResponse.class);
 
@@ -89,14 +93,46 @@ public class UserServiceUnitTest {
         when(socialUserRepository.save(any(SocialUserEntity.class))).thenReturn(mockUser);
         when(jwtUtil.createJwt(any(), any(), any(), any(), any())).thenReturn("accessToken", "refreshToken");
 
-        // Act
+        // then
         SocialUserDTO result = userService.kakaoLogin(kakaoLoginRequestDTO, response);
 
-        // Assert
+        // when
         assertNotNull(result);
         assertEquals(mockUser.getAccountId(), result.getAccountId());
         verify(response).setHeader("access", "accessToken");
         verify(response).setHeader("refresh", "refreshToken");
+    }
+
+    /**
+     * 구글 소셜 로그인
+     */
+    @Test
+    public void testGoogleLogin() throws Exception {
+        // Given
+        GoogleLoginRequestDTO googleLoginRequestDTO = new GoogleLoginRequestDTO("mockIdToken", "ROLE_USER");
+
+        // Mock GoogleIdToken.Payload
+        GoogleIdToken.Payload payload = mock(GoogleIdToken.Payload.class);
+        when(payload.getSubject()).thenReturn("1234567890");
+        when(payload.get("name")).thenReturn("Test User");
+        when(payload.getEmail()).thenReturn("test@example.com");
+
+        // Mock TokenVerifier behavior
+        when(googleTokenVerifier.verifyIdToken(googleLoginRequestDTO)).thenReturn(payload);
+
+        // Mock SocialUserRepository behavior
+        SocialUserEntity socialUserEntity = new SocialUserEntity("google_1234567890", "Test User", "test@example.com", "ROLE_USER");
+        when(socialUserRepository.findByAccountId("google_1234567890")).thenReturn(Optional.empty());
+        when(socialUserRepository.save(any(SocialUserEntity.class))).thenReturn(socialUserEntity);
+
+        // When
+        SocialUserDTO result = userService.googleLogin(googleLoginRequestDTO, response);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("google_1234567890", result.getAccountId());
+        assertEquals("Test User", result.getNickname());
+        assertEquals("test@example.com", result.getEmail());
     }
 
     /**

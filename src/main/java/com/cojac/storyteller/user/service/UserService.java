@@ -1,19 +1,19 @@
 package com.cojac.storyteller.user.service;
 
-import com.cojac.storyteller.response.code.ErrorCode;
 import com.cojac.storyteller.common.mail.MailService;
 import com.cojac.storyteller.common.redis.RedisService;
-import com.cojac.storyteller.user.repository.LocalUserRepository;
-import com.cojac.storyteller.user.repository.SocialUserRepository;
+import com.cojac.storyteller.response.code.ErrorCode;
+import com.cojac.storyteller.user.dto.*;
+import com.cojac.storyteller.user.dto.oauth.GoogleLoginRequestDTO;
+import com.cojac.storyteller.user.jwt.oauth.GoogleTokenVerifier;
+import com.cojac.storyteller.user.dto.oauth.KakaoLoginRequestDTO;
 import com.cojac.storyteller.user.entity.LocalUserEntity;
 import com.cojac.storyteller.user.entity.SocialUserEntity;
 import com.cojac.storyteller.user.exception.*;
 import com.cojac.storyteller.user.jwt.JWTUtil;
-import com.cojac.storyteller.user.dto.*;
+import com.cojac.storyteller.user.repository.LocalUserRepository;
+import com.cojac.storyteller.user.repository.SocialUserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Random;
 
 @Service
@@ -45,6 +44,8 @@ public class UserService {
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
     private final MailService mailService;
+    private final GoogleTokenVerifier googleTokenVerifier;
+
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
     @Value("${google.client.id}")
@@ -69,7 +70,8 @@ public class UserService {
      */
     @Transactional
     public SocialUserDTO googleLogin(GoogleLoginRequestDTO googleLoginRequestDTO, HttpServletResponse response) throws Exception {
-        GoogleIdToken.Payload payload = verifyIdToken(googleLoginRequestDTO);
+        GoogleIdToken.Payload payload = googleTokenVerifier.verifyIdToken(googleLoginRequestDTO);
+
 
         return handleSocialLogin(
                 "google_" + payload.getSubject(),
@@ -97,20 +99,6 @@ public class UserService {
         response.setHeader("refresh", refreshToken);
 
         return SocialUserDTO.mapToSocialUserDTO(socialUserEntity);
-    }
-
-    private GoogleIdToken.Payload verifyIdToken(GoogleLoginRequestDTO googleLoginRequestDTO) throws Exception {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-                .setAudience(Collections.singletonList(CLIENT_ID))
-                .build();
-
-        // ID 토큰 검증
-        GoogleIdToken idToken = verifier.verify(googleLoginRequestDTO.getIdToken());
-        if (idToken != null) {
-            return idToken.getPayload(); // 사용자 정보 반환
-        } else {
-            throw new InvalidIdTokenException(ErrorCode.INVALID_ID_TOKEN);
-        }
     }
 
     private SocialUserEntity findOrCreateSocialUser(String accountId, String nickname, String email, String role) {

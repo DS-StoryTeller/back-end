@@ -1,4 +1,4 @@
-package com.cojac.storyteller.user.jwt;
+package com.cojac.storyteller.user.security;
 
 import com.cojac.storyteller.response.code.ErrorCode;
 import com.cojac.storyteller.response.dto.ErrorResponseDTO;

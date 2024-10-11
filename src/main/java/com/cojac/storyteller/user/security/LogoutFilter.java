@@ -1,9 +1,10 @@
-package com.cojac.storyteller.user.jwt;
+package com.cojac.storyteller.user.security;
 
 import com.cojac.storyteller.response.code.ErrorCode;
 import com.cojac.storyteller.response.code.ResponseCode;
 import com.cojac.storyteller.response.dto.ResponseDTO;
 import com.cojac.storyteller.user.dto.ReissueDTO;
+import com.cojac.storyteller.user.jwt.JWTUtil;
 import com.cojac.storyteller.user.repository.LocalUserRepository;
 import com.cojac.storyteller.user.repository.SocialUserRepository;
 import com.cojac.storyteller.common.redis.RedisService;

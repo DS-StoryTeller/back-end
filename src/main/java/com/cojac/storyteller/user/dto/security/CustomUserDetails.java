@@ -1,4 +1,4 @@
-package com.cojac.storyteller.user.dto;
+package com.cojac.storyteller.user.dto.security;
 
 import com.cojac.storyteller.user.entity.LocalUserEntity;
 import lombok.RequiredArgsConstructor;

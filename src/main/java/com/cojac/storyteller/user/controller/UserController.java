@@ -3,6 +3,8 @@ package com.cojac.storyteller.user.controller;
 import com.cojac.storyteller.response.code.ResponseCode;
 import com.cojac.storyteller.common.swagger.UserControllerDocs;
 import com.cojac.storyteller.response.dto.ResponseDTO;
+import com.cojac.storyteller.user.dto.oauth.GoogleLoginRequestDTO;
+import com.cojac.storyteller.user.dto.oauth.KakaoLoginRequestDTO;
 import com.cojac.storyteller.user.service.UserService;
 import com.cojac.storyteller.user.dto.*;
 import jakarta.servlet.http.HttpServletRequest;

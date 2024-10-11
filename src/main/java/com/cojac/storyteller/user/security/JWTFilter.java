@@ -1,9 +1,10 @@
-package com.cojac.storyteller.user.jwt;
+package com.cojac.storyteller.user.security;
 
 import com.cojac.storyteller.response.code.ErrorCode;
 import com.cojac.storyteller.user.entity.LocalUserEntity;
-import com.cojac.storyteller.user.dto.CustomUserDetails;
+import com.cojac.storyteller.user.dto.security.CustomUserDetails;
 import com.cojac.storyteller.common.util.ErrorResponseUtil;
+import com.cojac.storyteller.user.jwt.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

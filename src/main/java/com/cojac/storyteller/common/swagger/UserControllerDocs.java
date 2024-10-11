@@ -2,6 +2,8 @@ package com.cojac.storyteller.common.swagger;
 
 import com.cojac.storyteller.response.dto.ResponseDTO;
 import com.cojac.storyteller.user.dto.*;
+import com.cojac.storyteller.user.dto.oauth.GoogleLoginRequestDTO;
+import com.cojac.storyteller.user.dto.oauth.KakaoLoginRequestDTO;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

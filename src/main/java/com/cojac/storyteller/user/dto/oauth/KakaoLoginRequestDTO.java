@@ -1,4 +1,4 @@
-package com.cojac.storyteller.user.dto;
+package com.cojac.storyteller.user.dto.oauth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
