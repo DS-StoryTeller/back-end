@@ -1,4 +1,4 @@
-package com.cojac.storyteller.user.security;
+package com.cojac.storyteller.user.service.security;
 
 import com.cojac.storyteller.user.dto.security.CustomUserDetails;
 import com.cojac.storyteller.user.repository.LocalUserRepository;

@@ -2,7 +2,7 @@ package com.cojac.storyteller.test.unit.user.security;
 
 import com.cojac.storyteller.user.entity.LocalUserEntity;
 import com.cojac.storyteller.user.repository.LocalUserRepository;
-import com.cojac.storyteller.user.security.CustomUserDetailsService;
+import com.cojac.storyteller.user.service.security.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

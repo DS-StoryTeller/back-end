@@ -1,4 +1,4 @@
-package com.cojac.storyteller.user.security;
+package com.cojac.storyteller.user.service.security;
 
 import com.cojac.storyteller.response.code.ErrorCode;
 import com.cojac.storyteller.response.code.ResponseCode;

@@ -27,7 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
-import static com.cojac.storyteller.user.security.LogoutFilter.REFRESH_TOKEN_PREFIX;
+import static com.cojac.storyteller.user.service.security.LogoutFilter.REFRESH_TOKEN_PREFIX;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
