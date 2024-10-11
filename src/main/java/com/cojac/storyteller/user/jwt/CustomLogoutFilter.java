@@ -64,7 +64,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         } else if (authenticationMethod.equals("social")) {
             authenticateSocialUser(request, response, authenticationMethod);
         } else {
-            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_ACCESS_TOKEN);
+            ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_REFRESH_TOKEN);
             return;
         }
     }

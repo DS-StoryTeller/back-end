@@ -3,6 +3,8 @@ package com.cojac.storyteller.test.unit.profile;
 import com.cojac.storyteller.book.entity.BookEntity;
 import com.cojac.storyteller.book.repository.BookRepository;
 import com.cojac.storyteller.common.amazon.AmazonS3Service;
+import com.cojac.storyteller.page.entity.PageEntity;
+import com.cojac.storyteller.page.repository.PageRepository;
 import com.cojac.storyteller.profile.dto.PinCheckResultDTO;
 import com.cojac.storyteller.profile.dto.PinNumberDTO;
 import com.cojac.storyteller.profile.dto.ProfileDTO;
@@ -12,6 +14,7 @@ import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
 import com.cojac.storyteller.profile.repository.ProfileRepository;
 import com.cojac.storyteller.profile.repository.batch.BatchProfileDelete;
 import com.cojac.storyteller.profile.service.ProfileService;
+import com.cojac.storyteller.unknownWord.repository.UnknownWordRepository;
 import com.cojac.storyteller.user.entity.LocalUserEntity;
 import com.cojac.storyteller.user.exception.InvalidPinNumberException;
 import com.cojac.storyteller.user.exception.UserNotFoundException;
@@ -38,11 +41,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * 단위 테스트
+ * 단위 테스트 클래스
  *
- * 개별 메서드 및 클래스의 동작을 검증하기 위한 테스트 클래스입니다.
- * 각 테스트는 특정 기능이나 비즈니스 로직을 독립적으로 확인하며,
- * 외부 의존성을 최소화하기 위해 모의 객체를 사용합니다.
+ * 이 클래스는 개별 단위(주로 서비스 또는 비즈니스 로직) 기능을 검증하기 위한 단위 테스트를 포함합니다.
+ *
+ * 주요 특징:
+ * - 모의 객체(mock objects)를 사용하여 외부 의존성을 제거하고,테스트 대상 객체의 로직에만 집중합니다.
+ * - 테스트의 독립성을 보장하여, 각 테스트가 서로에게 영향을 미치지 않도록 합니다.
+ *
+ * 테스트 전략:
+ * - 간단한 기능이나 로직에 대한 테스트는 단위 테스트를 사용하십시오.
+ * - 시스템의 전체적인 동작 및 상호작용을 검증하기 위해 통합 테스트를 활용하십시오.
+ *
+ * 참고: 단위 테스트는 실행 속도가 빠르며,
+ *       전체 시스템의 동작보다는 개별 단위의 동작을 검증하는 데 중점을 둡니다.
  */
 class ProfileServiceUnitTest {
 
@@ -57,6 +69,12 @@ class ProfileServiceUnitTest {
 
     @Mock
     private BookRepository bookRepository;
+
+    @Mock
+    private PageRepository pageRepository;
+
+    @Mock
+    private UnknownWordRepository unknownWordRepository;
 
     @Mock
     private BatchProfileDelete batchProfileDelete;
@@ -366,7 +384,7 @@ class ProfileServiceUnitTest {
      * 프로필 삭제하기
      */
     @Test
-    @DisplayName("프로필 삭제하기 단위 테스트 - 성공")
+    @DisplayName("프로필 삭제하기 단위 테스트 - 책만 존재하는 경우 - 성공")
     void testDeleteProfile_Success() throws Exception {
         // given
         Integer profileId = 1;
@@ -393,6 +411,66 @@ class ProfileServiceUnitTest {
         verify(profileRepository, times(1)).findById(profileId);
         verify(batchProfileDelete, times(1)).deleteByProfileId(profileId);
     }
+
+    @Test
+    @DisplayName("프로필 삭제하기 단위 테스트 - 책과 페이지가 존재하는 경우 - 성공")
+    void testDeleteProfile_withBooksAndPage_Success() throws Exception {
+        // given
+        Integer profileId = 1;
+
+        ProfileEntity profile = ProfileEntity.builder()
+                .build();
+
+        BookEntity book = BookEntity.builder()
+                .profile(profile)
+                .coverImage("coverImageUrl")
+                .build();
+
+        PageEntity page1 = PageEntity.builder()
+                .pageNumber(1)
+                .book(book)
+                .build();
+
+        PageEntity page2 = PageEntity.builder()
+                .pageNumber(2)
+                .book(book)
+                .build();
+
+        profile.addBook(book); // Adding book to profile
+
+        when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
+        when(bookRepository.findByProfile(profile)).thenReturn(Collections.singletonList(book));
+
+        // When
+        profileService.deleteProfile(profileId);
+
+        // Then
+        verify(profileRepository, times(1)).findById(profileId);
+        verify(bookRepository, times(1)).findByProfile(profile);
+        verify(batchProfileDelete, times(1)).deleteByProfileId(profileId);
+    }
+
+
+    @Test
+    @DisplayName("프로필 삭제하기 단위 테스트 - 책과 페이지가 없는 경우 - 성공")
+    void testDeleteProfile_NoBooksOrPages_Success() throws Exception {
+        // given
+        Integer profileId = 1;
+        ProfileEntity profile = new ProfileEntity();
+
+        when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
+        when(bookRepository.findByProfile(profile)).thenReturn(Collections.emptyList());
+
+        // when
+        profileService.deleteProfile(profileId);
+
+        // then
+        verify(bookRepository, times(1)).findByProfile(profile);
+        verify(amazonS3Service, times(0)).deleteS3(anyString());
+        verify(profileRepository, times(1)).findById(profileId);
+        verify(batchProfileDelete, times(1)).deleteByProfileId(profileId);
+    }
+
 
     @Test
     @DisplayName("프로필 삭제하기 단위 테스트 - 프로필을 찾을 수 없을 때 예외")
@@ -436,5 +514,7 @@ class ProfileServiceUnitTest {
         // when & then
         assertThrows(RuntimeException.class, () -> profileService.uploadMultipleFilesToS3(files));
     }
+
+
 
 }

@@ -1,6 +1,8 @@
 package com.cojac.storyteller.test.integration.profile;
 
+import com.cojac.storyteller.book.repository.BookRepository;
 import com.cojac.storyteller.common.amazon.AmazonS3Service;
+import com.cojac.storyteller.page.repository.PageRepository;
 import com.cojac.storyteller.profile.dto.PinCheckResultDTO;
 import com.cojac.storyteller.profile.dto.PinNumberDTO;
 import com.cojac.storyteller.profile.dto.ProfileDTO;
@@ -27,20 +29,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 /**
- * 통합 테스트
+ * 통합 테스트 클래스
  *
- * 여러 구성 요소(서비스, 데이터베이스 등) 간의 상호작용을 검증하기 위한 테스트 클래스입니다.
- * 실제 데이터베이스와 리포지토리를 사용하며, 외부 서비스는 모의 객체로 처리하여
- * 외부 의존성을 최소화합니다. 이를 통해 실질적인 통합 상황에서의 기능과 동작을 검증합니다.
+ * 이 클래스는 여러 구성 요소(서비스, 데이터베이스 등) 간의 상호작용을 검증하기 위한 통합 테스트를 포함합니다.
+ *
+ * 주요 특징:
+ * - 실제 데이터베이스와 리포지토리를 사용하여 테스트를 수행합니다.
+ * - 외부 서비스와의 의존성을 최소화하기 위해 모의 객체를 활용합니다.
+ *
+ * 통합 테스트는 여러 구성 요소 간의 상호작용을 검증하므로, 일반적으로 단위 테스트보다 느릴 수 있습니다.
+ *
+ * 테스트 전략:
+ * - 간단한 기능이나 로직에 대한 테스트는 단위 테스트를 사용하십시오.
+ * - 시스템의 전체적인 동작 및 상호작용을 검증하기 위해 통합 테스트를 활용하십시오.
+ *
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -52,6 +61,12 @@ public class ProfileServiceIntegrationTest {
 
     @Autowired
     private ProfileRepository profileRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private PageRepository pageRepository;
 
     @Autowired
     private LocalUserRepository localUserRepository;
@@ -360,38 +375,6 @@ public class ProfileServiceIntegrationTest {
 
         // when & then
         assertThrows(UserNotFoundException.class, () -> profileService.getProfileList(invalidUserId));
-    }
-
-    /**
-     * 프로필 삭제하기
-     */
-    @Test
-    @DisplayName("프로필 삭제하기 통합 테스트 - 성공")
-    public void testDeleteProfile() throws Exception {
-        ProfileDTO newProfile = ProfileDTO.builder()
-                .userId(localUserEntity.getId())
-                .name("Profile to Delete")
-                .birthDate(LocalDate.now())
-                .pinNumber("1234")
-                .build();
-
-        ProfileDTO createdProfile = profileService.createProfile(newProfile);
-
-        profileService.deleteProfile(createdProfile.getId());
-
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-            assertThrows(ProfileNotFoundException.class, () -> profileService.getProfile(createdProfile.getId()));
-        });
-    }
-
-    @Test
-    @DisplayName("프로필 삭제하기 통합 테스트 - 프로필을 찾을 수 없을 때 예외")
-    void testDeleteProfile_ProfileNotFound() {
-        // given
-        Integer invalidProfileId = -1;
-
-        // when & then
-        assertThrows(ProfileNotFoundException.class, () -> profileService.deleteProfile(invalidProfileId));
     }
 
 }
