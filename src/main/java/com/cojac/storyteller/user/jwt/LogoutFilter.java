@@ -150,7 +150,7 @@ public class LogoutFilter extends GenericFilterBean {
     }
 
     private boolean checkTokenInRedis(String refreshTokenKey, HttpServletResponse response) throws IOException {
-        if (redisService.checkExistsValue(refreshTokenKey)) {
+        if (!redisService.checkExistsValue(refreshTokenKey)) {
             ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_REFRESH_TOKEN);
             return true;
         }
