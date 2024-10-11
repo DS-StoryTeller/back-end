@@ -16,8 +16,10 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig {
 
-    @Value("${server.deployed-url}")
-    private String deployedUrl;
+    @Value("${server.serverAddress}")
+    private String serverAddress;
+    @Value("${server.port}")
+    private String serverPort;
 
     @Bean
     public OpenAPI openAPI() {
@@ -51,7 +53,7 @@ public class SwaggerConfig {
 
         // 배포된 서버의 IP 또는 도메인 주소 설정
         Server deployedServer = new Server()
-                .url(deployedUrl)
+                .url("http://" + serverAddress + ":" + serverPort)
                 .description("배포된 서버");
 
         return new OpenAPI()

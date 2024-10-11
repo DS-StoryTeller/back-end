@@ -33,8 +33,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${server.deployed-url}")
-    private String deployedUrl;
+    @Value("${server.serverAddress}")
+    private String serverAddress;
+    @Value("${server.port}")
+    private String serverPort;
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
@@ -70,7 +72,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(List.of("http://localhost:3000", deployedUrl));
+                        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://" + serverAddress + ":" + serverPort));
                         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -104,6 +106,7 @@ public class SecurityConfig {
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/storyteller-api/**").permitAll()
                         .requestMatchers(endpoints+"/**").permitAll()
+                        .requestMatchers("/healthCheck", "/env").permitAll()
                         .anyRequest().authenticated());
 
         // 인증/인가와 관련된 예외 처리
