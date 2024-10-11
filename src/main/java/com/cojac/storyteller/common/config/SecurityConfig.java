@@ -18,7 +18,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -111,7 +110,7 @@ public class SecurityConfig {
 
         // 로그아웃 필터 등록
         http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService, objectMapper, localUserRepository, socialUserRepository), LogoutFilter.class);
+                .addFilterBefore(new LogoutFilter(jwtUtil, redisService, objectMapper, localUserRepository, socialUserRepository), org.springframework.security.web.authentication.logout.LogoutFilter.class);
 
         // JWTFilter 등록
         http

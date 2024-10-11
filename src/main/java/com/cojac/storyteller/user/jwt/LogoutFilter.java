@@ -24,7 +24,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class CustomLogoutFilter extends GenericFilterBean {
+public class LogoutFilter extends GenericFilterBean {
 
     public static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
 
