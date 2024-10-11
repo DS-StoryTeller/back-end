@@ -15,6 +15,7 @@ import com.cojac.storyteller.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
@@ -76,6 +77,7 @@ public class UserServiceUnitTest {
      * 카카오 소셜 로그인
      */
     @Test
+    @DisplayName("카카오 소셜 로그인 요청이 유효할 경우 SocialUserDTO 반환")
     void kakaoLogin_ShouldReturnSocialUserDTO_WhenValidKakaoLoginRequest() throws Exception {
         // Arrange
         KakaoLoginRequestDTO kakaoLoginRequestDTO = new KakaoLoginRequestDTO("12345", "nickname", "email@example.com", "USER");
@@ -101,6 +103,7 @@ public class UserServiceUnitTest {
      * 회원 등록하기
      */
     @Test
+    @DisplayName("회원 등록 요청이 유효할 경우 LocalUserDTO 반환")
     void registerUser_ShouldReturnLocalUserDTO_WhenValidCreateUserRequest() {
         CreateUserRequestDTO createUserRequestDTO = new CreateUserRequestDTO();
         createUserRequestDTO.setUsername("testUser");
@@ -120,6 +123,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @DisplayName("존재하는 사용자 이름으로 회원 등록 요청 시 DuplicateUsernameException 발생")
     void registerUser_ShouldThrowDuplicateUsernameException_WhenUsernameExists() {
         // given
         CreateUserRequestDTO createUserRequestDTO = new CreateUserRequestDTO();
@@ -143,6 +147,7 @@ public class UserServiceUnitTest {
      * 유저 아이디 중복 검증
      */
     @Test
+    @DisplayName("사용자 이름이 사용 가능할 경우 인증 결과 true 반환")
     void verifiedUsername_ShouldReturnAuthResultTrue_WhenUsernameIsAvailable() {
         // given
         String username = "testUser";
@@ -157,6 +162,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @DisplayName("사용자 이름이 사용 중일 경우 인증 결과 false 반환")
     void verifiedUsername_ShouldReturnAuthResultFalse_WhenUsernameIsTaken() {
         // given
         String username = "existingUser";
@@ -174,6 +180,7 @@ public class UserServiceUnitTest {
      * 토큰 재발급
      */
     @Test
+    @DisplayName("유효한 refresh token이 있을 경우 UserDTO 반환")
     void reissueToken_ShouldReturnUserDTO_WhenRefreshTokenIsValidAndLocalUser() throws Exception {
         // given
         String refreshToken = "validRefreshToken";
@@ -203,6 +210,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @DisplayName("유효한 refresh token이 있을 경우 SocialUserDTO 반환")
     void reissueToken_ShouldReturnUserDTO_WhenRefreshTokenIsValidAndSocialUser() throws Exception {
         // given
         String refreshToken = "validRefreshToken";
@@ -232,6 +240,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @DisplayName("refresh token이 유효하지 않을 경우 예외 발생")
     void reissueToken_ShouldThrowException_WhenRefreshTokenIsInvalid() {
         // given
         String refreshToken = null;
@@ -248,6 +257,7 @@ public class UserServiceUnitTest {
      * 인증 코드 검증을 위한 이메일 전송
      */
     @Test
+    @DisplayName("중복되지 않은 이메일로 인증 코드 전송")
     void sendCodeToEmail_ShouldSendEmail_WhenEmailIsNotDuplicated() {
         // given
         String email = "test@example.com";
@@ -262,6 +272,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @DisplayName("중복된 이메일로 인증 코드 전송 시 예외 발생")
     void sendCodeToEmail_ShouldThrowException_WhenEmailIsDuplicated() {
         // given
         String email = "duplicate@example.com";
@@ -279,6 +290,7 @@ public class UserServiceUnitTest {
      * 인증 코드 검증하기
      */
     @Test
+    @DisplayName("유효한 인증 코드로 인증 결과 true 반환")
     void verifiedCode_ShouldReturnAuthResultTrue_WhenCodeIsValid() {
         // given
         String email = "test@example.com";
@@ -294,6 +306,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @DisplayName("유효하지 않은 인증 코드로 인증 결과 false 반환")
     void verifiedCode_ShouldReturnAuthResultFalse_WhenCodeIsInvalid() {
         // given
         String email = "test@example.com";

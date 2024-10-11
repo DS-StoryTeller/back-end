@@ -3,6 +3,7 @@ package com.cojac.storyteller.test.integration.user.security;
 import com.cojac.storyteller.user.entity.LocalUserEntity;
 import com.cojac.storyteller.user.repository.LocalUserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -55,6 +56,7 @@ public class LoginFilterIntegrationTest {
     }
 
     @Test
+    @DisplayName("성공적인 인증 테스트")
     public void testSuccessfulAuthentication() throws Exception {
         mockMvc.perform(post("/login")
                         .param("username", "username")
@@ -65,6 +67,7 @@ public class LoginFilterIntegrationTest {
     }
 
     @Test
+    @DisplayName("잘못된 사용자 이름으로 인증 실패 테스트")
     public void testFailedAuthentication_withWrongUsername() throws Exception {
         mockMvc.perform(post("/login")
                         .param("username", "wrongUsername") // 잘못된 사용자 이름
@@ -73,6 +76,7 @@ public class LoginFilterIntegrationTest {
     }
 
     @Test
+    @DisplayName("잘못된 비밀번호로 인증 실패 테스트")
     public void testFailedAuthentication_withWrongPassword() throws Exception {
         mockMvc.perform(post("/login")
                         .param("username", "username")
