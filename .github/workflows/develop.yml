@@ -9,13 +9,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
-          
+    runs-on: ubuntu-latest          
     steps:
       - uses: actions/checkout@v3
       - name: Install JDK 17
