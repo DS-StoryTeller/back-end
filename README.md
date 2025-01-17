@@ -1,5 +1,3 @@
-![image](https://github.com/user-attachments/assets/c3d09d11-6886-4374-b0dd-6843f193aa90)
-
 ## STORYTELLER
 
 <div align="center">
