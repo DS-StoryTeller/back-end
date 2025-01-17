@@ -1,6 +1,8 @@
-## STORYTELLER
-
 <div align="center">
+  
+<img src="https://github.com/user-attachments/assets/bae54899-5a36-4aa0-a6b5-ca7a7fecae80" width="200px" height="200px"/>
+  
+## STORYTELLER
 
 `#사용자 맞춤형 동화 생성` `#학습에 편리한 기능` <br /> <br />
 기존에 없는 새로운 영어 동화를 위해 원하는 키워드를 통해 다양하고 창의적인 영어 동화를 경험을 통해, <br /> 영어 동화에 대한 어린이들의 흥미와 관심을 유발할 수 있는 <br />
@@ -26,6 +28,8 @@ _written by pyounani_
 > Client: https://github.com/DS-StoryTeller/front-end <br />
 > Spring boot server: https://github.com/DS-StoryTeller/back-end <br/>
 
+<br />
+
 ## Table of contents
 
 - [Team, cojac](#team-cojac)
@@ -35,6 +39,8 @@ _written by pyounani_
   - [Service Architecture](#service-architecture)
   - [Infrastructure Architecture](#infrastructure-architecture)
 - [Features](#features)
+
+<br />
 
 ## Team, cojac!
 
@@ -64,6 +70,8 @@ _written by pyounani_
 ![서비스 구성도](https://github.com/user-attachments/assets/24059f87-4542-4cb2-989e-bf710dde687e)
 
 ### Infrastructure Architecture
+
+<br />
 
 ## Features
 ![image-6](https://github.com/user-attachments/assets/ff481524-1675-4ad1-80b1-fd05a759cfb1) <br />
