@@ -1,9 +1,10 @@
-<img src="https://github.com/user-attachments/assets/bae54899-5a36-4aa0-a6b5-ca7a7fecae80" width="200px" height="200px"/>
-  
+<img src="https://github.com/user-attachments/assets/029ba402-6347-4704-9be1-6318e50d01d4"/>
+
 ## STORYTELLER
 
 `#사용자 맞춤형 동화 생성` `#학습에 편리한 기능` <br /> <br />
-기존에 없는 새로운 영어 동화를 위해 원하는 키워드를 통해 다양하고 창의적인 영어 동화를 경험을 통해, <br /> 영어 동화에 대한 어린이들의 흥미와 관심을 유발할 수 있는 <br />
+기존에 없는 새로운 영어 동화를 위해 원하는 키워드로 다양하고 창의적인 영어 동화를 경험을 통해, <br /> 
+영어 동화에 대한 어린이들의 흥미와 관심을 유발할 수 있는 <br />
 **"어린이들을 위한 창의적인 영어 동화 앱"**, STORYTELLER입니다.
 
 _written by pyounani_
