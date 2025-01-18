@@ -1,19 +1,22 @@
 package com.cojac.storyteller.book.mapper;
 
+import com.cojac.storyteller.book.dto.BookDTO;
+import com.cojac.storyteller.book.dto.BookListResponseDTO;
 import com.cojac.storyteller.book.entity.BookEntity;
+import com.cojac.storyteller.page.dto.PageDTO;
 import com.cojac.storyteller.page.entity.PageEntity;
 import com.cojac.storyteller.profile.entity.ProfileEntity;
 import com.cojac.storyteller.setting.entity.SettingEntity;
-import com.cojac.storyteller.book.dto.BookDTO;
-import com.cojac.storyteller.book.dto.BookListResponseDTO;
-import com.cojac.storyteller.page.dto.PageDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 public class BookMapper {
-    public static BookEntity mapToBookEntity(String title, String coverImageUrl, ProfileEntity profile, SettingEntity setting) {
+    public static BookEntity createBookEntity(String title, String coverImageUrl, ProfileEntity profile) {
+
+        // Setting 초기 설정
+        SettingEntity setting = SettingEntity.createDefaultSetting();
 
         return BookEntity.builder()
                 .title(title)
