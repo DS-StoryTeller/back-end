@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,8 @@ public class MailService {
 
     private final JavaMailSender emailSender;
 
+    @Retryable(interceptor = "mailRetryInterceptor")
+    @Async("mailServiceTaskExecutor")
     public void sendEmail(String toEmail,
                           String title,
                           String text) {
