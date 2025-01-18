@@ -1,4 +1,4 @@
-package com.cojac.storyteller.common.config;
+package com.cojac.storyteller.common.redis.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

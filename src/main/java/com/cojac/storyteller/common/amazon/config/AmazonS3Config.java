@@ -1,4 +1,4 @@
-package com.cojac.storyteller.common.config;
+package com.cojac.storyteller.common.amazon.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
