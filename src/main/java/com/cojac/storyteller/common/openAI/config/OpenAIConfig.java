@@ -1,4 +1,4 @@
-package com.cojac.storyteller.common.config;
+package com.cojac.storyteller.common.openAI.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

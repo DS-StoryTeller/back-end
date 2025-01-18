@@ -1,29 +1,29 @@
 package com.cojac.storyteller.book.service;
 
-import com.cojac.storyteller.book.entity.BookEntity;
-import com.cojac.storyteller.book.exception.BookNotFoundException;
-import com.cojac.storyteller.book.repository.BookRepository;
-import com.cojac.storyteller.book.repository.batch.BatchBookDelete;
-import com.cojac.storyteller.response.code.ErrorCode;
-import com.cojac.storyteller.page.entity.PageEntity;
-import com.cojac.storyteller.profile.entity.ProfileEntity;
-import com.cojac.storyteller.setting.entity.SettingEntity;
 import com.cojac.storyteller.book.dto.BookDTO;
 import com.cojac.storyteller.book.dto.BookDetailResponseDTO;
 import com.cojac.storyteller.book.dto.BookListResponseDTO;
 import com.cojac.storyteller.book.dto.QuizResponseDTO;
-import com.cojac.storyteller.page.dto.PageDTO;
-import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
-import com.cojac.storyteller.page.repository.batch.BatchPageInsert;
-import com.cojac.storyteller.profile.repository.ProfileRepository;
+import com.cojac.storyteller.book.entity.BookEntity;
+import com.cojac.storyteller.book.exception.BookNotFoundException;
+import com.cojac.storyteller.book.mapper.BookMapper;
+import com.cojac.storyteller.book.repository.BookRepository;
+import com.cojac.storyteller.book.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.common.amazon.AmazonS3Service;
+import com.cojac.storyteller.common.amazon.eventHandler.UploadS3Event;
 import com.cojac.storyteller.common.openAI.ImageGenerationService;
 import com.cojac.storyteller.common.openAI.OpenAIService;
-import com.cojac.storyteller.book.mapper.BookMapper;
+import com.cojac.storyteller.page.dto.PageDTO;
+import com.cojac.storyteller.page.entity.PageEntity;
+import com.cojac.storyteller.page.repository.batch.BatchPageInsert;
+import com.cojac.storyteller.profile.entity.ProfileEntity;
+import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
+import com.cojac.storyteller.profile.repository.ProfileRepository;
+import com.cojac.storyteller.response.code.ErrorCode;
+import com.cojac.storyteller.setting.entity.SettingEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,63 +48,47 @@ public class BookService {
     private final BatchPageInsert batchPageInsert;
     private final BatchBookDelete batchBookDelete;
     private final AmazonS3Service amazonS3Service;
-
-    // 동화 생성 중인지 확인하는 맵 (프로필 ID를 키로 사용)
-    private final ConcurrentHashMap<Integer, Boolean> creatingBooks = new ConcurrentHashMap<>();
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 동화 생성
      */
     @Transactional
     public BookDTO createBook(String prompt, Integer profileId) {
-        // 동화 생성 중복 확인
-        if (creatingBooks.getOrDefault(profileId, false)) {
-            throw new IllegalStateException("이미 동화가 생성 중입니다. 나중에 다시 시도해주세요.");
-        }
 
-        // 동화 생성 중 상태로 설정
-        creatingBooks.put(profileId, true);
+        // 프로필 확인
+        ProfileEntity profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
 
-        try {
-            // 프로필 확인
-            ProfileEntity profile = profileRepository.findById(profileId)
-                    .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
+        // 나이를 계산 (birthDate 기준)
+        int age = calculateAge(profile);
 
-            // 나이를 계산 (birthDate 기준)
-            LocalDate birthDate = profile.getBirthDate();
-            LocalDate currentDate = LocalDate.now();
-            int age = Period.between(birthDate, currentDate).getYears();
+        // OpenAI 서비스로부터 동화 생성
+        String story = openAIService.generateStory(prompt, age);
+        String title = story.split("Content:")[0].replace("Title:", "").trim();
+        String content = story.split("Content:")[1].trim();
 
-            // OpenAI 서비스로부터 동화 생성
-            String story = openAIService.generateStory(prompt, age);
+        // 책 표지 이미지 생성 및 S3에 업로드
+        String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
+        eventPublisher.publishEvent(new UploadS3Event(coverImageUrl));
 
-            // 제목과 내용을 분리 (Title: 과 Content: 기준)
-            String title = story.split("Content:")[0].replace("Title:", "").trim();
-            String content = story.split("Content:")[1].trim();
+        // 책 및 페이지 엔티티 생성
+        BookEntity book = BookMapper.createBookEntity(title, coverImageUrl, profile);
+        List<PageEntity> pages = createPage(book, content);
 
-            // Setting 초기 설정
-            SettingEntity setting = SettingEntity.createDefaultSetting();
+        // 책 및 페이지 저장
+        BookEntity savedBook = bookRepository.save(book);
+        batchPageInsert.batchInsertPages(pages);
 
-            // 책 표지 이미지 생성 및 업로드
-            String coverImageUrl = imageGenerationService.generateAndUploadBookCoverImage(title);
-
-            // 책 엔티티 생성
-            BookEntity book = BookMapper.mapToBookEntity(title, coverImageUrl, profile, setting);
-            BookEntity savedBook = bookRepository.save(book);
-
-            // 페이지 생성
-            List<PageEntity> pages = createPage(savedBook, content);
-            batchPageInsert.batchInsertPages(pages);
-
-            // 성공적으로 생성된 동화 반환
-            return BookMapper.mapToBookDTO(savedBook, pages);
-
-        } finally {
-            // 동화 생성이 끝나면 상태를 제거하여 다시 요청 가능하게 함
-            creatingBooks.remove(profileId);
-        }
+        // 성공적으로 생성된 동화 반환
+        return BookMapper.mapToBookDTO(savedBook, pages);
     }
 
+    /**
+     * 페이지 관련 작업
+     * 페이지 이미지 생성 및 S3 업로드
+     * 페이지 엔티티 생성
+     */
     private List<PageEntity> createPage(BookEntity book, String content) {
         String[] contentParts = content.split("\n\n");
         List<PageEntity> pages = new ArrayList<>();
@@ -113,6 +97,7 @@ public class BookService {
             String trimContent = contentParts[i].trim();
 
             String imageUrl = imageGenerationService.generateAndUploadPageImage(trimContent);
+            eventPublisher.publishEvent(new UploadS3Event(imageUrl));
 
             PageEntity pageEntity = PageEntity.builder()
                     .pageNumber(i + 1)
@@ -126,10 +111,16 @@ public class BookService {
         return pages;
     }
 
+    private int calculateAge(ProfileEntity profile) {
+        LocalDate birthDate = profile.getBirthDate();
+        LocalDate currentDate = LocalDate.now();
+        int age = Period.between(birthDate, currentDate).getYears();
+        return age;
+    }
+
     /**
      * 책 목록 조회
      */
-    @Cacheable(value = "bookListCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getBooksPage(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -141,7 +132,6 @@ public class BookService {
     /**
      * 즐겨찾기 책 목록 조회
      */
-    @Cacheable(value = "favoriteBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getFavoriteBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -153,7 +143,6 @@ public class BookService {
     /**
      * 읽고 있는 책 목록 조회
      */
-    @Cacheable(value = "readingBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getReadingBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -195,7 +184,6 @@ public class BookService {
     /**
      * 즐겨찾기 토글 기능 추가
      */
-    @CacheEvict(value = {"bookListCache", "favoriteBooksCache"}, key = "#profileId")
     public Boolean toggleFavorite(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -214,7 +202,6 @@ public class BookService {
      * 책 삭제 기능
      */
     @Transactional
-    @CacheEvict(value = {"bookListCache", "favoriteBooksCache", "readingBooksCache"}, allEntries = true)
     public void deleteBook(Integer profileId, Integer bookId) throws Exception {
 
         if (!profileRepository.existsById(profileId)) {
@@ -252,7 +239,6 @@ public class BookService {
      * 현재 읽고 있는 페이지 업데이트
      */
     @Transactional
-    @CacheEvict(value = {"bookListCache", "readingBooksCache"}, key = "#profileId")
     public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));

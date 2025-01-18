@@ -2,6 +2,8 @@ package com.cojac.storyteller.common.async;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -19,6 +21,11 @@ public class AsyncConfig {
         taskExecutor.setThreadNamePrefix("mailExecutor-"); // 생성된 스레드의 이름에 접두사 설정
         taskExecutor.initialize();
         return taskExecutor;
+    }
+
+    @Bean(name = "s3ServiceTaskExecutor")
+    public TaskExecutor taskExecutor() {
+        return new SimpleAsyncTaskExecutor();
     }
 
 }
