@@ -1,29 +1,27 @@
 package com.cojac.storyteller.book.service;
 
-import com.cojac.storyteller.book.entity.BookEntity;
-import com.cojac.storyteller.book.exception.BookNotFoundException;
-import com.cojac.storyteller.book.repository.BookRepository;
-import com.cojac.storyteller.book.repository.batch.BatchBookDelete;
-import com.cojac.storyteller.response.code.ErrorCode;
-import com.cojac.storyteller.page.entity.PageEntity;
-import com.cojac.storyteller.profile.entity.ProfileEntity;
-import com.cojac.storyteller.setting.entity.SettingEntity;
 import com.cojac.storyteller.book.dto.BookDTO;
 import com.cojac.storyteller.book.dto.BookDetailResponseDTO;
 import com.cojac.storyteller.book.dto.BookListResponseDTO;
 import com.cojac.storyteller.book.dto.QuizResponseDTO;
-import com.cojac.storyteller.page.dto.PageDTO;
-import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
-import com.cojac.storyteller.page.repository.batch.BatchPageInsert;
-import com.cojac.storyteller.profile.repository.ProfileRepository;
+import com.cojac.storyteller.book.entity.BookEntity;
+import com.cojac.storyteller.book.exception.BookNotFoundException;
+import com.cojac.storyteller.book.mapper.BookMapper;
+import com.cojac.storyteller.book.repository.BookRepository;
+import com.cojac.storyteller.book.repository.batch.BatchBookDelete;
 import com.cojac.storyteller.common.amazon.AmazonS3Service;
 import com.cojac.storyteller.common.openAI.ImageGenerationService;
 import com.cojac.storyteller.common.openAI.OpenAIService;
-import com.cojac.storyteller.book.mapper.BookMapper;
+import com.cojac.storyteller.page.dto.PageDTO;
+import com.cojac.storyteller.page.entity.PageEntity;
+import com.cojac.storyteller.page.repository.batch.BatchPageInsert;
+import com.cojac.storyteller.profile.entity.ProfileEntity;
+import com.cojac.storyteller.profile.exception.ProfileNotFoundException;
+import com.cojac.storyteller.profile.repository.ProfileRepository;
+import com.cojac.storyteller.response.code.ErrorCode;
+import com.cojac.storyteller.setting.entity.SettingEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -129,7 +127,6 @@ public class BookService {
     /**
      * 책 목록 조회
      */
-    @Cacheable(value = "bookListCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getBooksPage(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -141,7 +138,6 @@ public class BookService {
     /**
      * 즐겨찾기 책 목록 조회
      */
-    @Cacheable(value = "favoriteBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getFavoriteBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -153,7 +149,6 @@ public class BookService {
     /**
      * 읽고 있는 책 목록 조회
      */
-    @Cacheable(value = "readingBooksCache", key = "#profileId", unless = "#result.isEmpty()")
     public List<BookListResponseDTO> getReadingBooks(Integer profileId, Pageable pageable) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -195,7 +190,6 @@ public class BookService {
     /**
      * 즐겨찾기 토글 기능 추가
      */
-    @CacheEvict(value = {"bookListCache", "favoriteBooksCache"}, key = "#profileId")
     public Boolean toggleFavorite(Integer profileId, Integer bookId) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
@@ -214,7 +208,6 @@ public class BookService {
      * 책 삭제 기능
      */
     @Transactional
-    @CacheEvict(value = {"bookListCache", "favoriteBooksCache", "readingBooksCache"}, allEntries = true)
     public void deleteBook(Integer profileId, Integer bookId) throws Exception {
 
         if (!profileRepository.existsById(profileId)) {
@@ -252,7 +245,6 @@ public class BookService {
      * 현재 읽고 있는 페이지 업데이트
      */
     @Transactional
-    @CacheEvict(value = {"bookListCache", "readingBooksCache"}, key = "#profileId")
     public BookDTO updateCurrentPage(Integer profileId, Integer bookId, Integer currentPage) {
         ProfileEntity profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(ErrorCode.PROFILE_NOT_FOUND));
