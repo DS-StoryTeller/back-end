@@ -2,6 +2,7 @@ package com.cojac.storyteller.email;
 
 import com.cojac.storyteller.common.async.MailSendRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mail.MailSendException;
@@ -34,7 +35,7 @@ public class MailSendRetryPolicyTest {
             log.info("재시도 종료");
         }
 
-        assertThat(tryCount.intValue()).isEqualTo(1); // 재시도는 1회로 종료
+        Assertions.assertThat(tryCount.intValue()).isEqualTo(1); // 재시도는 1회로 종료
     }
 
 
@@ -58,6 +59,6 @@ public class MailSendRetryPolicyTest {
             log.info("재시도 종료");
         }
 
-        assertThat(tryCount.intValue()).isEqualTo(3); // 재시도는 3회로 종료
+        Assertions.assertThat(tryCount.intValue()).isEqualTo(3); // 재시도는 3회로 종료
     }
 }
