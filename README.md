@@ -69,6 +69,7 @@ _written by pyounani, devdaradara_
 ![서비스 구성도](https://github.com/user-attachments/assets/24059f87-4542-4cb2-989e-bf710dde687e)
 
 ### Infrastructure Architecture
+![아키텍처 설계도](https://github.com/user-attachments/assets/1ed56472-6ca7-44d2-ad1b-709ea534aeee)
 
 #### Environment
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white)
